@@ -2,16 +2,6 @@ import React, { useState } from "react";
 import { useNavigation } from "react-router-dom";
 // import dev_url from "../config";
 const EmployeeRegister = () => {
-  const [hireDate, setHireDate] = useState("");
-
-  const handleDateChange = (e) => {
-    const selectedDate = e.target.value;
-    if (selectedDate) {
-      const [year, month, day] = selectedDate.split("-");
-      setHireDate(`${day}-${month}-${year}`); // Convert to DD-MM-YYYY
-    }
-  };
-
   // const navigation = useNavigation();
   const [formData, setFormData] = useState({
     emp_code: "",
@@ -81,7 +71,10 @@ const EmployeeRegister = () => {
           />
         </div>
 
-        <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+        >
           <input
             placeholder="Employee Code"
             className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
@@ -162,27 +155,26 @@ const EmployeeRegister = () => {
             placeholder="Hire Date"
             onFocus={(e) => (e.target.type = "date")}
             onBlur={(e) => (hireDate === "" ? (e.target.type = "text") : null)}
-            onChange={handleDateChange}
+            // onChange={handleDateChange}
             className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
             name="hire_date"
             id="hire_date"
             value={formData.hire_date}
-            // onChange={handleChange}
+            onChange={handleChange}
             required
           />
 
           {/* isActive Dropdown */}
           <select
-  name="is_active"
-  className="w-full border-b border-gray-300 p-2 text-gray-600 focus:outline-none focus:border-black"
-  value={formData.is_active ? "yes" : "no"}
-  onChange={handleChange} 
-  required
->
-  <option value="no">Not Active</option>
-  <option value="yes">Active</option>
-</select>
-
+            name="is_active"
+            className="w-full border-b border-gray-300 p-2 text-gray-600 focus:outline-none focus:border-black"
+            value={formData.is_active ? "yes" : "no"}
+            onChange={handleChange}
+            required
+          >
+            <option value="no">Not Active</option>
+            <option value="yes">Active</option>
+          </select>
 
           <input
             placeholder="Password"
