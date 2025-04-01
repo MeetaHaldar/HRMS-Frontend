@@ -1,40 +1,35 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
+    name: "",
+    email: "",
+    password: "",
   });
-  const[err,setErr]=useState('')
+  const [err, setErr] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     alert(`Name: ${formData.name}\nEmail: ${formData.email}`);
-   try{
-    const response = await axios.post(`${dev_url}/api/auth/login`,formData)
+    try {
+      const response = await axios.post(`${dev_url}/api/auth/login`, formData);
 
-    const {token,user}=response.data
-  
-    localStorage.setItem('token',token)
-    localStorage.setItem('user',JSON.stringify(user))
-    if (user.role === 'superAdmin') {
-      window.location.href = '/admin/dashboard';
-     } 
-    
-    else if (user.role === 'systemAdmin') {
-      window.location.href = '/company/dashboard';
+      const { token, user } = response.data;
+
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
+      if (user.role === "superAdmin") {
+        window.location.href = "/admin/dashboard";
+      } else if (user.role === "systemAdmin") {
+        window.location.href = "/company/dashboard";
+      }
+    } catch (err) {
+      setErr("Failed to login . Please try again later");
     }
-   }
-   catch(err){
-    setErr(
-      'Failed to login . Please try again later'
-    )
-   }
   };
 
   return (
@@ -60,26 +55,28 @@ const Login = () => {
           Login
         </h2>
 
-        <form  onSubmit={handleSubmit} className="flex flex-col gap-5 w-[90%] md:w-[50%]">
-     
-                <input
-                    type="text"
-                    name="name"
-                    placeholder="Name"
-                    className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-            <input
-                    type="email"
-                    name="email"
-                    placeholder="Email ID"
-                    className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-5 w-[90%] md:w-[50%]"
+        >
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email ID"
+            className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
 
           <input
             type="password"
