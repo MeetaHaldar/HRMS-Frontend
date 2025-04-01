@@ -1,6 +1,42 @@
-import React from "react";
+import React,{useState} from "react";
 
 const Login = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+  const[err,setErr]=useState('')
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    alert(`Name: ${formData.name}\nEmail: ${formData.email}`);
+   try{
+    const response = await axios.post(`${dev_url}/api/auth/login`,formData)
+
+    const {token,user}=response.data
+  
+    localStorage.setItem('token',token)
+    localStorage.setItem('user',JSON.stringify(user))
+    if (user.role === 'superAdmin') {
+      window.location.href = '/admin/dashboard';
+     } 
+    
+    else if (user.role === 'systemAdmin') {
+      window.location.href = '/company/dashboard';
+    }
+   }
+   catch(err){
+    setErr(
+      'Failed to login . Please try again later'
+    )
+   }
+  };
+
   return (
     <div className="flex flex-col md:flex-row items-center justify-center min-h-screen bg-white p-6">
       {/* Mobile View: Heading First */}
@@ -24,21 +60,34 @@ const Login = () => {
           Login
         </h2>
 
-        <form className="flex flex-col gap-5 w-[90%] md:w-[50%]">
-          {["Name", "Email ID"].map((placeholder, index) => (
+        <form  onSubmit={handleSubmit} className="flex flex-col gap-5 w-[90%] md:w-[50%]">
+     
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
             <input
-              key={index}
-              type={placeholder.includes("Email") ? "email" : "text"}
-              placeholder={placeholder}
-              className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
-              required
-            />
-          ))}
+                    type="email"
+                    name="email"
+                    placeholder="Email ID"
+                    className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
 
           <input
             type="password"
+            name="password"
             placeholder="Password"
             className="w-full border-b border-gray-400 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+            value={formData.password}
+            onChange={handleChange}
             required
           />
 
