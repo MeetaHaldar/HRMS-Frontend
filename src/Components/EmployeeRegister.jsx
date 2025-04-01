@@ -20,31 +20,34 @@ const EmployeeRegister = () => {
           className="max-w-full h-auto"
         />
       </div>
-
-      <div className="w-full md:w-1/2 bg-white p-6 border-gray-200">
+      
+      <div className="w-full md:w-1/2 p-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
           Register - <span className="font-semibold">Employee</span>
         </h2>
+
+        <div className="flex justify-center md:hidden mb-4">
+          <img
+            src="src/assets/Login_image.png"
+            alt="Illustration"
+            className="max-w-[80%] h-auto md:max-w-[50%]"
+          />
+        </div>
+
         <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            "Employee Code",
-            "First Name",
-            "Last Name",
-            "Email ID",
-            "Phone No",
-            "Department ID",
-            "Position ID",
+            "Employee Code", "First Name", "Last Name", "Email ID", "Phone No", "Department ID", "Position ID"
           ].map((placeholder, index) => (
             <input
               key={index}
               type={placeholder.includes("Email") ? "email" : "text"}
               placeholder={placeholder}
-              className="w-75 border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+              className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
               required
             />
           ))}
 
-          {/* Hire Date Input with "Hire Date" as Placeholder */}
+          {/* Hire Date Input */}
           <input
             type="text"
             value={hireDate}
@@ -52,13 +55,13 @@ const EmployeeRegister = () => {
             onFocus={(e) => (e.target.type = "date")}
             onBlur={(e) => (hireDate === "" ? (e.target.type = "text") : null)}
             onChange={handleDateChange}
-            className="w-75 border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+            className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
             required
           />
 
           {/* isActive Dropdown */}
           <select
-            className="w-75 border-b border-gray-300 p-2 text-gray-600 focus:outline-none focus:border-black"
+            className="w-full border-b border-gray-300 p-2 text-gray-600 focus:outline-none focus:border-black"
             required
           >
             <option value="" disabled selected>
@@ -79,15 +82,13 @@ const EmployeeRegister = () => {
         <div className="flex items-center justify-center mt-4">
           <input type="checkbox" className="mr-2" required />
           <p className="text-sm text-gray-600">
-            By continuing, I agree to the{" "}
-            <span className="font-semibold">Terms & Conditions</span> and{" "}
-            <span className="font-semibold">Privacy Policy</span>.
+            By continuing, I agree to the <span className="font-semibold">Terms & Conditions</span> and <span className="font-semibold">Privacy Policy</span>.
           </p>
         </div>
 
         <button className="w-72 mt-4 bg-gray-500 text-white text-lg font-semibold py-2 px-6 rounded-full hover:bg-yellow-500 transition block mx-auto">
-          Register
-        </button>
+  Register
+</button>
       </div>
     </div>
   );
