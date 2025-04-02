@@ -5,6 +5,7 @@ import './App.css'
 import CompanyRegistration from './Components/CompanyRegistration'
 import EmployeeRegister from './Components/EmployeeRegister'
 import Login from './Components/Login'
+import AdminDashboard from './Components/AdminDashboard';
 
 function App() {
 
@@ -13,6 +14,8 @@ function App() {
      <Router>
       <Routes>
         <Route path="/login" element={<Login />} /> 
+        <Route path="/adminDashboard" element={<AdminDashboard />} /> 
+
         <Route path="/companyregister" element={<CompanyRegistration />} /> 
         <Route path="/employeeregister" element={<EmployeeRegister />} /> 
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />  
