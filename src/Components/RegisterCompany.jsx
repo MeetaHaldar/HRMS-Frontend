@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const CompanyRegistration = () => {
+const RegisterCompany = () => {
   const [formData, setFormData] = useState({
     name: "",
     sub_domain: "",
@@ -112,4 +112,4 @@ const CompanyRegistration = () => {
   );
 };
 
-export default CompanyRegistration;
+export default RegisterCompany;

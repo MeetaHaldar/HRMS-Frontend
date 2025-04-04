@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 // import dev_url from "../config";
 
-const EmployeeRegister = () => {
+const RegisterEmployee = () => {
   const [formData, setFormData] = useState({
     emp_code: "",
     first_name: "",
@@ -114,4 +114,4 @@ const EmployeeRegister = () => {
   );
 };
 
-export default EmployeeRegister;
+export default RegisterEmployee;
