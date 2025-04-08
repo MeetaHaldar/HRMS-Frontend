@@ -6,6 +6,7 @@ import RegisterCompany from './Components/RegisterCompany'
 import RegisterEmployee from './Components/RegisterEmployee'
 import SignIn from './Components/SignIn'
 import AdminDashboard from './Components/AdminDashboard';
+import EditCompany from './Components/EditCompany';
 
 function App() {
 
@@ -13,12 +14,14 @@ function App() {
     <>
      <Router>
       <Routes>
-        <Route path="/SignIn" element={<SignIn />} /> 
+        <Route path="/SignIn" element={<SignIn />} />
         <Route path="/" element={<SignIn />} />
-        <Route path="/adminDashboard" element={<AdminDashboard />} /> 
-        <Route path="/RegisterCompany" element={<RegisterCompany />} /> 
-        <Route path="/RegisterEmployee" element={<RegisterEmployee />} /> 
-        <Route path="*" element={<h1>404 - Page Not Found</h1>} />  
+        <Route path="/adminDashboard" element={<AdminDashboard />} />
+        <Route path="/RegisterCompany" element={<RegisterCompany />} />
+        <Route path="/RegisterEmployee" element={<RegisterEmployee />} />
+        <Route path="/editCompany" element={<EditCompany/>} />
+
+        <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
     </Router>
     </>
