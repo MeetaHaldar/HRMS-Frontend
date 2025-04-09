@@ -6,7 +6,8 @@ import RegisterCompany from './Components/RegisterCompany'
 import RegisterEmployee from './Components/RegisterEmployee'
 import SignIn from './Components/SignIn'
 import AdminDashboard from './Components/AdminDashboard';
-import EditCompany from './Components/EditCompany';
+import SidebarLayout from './Components/SidebarLayout';
+import HolidayList from './Components/HolidayList';
 
 function App() {
 
@@ -19,7 +20,8 @@ function App() {
         <Route path="/adminDashboard" element={<AdminDashboard />} />
         <Route path="/RegisterCompany" element={<RegisterCompany />} />
         <Route path="/RegisterEmployee" element={<RegisterEmployee />} />
-        <Route path="/editCompany" element={<EditCompany/>} />
+        <Route path="/sidebar" element={<SidebarLayout/>} />
+        <Route path="/HolidayList" element={<HolidayList />} />
 
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
