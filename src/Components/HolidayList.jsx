@@ -71,6 +71,10 @@ const HolidayList = () => {
     }
     setIsPopupOpen(false);
   };
+  const addHoliday=() => {
+    setSelectedHoliday(null); // Clear for adding
+    setIsPopupOpen(true);   
+  }
 
   return (
     <div className="p-4 w-full flex justify-center">
@@ -78,7 +82,7 @@ const HolidayList = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-base md:text-lg text-gray-600">Holiday List:</h2>
           <button
-            onClick={handleAddClick}
+            onClick={addHoliday}
             className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-lg cursor-pointer"
           >
             + Add Holiday

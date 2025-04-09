@@ -8,6 +8,7 @@ import SignIn from './Components/SignIn'
 import AdminDashboard from './Components/AdminDashboard';
 import SidebarLayout from './Components/SidebarLayout';
 import HolidayList from './Components/HolidayList';
+import Leaves from './Components/Leaves';
 
 function App() {
 
@@ -22,6 +23,8 @@ function App() {
         <Route path="/RegisterEmployee" element={<RegisterEmployee />} />
         <Route path="/sidebar" element={<SidebarLayout/>} />
         <Route path="/HolidayList" element={<HolidayList />} />
+
+        <Route path="/leaves" element={<Leaves />} />
 
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
