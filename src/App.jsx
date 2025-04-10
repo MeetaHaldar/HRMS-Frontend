@@ -9,6 +9,7 @@ import AdminDashboard from './Components/AdminDashboard';
 import SidebarLayout from './Components/SidebarLayout';
 import HolidayList from './Components/HolidayList';
 import Leaves from './Components/Leaves';
+import LeaveHistory from './Components/LeaveHistory';
 
 function App() {
 
@@ -25,6 +26,8 @@ function App() {
         <Route path="/HolidayList" element={<HolidayList />} />
 
         <Route path="/leaves" element={<Leaves />} />
+        <Route path="/leaveHistory" element={<LeaveHistory />} />
+
 
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
