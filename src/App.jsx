@@ -11,6 +11,7 @@ import HolidayList from './Components/HolidayList';
 import Leaves from './Components/Leaves';
 import LeaveHistory from './Components/LeaveHistory';
 import WFHhistory from './Components/WFHhistory';
+import Department from './Components/Department';
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/leaves" element={<Leaves />} />
         <Route path="/leaveHistory" element={<LeaveHistory />} />
         <Route path="/WFHhistory" element={<WFHhistory />} />
+        <Route path="/Department" element={<Department />} />
 
 
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
