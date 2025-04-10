@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const EditHolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
+const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
     name: "",
     date: "",
@@ -8,13 +8,22 @@ const EditHolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     id: "",
   });
 
+  const isEdit = Boolean(initialData);
+
   useEffect(() => {
-    if (initialData) {
+    if (isEdit) {
       setFormData({
         name: initialData.name || "",
         date: initialData.date || "",
         duration: initialData.duration || "",
         id: initialData.id || "",
+      });
+    } else {
+      setFormData({
+        name: "",
+        date: "",
+        duration: "",
+        id: "",
       });
     }
   }, [initialData]);
@@ -35,7 +44,9 @@ const EditHolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg text-gray-700 font-semibold">Edit Holiday</h2>
+          <h2 className="text-lg text-gray-700 font-semibold">
+            {isEdit ? "Edit Holiday" : "Add New Holiday"}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900 text-3xl leading-none"
@@ -43,7 +54,7 @@ const EditHolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
             &times;
           </button>
         </div>
-
+        <div className="border-b border-gray-200 mb-4" />
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -94,7 +105,7 @@ const EditHolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
             type="submit"
             className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-xl transition"
           >
-            Submit
+            {isEdit ? "Save Changes" : "Add Holiday"}
           </button>
         </form>
       </div>
@@ -102,4 +113,4 @@ const EditHolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   );
 };
 
-export default EditHolidayPopup;
+export default HolidayPopup;

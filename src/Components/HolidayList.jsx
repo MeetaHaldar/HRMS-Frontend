@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import EditHolidayPopup from "./EditHolidayPopup"; // make sure the path is correct
+import HolidayPopup from "./HolidayPopup";
 
 const HolidayList = () => {
   const [holidays, setHolidays] = useState([
@@ -21,7 +21,8 @@ const HolidayList = () => {
   const [error, setError] = useState(null);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedHoliday, setSelectedHoliday] = useState(null); // used for both edit and add
+  const [selectedHoliday, setSelectedHoliday] = useState(null);
+  const [mode, setMode] = useState("add"); // "add" or "edit"
 
   useEffect(() => {
     fetch("/api/holidays")
@@ -38,11 +39,13 @@ const HolidayList = () => {
   }, []);
 
   const handleAddClick = () => {
-    setSelectedHoliday(null); // Clear for adding
+    setMode("add");
+    setSelectedHoliday(null);
     setIsPopupOpen(true);
   };
 
   const handleEditClick = (holiday) => {
+    setMode("edit");
     setSelectedHoliday(holiday);
     setIsPopupOpen(true);
   };
@@ -53,39 +56,35 @@ const HolidayList = () => {
     );
     if (confirmDelete) {
       setHolidays(holidays.filter((h) => h.id !== id));
-      // TODO: Add API call to delete from backend
+      // TODO: API call to delete from backend
     }
   };
 
   const handleSubmit = (formData) => {
     if (formData.id) {
-      // Edit existing
       setHolidays((prev) =>
         prev.map((holiday) => (holiday.id === formData.id ? formData : holiday))
       );
     } else {
-      // Add new
       const newId = Math.max(...holidays.map((h) => h.id), 0) + 1;
       const newHoliday = { ...formData, id: newId };
       setHolidays((prev) => [...prev, newHoliday]);
     }
     setIsPopupOpen(false);
   };
-  const addHoliday=() => {
-    setSelectedHoliday(null); // Clear for adding
-    setIsPopupOpen(true);   
-  }
 
   return (
     <div className="p-4 w-full flex justify-center">
       <div className="w-full max-w-3xl">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-base md:text-lg text-gray-600">Holiday List:</h2>
+          <h2 className="text-base md:text-lg text-gray-600 uppercase font-semibold">
+            Holiday's List:
+          </h2>
           <button
-            onClick={addHoliday}
-            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-lg cursor-pointer"
+            onClick={handleAddClick}
+            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold shadow-md cursor-pointer"
           >
-            + Add Holiday
+            + Add New Holiday
           </button>
         </div>
 
@@ -93,7 +92,7 @@ const HolidayList = () => {
           <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
             <thead>
               <tr className="bg-gray-200 text-left text-gray-600">
-                <th className="p-2 md:p-3">Name</th>
+                <th className="p-2 md:p-3">Holidays</th>
                 <th className="p-2 md:p-3">Date</th>
                 <th className="p-2 md:p-3">Duration</th>
                 <th className="p-2 md:p-3">Actions</th>
@@ -115,7 +114,7 @@ const HolidayList = () => {
                 </tr>
               ) : (
                 holidays.map((holiday) => (
-                  <tr key={holiday.id} className="border-b hover:bg-gray-100">
+                  <tr key={holiday.id} className="hover:bg-gray-100">
                     <td className="p-2 md:p-3">{holiday.name}</td>
                     <td className="p-2 md:p-3">{holiday.date}</td>
                     <td className="p-2 md:p-3">{holiday.duration}</td>
@@ -141,11 +140,12 @@ const HolidayList = () => {
         </div>
 
         {/* Popup Component */}
-        <EditHolidayPopup
+        <HolidayPopup
           isOpen={isPopupOpen}
           onClose={() => setIsPopupOpen(false)}
           onSubmit={handleSubmit}
           initialData={selectedHoliday}
+          mode={mode}
         />
       </div>
     </div>

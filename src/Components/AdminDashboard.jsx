@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import EditCompanyPopup from "./EditCompanyPopup";
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [companies, setCompanies] = useState([
     {
       id: 1,
@@ -113,8 +116,13 @@ const AdminDashboard = () => {
   return (
     <div className="p-2 md:p-6 w-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-sm md:text-lg text-gray-600">Listed Companies:</h2>
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-lg cursor-pointer">
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
+          Listed Companies:
+        </h2>
+        <button
+          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
+          onClick={() => navigate("/RegisterCompany")}
+        >
           + New Company
         </button>
       </div>
@@ -150,7 +158,7 @@ const AdminDashboard = () => {
               </tr>
             ) : (
               companies.map((company, index) => (
-                <tr key={index} className="border-b hover:bg-gray-100">
+                <tr key={index} className="hover:bg-gray-100">
                   <td className="p-2 md:p-3">
                     <input type="checkbox" />
                   </td>
@@ -174,10 +182,10 @@ const AdminDashboard = () => {
                       className="text-gray-500 hover:text-gray-950"
                       onClick={() => handleEditClick(company)}
                     >
-                      <FaEdit />
+                      <FiEdit />
                     </button>
                     <button className="text-gray-500 hover:text-gray-950">
-                      <FaTrash />
+                      <RiDeleteBin6Line />
                     </button>
                   </td>
                 </tr>
