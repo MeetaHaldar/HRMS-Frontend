@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import EditCompanyPopup from "./EditCompanyPopup";
+import DeleteConfirmationPopup from "./DeleteConfirmationPopup";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -38,6 +39,8 @@ const AdminDashboard = () => {
       adminName: "Jane Smith",
     },
   ]);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [companyToDelete, setCompanyToDelete] = useState(null);
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
@@ -112,6 +115,23 @@ const AdminDashboard = () => {
     });
     */
   };
+  const handleDeleteClick = (company) => {
+    setCompanyToDelete(company);
+    setShowDeletePopup(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await fetch(`/api/companies/${companyToDelete.id}`, {
+        method: "DELETE",
+      });
+      setCompanies(companies.filter((c) => c.id !== companyToDelete.id));
+      setShowDeletePopup(false);
+    } catch (error) {
+      console.error("Error deleting company:", error);
+      setShowDeletePopup(false);
+    }
+  };
 
   return (
     <div className="p-2 md:p-6 w-full">
@@ -120,7 +140,7 @@ const AdminDashboard = () => {
           Listed Companies:
         </h2>
         <button
-          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
+          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2  text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={() => navigate("/RegisterCompany")}
         >
           + New Company
@@ -184,7 +204,10 @@ const AdminDashboard = () => {
                     >
                       <FiEdit />
                     </button>
-                    <button className="text-gray-500 hover:text-gray-950">
+                    <button
+                      className="text-gray-500 hover:text-gray-950"
+                      onClick={() => handleDeleteClick(company)}
+                    >
                       <RiDeleteBin6Line />
                     </button>
                   </td>
@@ -242,6 +265,12 @@ const AdminDashboard = () => {
         onClose={() => setShowEditModal(false)}
         onSubmit={handleEditSubmit}
         initialData={selectedCompany}
+      />
+      <DeleteConfirmationPopup
+        isOpen={showDeletePopup}
+        onCancel={() => setShowDeletePopup(false)}
+        onConfirm={confirmDelete}
+        companyName={companyToDelete?.name}
       />
     </div>
   );

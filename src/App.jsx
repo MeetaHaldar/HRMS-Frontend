@@ -1,17 +1,17 @@
-import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Link } from "react-router-dom";
 import './App.css'
-import RegisterCompany from './Components/RegisterCompany'
-import RegisterEmployee from './Components/RegisterEmployee'
+import RegisterCompany from './Components/SuperAdmin/RegisterCompany'
+import RegisterEmployee from './Components/Company/RegisterEmployee'
 import SignIn from './Components/SignIn'
-import AdminDashboard from './Components/AdminDashboard';
+import AdminDashboard from './Components/SuperAdmin/AdminDashboard';
 import SidebarLayout from './Components/SidebarLayout';
-import HolidayList from './Components/HolidayList';
-import Leaves from './Components/Leaves';
-import LeaveHistory from './Components/LeaveHistory';
-import WFHhistory from './Components/WFHhistory';
-import Department from './Components/Department';
+import HolidayList from './Components/Company/HolidayList';
+import Leaves from './Components/Employee/Leaves';
+import LeaveHistory from './Components/Employee/LeaveHistory';
+import WFHhistory from './Components/Employee/WFHhistory';
+import Department from './Components/Company/Department';
+import Profile from "./Components/Employee/Profile";
+import Holidays from "./Components/Employee/Holidays";
 
 function App() {
 
@@ -30,6 +30,9 @@ function App() {
         <Route path="/leaves" element={<Leaves />} />
         <Route path="/leaveHistory" element={<LeaveHistory />} />
         <Route path="/WFHhistory" element={<WFHhistory />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/employee/holidays" element={<Holidays />} />
+
         <Route path="/Department" element={<Department />} />
 
 
