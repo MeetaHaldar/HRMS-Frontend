@@ -77,7 +77,7 @@ const Designation = () => {
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
               <th className="p-2 md:p-3">Designation Name</th>
-              <th className="p-2 md:p-3">Department</th>
+              <th className="p-2 md:p-3">Total Employees</th>
               <th className="p-2 md:p-3">Actions</th>
             </tr>
           </thead>

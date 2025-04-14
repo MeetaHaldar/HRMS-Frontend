@@ -148,7 +148,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
+        <table className="w-full border-collapse text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
               <th className="p-2 md:p-3">

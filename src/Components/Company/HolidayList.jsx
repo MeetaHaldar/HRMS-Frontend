@@ -72,14 +72,12 @@ const HolidayList = () => {
     }
     setIsPopupOpen(false);
   };
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   return (
-    <div className="p-4 w-full flex justify-center">
-      <div className="w-full max-w-3xl">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-base md:text-lg text-gray-600 uppercase font-semibold">
-            Holiday's List:
-          </h2>
+<div className="p-2 md:p-6 w-full">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold"> Holiday's List:</h2>
           <button
             onClick={handleAddClick}
             className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold shadow-md cursor-pointer"
@@ -139,6 +137,36 @@ const HolidayList = () => {
           </table>
         </div>
 
+      {/* Pagination */}
+      <div className="flex justify-between items-center mt-4 text-gray-600 text-xs md:text-sm">
+        <button
+          className="px-2 py-1 rounded-md cursor-pointer"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
+          &lt; Previous
+        </button>
+        <div className="flex space-x-1">
+          {[...Array(totalPages)].map((_, idx) => (
+            <button
+              key={idx}
+              className={`px-2 py-1 rounded-md cursor-pointer ${
+                currentPage === idx + 1 ? "bg-gray-300" : "hover:bg-gray-200"
+              }`}
+              onClick={() => setCurrentPage(idx + 1)}
+            >
+              {idx + 1}
+            </button>
+          ))}
+        </div>
+        <button
+          className="px-2 py-1 rounded-md cursor-pointer"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Next &gt;
+        </button>
+      </div>
         {/* Popup Component */}
         <HolidayPopup
           isOpen={isPopupOpen}
@@ -148,7 +176,7 @@ const HolidayList = () => {
           mode={mode}
         />
       </div>
-    </div>
+   
   );
 };
 

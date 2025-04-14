@@ -1,71 +1,109 @@
 import React, { useState } from 'react';
-// import { Menu, X } from 'lucide-react'; // Optional icons (install `lucide-react`)
 import { Link } from 'react-router-dom';
 import { IoIosMenu } from "react-icons/io";
 import { RxCross1 } from "react-icons/rx";
-
+import { IoSettingsOutline } from "react-icons/io5";
+import { FaFolderPlus } from "react-icons/fa";
+import { LuReceiptIndianRupee } from "react-icons/lu";
+import { FaWpforms } from "react-icons/fa";
+import { FaPeopleGroup } from "react-icons/fa6";
+import { FaClipboardCheck } from "react-icons/fa6";
+import { FaArrowTrendUp } from "react-icons/fa6";
+import { MdSpaceDashboard } from "react-icons/md";
+import { GoReport } from "react-icons/go";
+import { FaQuestionCircle, FaBookOpen, FaPhoneVolume } from "react-icons/fa";  // Added icons for settings menu
 
 const menuItems = [
-  { label: 'Dashboard', to: '/' },
-  { label: 'Dashboard Listings', to: '/listings1' },
-  { label: 'Dashboard Listings', to: '/listings2' },
-  { label: 'Dashboard Listings', to: '/listings3' },
-  { label: 'Organisations', to: '/organisations', active: true },
-  { label: 'Dashboard Listings', to: '/listings4' },
-  { label: 'Logs & Reports', to: '/logs' },
-  { label: 'Support', to: '/support' },
-  { label: 'Help', to: '/help' },
+  { label: 'Dashboard', to: '/adminDashboard', icon: <MdSpaceDashboard /> },
+  { label: 'Employees', to: '/listings1', icon: <FaPeopleGroup /> },
+  { label: 'Pay Runs', to: '/listings2', icon: <FaArrowTrendUp /> },
+  { label: 'Approvals', to: '/listings3', icon: <FaClipboardCheck /> },
+  { label: 'Form 16', to: '/organisations', icon: <FaWpforms /> },
+  { label: 'loans', to: '/listings4', icon: <LuReceiptIndianRupee /> },
+  { label: 'Documents', to: '/logs', icon: <FaFolderPlus /> },
+  { label: 'Reports', to: '/support', icon: <GoReport /> },
+  { label: 'Settings', to: '/adminDashboard', icon: <IoSettingsOutline /> },
+];
+
+const settingsMenu = [
+  { label: 'Organisation Profile', to: '/help/faq', icon: <FaQuestionCircle /> },
+  { label: 'Departments', to: '/Department', icon: <FaBookOpen /> },
+  { label: 'Designations', to: '/Designation', icon: <FaPhoneVolume /> },
+  { label: 'Holidays', to: '/HolidayList', icon: <FaPhoneVolume /> },
+
+  { label: 'Statutory Components', to: '/help/contact', icon: <FaPhoneVolume /> },
+
+  { label: 'Salary Components', to: '/salaryComponent', icon: <FaPhoneVolume /> },
+  { label: 'Salary Templates', to: '/help/contact', icon: <FaPhoneVolume /> },
+  { label: 'Taxes', to: '/help/contact', icon: <FaPhoneVolume /> },
+  { label: 'Pay Schedule', to: '/help/contact', icon: <FaPhoneVolume /> },
+  { label: 'Leave & Attendance', to: '/leaves', icon: <FaPhoneVolume /> },
+  { label: 'User & Roles', to: '/help/contact', icon: <FaPhoneVolume /> },
+
 ];
 
 const SidebarLayout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isSettingsMenuActive, setIsSettingsMenuActive] = useState(false);
+
+  const handleMenuClick = (item) => {
+    setIsSettingsMenuActive(item.label === 'Settings');
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
-    
-      {/* Sidebar */}
-      <div className={`fixed z-30 lg:static lg:translate-x-0 transition-transform duration-300 ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } w-64 bg-white shadow-lg border-r`}>
-        <div className="flex items-center justify-between px-4 py-4 lg:hidden">
-          <span className="text-lg font-bold">Menu</span>
-          <button onClick={() => setSidebarOpen(false)}>
-          <RxCross1 />
-          </button>
+
+      {/* Main Sidebar */}
+      <div className={`
+          bg-white shadow-lg border-r border-gray-200 h-full flex flex-col items-center 
+          ${isSettingsMenuActive ? 'lg:w-20' : 'lg:w-64'} 
+          w-20 
+        `}
+      >
+        <div className="hidden lg:flex items-center justify-center h-16 font-bold">
+          {isSettingsMenuActive ? 'M' : 'Main'}
         </div>
-        <nav className="px-4 py-6 space-y-2">
+
+        <nav className="px-2 py-6 space-y-2 w-full">
           {menuItems.map((item, index) => (
             <Link
               key={index}
               to={item.to}
-              className={`flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition ${
-                item.active ? 'bg-gray-200 font-semibold text-gray-900' : 'text-gray-600'
-              }`}
+              onClick={() => handleMenuClick(item)}
+              className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition text-gray-600 justify-center lg:justify-start"
             >
-              <span className="w-5 h-5 bg-gray-300 rounded-full"></span>
-              <span>{item.label}</span>
+              <span className="text-xl">{item.icon}</span>
+              <span className={`hidden lg:${isSettingsMenuActive ? 'hidden' : 'inline'}`}>{item.label}</span>
             </Link>
           ))}
         </nav>
       </div>
 
-      {/* Overlay on mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-20 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+      {/* Settings Sidebar */}
+      {isSettingsMenuActive && (
+        <div className="w-64 bg-white shadow-lg  h-full flex flex-col">
+          <div className="flex items-center justify-center h-16 text-[#303030] font-bold text-2xl">Settings</div>
+          <nav className="px-4 py-6 space-y-2">
+            {settingsMenu.map((item, index) => (
+              <Link
+                key={index}
+                to={item.to}
+                className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition text-gray-600"
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </nav>
+        </div>
       )}
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 flex flex-col overflow-y-auto">
         <header className="flex items-center justify-between p-4 bg-white shadow-md lg:hidden">
-          <button onClick={() => setSidebarOpen(true)}>
-          <IoIosMenu />
-          </button>
           <span className="text-xl font-semibold">My App</span>
         </header>
-        <main className="p-6">{children}</main>
+
+        <main className="p-6 flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   );

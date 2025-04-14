@@ -3,8 +3,6 @@ import React, { useState, useEffect } from "react";
 const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
     title: "",
-    code: "",
-    departmentCode: "",
   });
 
   const [error, setError] = useState("");
@@ -13,14 +11,10 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     if (initialData) {
       setFormData({
         title: initialData.title || "",
-        code: initialData.code || "",
-        departmentCode: initialData.departmentCode || "",
       });
     } else {
       setFormData({
         title: "",
-        code: "",
-        departmentCode: "",
       });
     }
   }, [initialData]);
@@ -34,13 +28,9 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.code) {
-      setError("Designation title and code are required.");
-      return;
-    }
 
     onSubmit(formData);
-    setFormData({ title: "", code: "", departmentCode: "" });
+    setFormData({ title: ""});
     onClose();
   };
 
@@ -71,39 +61,14 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">
-              Designation Title<span className="text-red-500">*</span>
+              Designation Name<span className="text-red-500">*</span>
             </label>
             <input
               name="title"
               placeholder="e.g. Senior Software Engineer"
               value={formData.title}
               onChange={handleChange}
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">
-              Code<span className="text-red-500">*</span>
-            </label>
-            <input
-              name="code"
-              placeholder="e.g. SSE001"
-              value={formData.code}
-              onChange={handleChange}
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">
-              Department Code
-            </label>
-            <input
-              name="departmentCode"
-              placeholder="e.g. ENG02"
-              value={formData.departmentCode}
-              onChange={handleChange}
+              required
               className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
