@@ -12,6 +12,8 @@ import WFHhistory from './Components/Employee/WFHhistory';
 import Department from './Components/Company/Department';
 import Profile from "./Components/Employee/Profile";
 import Holidays from "./Components/Employee/Holidays";
+import SalaryComponent from "./Components/Company/SalaryComponents/SalaryComponent";
+import Designation from "./Components/Company/Designation";
 
 function App() {
 
@@ -34,6 +36,10 @@ function App() {
         <Route path="/employee/holidays" element={<Holidays />} />
 
         <Route path="/Department" element={<Department />} />
+        <Route path="/Designation" element={<Designation />} />
+        
+        <Route path="/salaryComponent" element={<SalaryComponent />} />
+
 
 
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
