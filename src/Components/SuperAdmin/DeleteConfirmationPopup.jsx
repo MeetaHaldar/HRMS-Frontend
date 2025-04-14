@@ -5,21 +5,21 @@ const DeleteConfirmationPopup = ({ isOpen, onClose, onConfirm, data, message }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">
-          {message || "Are you sure you want to delete this?"}
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm">
+        <h2 className="text-base font-semibold text-gray-700 mb-6 border-b border-gray-300 pb-4 text-center">
+          {message || "Are you sure to delete it?"}
         </h2>
 
-        <div className="flex justify-end gap-3">
+        <div className="flex justify-center gap-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-600"
+            className="w-1/2 py-1 rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-100"
           >
             Cancel
           </button>
           <button
             onClick={() => onConfirm(data)}
-            className="px-4 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white"
+            className="w-1/2 py-1 rounded-lg bg-[#FFD85F] hover:bg-yellow-600 text-gray-500 font-semibold"
           >
             Delete
           </button>
