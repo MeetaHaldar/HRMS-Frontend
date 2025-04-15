@@ -4,7 +4,6 @@ import RegisterCompany from "./Components/SuperAdmin/RegisterCompany";
 import RegisterEmployee from "./Components/Company/RegisterEmployee";
 import SignIn from "./Components/SignIn";
 import AdminDashboard from "./Components/SuperAdmin/AdminDashboard";
-import SidebarLayout from "./Components/SidebarLayout";
 import HolidayList from "./Components/Company/HolidayList";
 import Leaves from "./Components/Employee/Leaves";
 import LeaveHistory from "./Components/Employee/LeaveHistory";
@@ -15,6 +14,9 @@ import Holidays from "./Components/Employee/Holidays";
 import SalaryComponent from "./Components/Company/SalaryComponent";
 import Designation from "./Components/Company/Designation";
 import Layout from "./Components/Layout";
+import SalaryTemplate from "./Components/Company/SalaryTemplate";
+import AddNewSalaryTemplate from "./Components/Company/AddNewSalaryTemplate";
+import ViewSalaryTemplate from "./Components/Company/ViewSalaryTemplate";
 function App() {
   return (
     <>
@@ -36,6 +38,9 @@ function App() {
             <Route path="/Department" element={<Department />} />
             <Route path="/Designation" element={<Designation />} />
             <Route path="/salaryComponent" element={<SalaryComponent />} />
+            <Route path="/salaryTemplate" element={<SalaryTemplate />} />
+            <Route path="/addNewSalaryTemplate" element={<AddNewSalaryTemplate />} />
+            <Route path="/viewSalaryTemplate" element={<ViewSalaryTemplate />} />
 
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>

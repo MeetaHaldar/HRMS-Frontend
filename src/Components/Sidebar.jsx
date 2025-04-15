@@ -12,6 +12,10 @@ import { FaArrowTrendUp } from "react-icons/fa6";
 import { MdSpaceDashboard } from "react-icons/md";
 import { GoReport } from "react-icons/go";
 import { FaQuestionCircle, FaBookOpen, FaPhoneVolume } from "react-icons/fa";  // Added icons for settings menu
+import { FaIdBadge } from "react-icons/fa";
+import { PiBuildingOfficeLight } from "react-icons/pi";
+import { PiSunglasses } from "react-icons/pi";
+
 
 const menuItems = [
   { label: 'Dashboard', to: '/adminDashboard', icon: <MdSpaceDashboard /> },
@@ -19,68 +23,68 @@ const menuItems = [
   { label: 'Pay Runs', to: '/listings2', icon: <FaArrowTrendUp /> },
   { label: 'Approvals', to: '/listings3', icon: <FaClipboardCheck /> },
   { label: 'Form 16', to: '/organisations', icon: <FaWpforms /> },
-  { label: 'loans', to: '/listings4', icon: <LuReceiptIndianRupee /> },
+  { label: 'Loans', to: '/listings4', icon: <LuReceiptIndianRupee /> },
   { label: 'Documents', to: '/logs', icon: <FaFolderPlus /> },
   { label: 'Reports', to: '/support', icon: <GoReport /> },
-  { label: 'Settings', to: '/adminDashboard', icon: <IoSettingsOutline /> },
+  { label: 'Settings', to: '', icon: <IoSettingsOutline /> }, // Settings button will toggle the menu
 ];
 
 const settingsMenu = [
   { label: 'Organisation Profile', to: '/help/faq', icon: <FaQuestionCircle /> },
-  { label: 'Departments', to: '/Department', icon: <FaBookOpen /> },
-  { label: 'Designations', to: '/Designation', icon: <FaPhoneVolume /> },
-  { label: 'Holidays', to: '/HolidayList', icon: <FaPhoneVolume /> },
-
+  { label: 'Departments', to: '/Department', icon: <PiBuildingOfficeLight /> },
+  { label: 'Designations', to: '/Designation', icon: <FaIdBadge />},
+  { label: 'Holidays', to: '/HolidayList', icon: <PiSunglasses /> },
   { label: 'Statutory Components', to: '/help/contact', icon: <FaPhoneVolume /> },
-
   { label: 'Salary Components', to: '/salaryComponent', icon: <FaPhoneVolume /> },
-  { label: 'Salary Templates', to: '/help/contact', icon: <FaPhoneVolume /> },
+  { label: 'Salary Templates', to: '/salaryTemplate', icon: <FaPhoneVolume /> },
   { label: 'Taxes', to: '/help/contact', icon: <FaPhoneVolume /> },
   { label: 'Pay Schedule', to: '/help/contact', icon: <FaPhoneVolume /> },
   { label: 'Leave & Attendance', to: '/leaves', icon: <FaPhoneVolume /> },
   { label: 'User & Roles', to: '/help/contact', icon: <FaPhoneVolume /> },
-
 ];
 
-const SidebarLayout = ({ children }) => {
+const Sidebar = ({ children }) => {
   const [isSettingsMenuActive, setIsSettingsMenuActive] = useState(false);
 
-  const handleMenuClick = (item) => {
-    setIsSettingsMenuActive(item.label === 'Settings');
+  const handleSettingsClick = () => {
+    // Toggle settings sidebar visibility without navigating away from the page
+    setIsSettingsMenuActive(!isSettingsMenuActive);
   };
 
   return (
     <div className="flex h-screen bg-gray-50">
 
       {/* Main Sidebar */}
-      <div className={`
-          bg-white shadow-lg border-r border-gray-200 h-full flex flex-col items-center 
-          ${isSettingsMenuActive ? 'lg:w-20' : 'lg:w-64'} 
-          w-20 
-        `}
-      >
+      <div className={`bg-white shadow-lg border-r border-gray-200 h-full flex flex-col items-center ${isSettingsMenuActive ? 'lg:w-20' : 'lg:w-64'} w-20`}>
         <div className="hidden lg:flex items-center justify-center h-16 font-bold">
           {isSettingsMenuActive ? 'M' : 'Main'}
         </div>
 
         <nav className="px-2 py-6 space-y-2 w-full">
           {menuItems.map((item, index) => (
-            <Link
+            <div
               key={index}
-              to={item.to}
-              onClick={() => handleMenuClick(item)}
               className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition text-gray-600 justify-center lg:justify-start"
+              onClick={item.label === 'Settings' ? handleSettingsClick : null} // Trigger only for Settings
             >
-              <span className="text-xl">{item.icon}</span>
-              <span className={`hidden lg:${isSettingsMenuActive ? 'hidden' : 'inline'}`}>{item.label}</span>
-            </Link>
+              {item.label === 'Settings' ? (
+                // If it's the settings button, don't use Link, handle click to toggle menu
+                <span className="text-xl">{item.icon}</span>
+              ) : (
+                // Use Link for navigation in all other cases
+                <Link to={item.to} className="flex items-center space-x-3">
+                  <span className="text-xl">{item.icon}</span>
+                  <span className={`hidden lg:${isSettingsMenuActive ? 'hidden' : 'inline'}`}>{item.label}</span>
+                </Link>
+              )}
+            </div>
           ))}
         </nav>
       </div>
 
       {/* Settings Sidebar */}
       {isSettingsMenuActive && (
-        <div className="w-64 bg-white shadow-lg  h-full flex flex-col">
+        <div className="w-64 bg-white shadow-lg h-full flex flex-col">
           <div className="flex items-center justify-center h-16 text-[#303030] font-bold text-2xl">Settings</div>
           <nav className="px-4 py-6 space-y-2">
             {settingsMenu.map((item, index) => (
@@ -109,4 +113,4 @@ const SidebarLayout = ({ children }) => {
   );
 };
 
-export default SidebarLayout;
+export default Sidebar;

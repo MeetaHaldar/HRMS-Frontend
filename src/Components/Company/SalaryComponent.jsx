@@ -35,7 +35,7 @@ export default function SalaryComponent() {
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-semibold">Salary Components:</h2>
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Salary Components:</h2>
 
         <div className="relative inline-block text-left">
           <button
