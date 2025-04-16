@@ -1,9 +1,22 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import Link component for navigation
 
 const ViewSalaryTemplate = () => {
+  const navigate = useNavigate();
+
   const [salaryComponents, setSalaryComponents] = useState([
-    { name: "Basic", description: "(50% of Annual CTC)", monthly: "₹ 4.00", annual: "₹ 48.00" },
-    { name: "Fixed Allowance", description: "", monthly: "₹ 4.00", annual: "₹ 48.00" },
+    {
+      name: "Basic",
+      description: "(50% of Annual CTC)",
+      monthly: "₹ 4.00",
+      annual: "₹ 48.00",
+    },
+    {
+      name: "Fixed Allowance",
+      description: "",
+      monthly: "₹ 4.00",
+      annual: "₹ 48.00",
+    },
   ]);
 
   const removeComponent = (index) => {
@@ -19,7 +32,10 @@ const ViewSalaryTemplate = () => {
           <button className="px-4 py-2 border rounded-full text-sm font-medium shadow-sm hover:bg-gray-100">
             + Add Salary Component
           </button>
-          <button className="px-4 py-2 bg-[#FFD85F] hover:bg-yellow-500 text-black rounded-full text-sm font-medium shadow">
+          <button
+            className="px-4 py-2 bg-[#FFD85F] hover:bg-yellow-500 text-black rounded-full text-sm font-medium shadow"
+            onClick={() => navigate(`/AddNewSalaryTemplate`)}
+          >
             + Add Template
           </button>
         </div>
@@ -46,7 +62,11 @@ const ViewSalaryTemplate = () => {
               <tr key={index}>
                 <td className="p-3">
                   <div>{component.name}</div>
-                  {component.description && <div className="text-gray-500 text-xs">{component.description}</div>}
+                  {component.description && (
+                    <div className="text-gray-500 text-xs">
+                      {component.description}
+                    </div>
+                  )}
                 </td>
                 <td className="p-3 text-center">{component.monthly}</td>
                 <td className="p-3 text-center">{component.annual}</td>

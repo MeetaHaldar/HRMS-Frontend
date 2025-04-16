@@ -3,6 +3,7 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import AddDesignationPopup from "./AddDesignationPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
+import Pagination from "../Pagination";
 const Designation = () => {
   const [designations, setDesignations] = useState([
     {
@@ -66,11 +67,22 @@ const Designation = () => {
     setDesignations(designations.filter((d) => d.id !== designation.id));
     setShowDeletePopup(false);
   };
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      const response = await fetch(`/api/salary-templates?page=${currentPage}`);
+      const result = await response.json();
+      setData(result.data);
+      setTotalPages(result.totalPages);
+    };
 
+    fetchTemplates();
+  }, [currentPage]);
   return (
     <div className="p-2 md:p-6 w-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Designations:</h2>
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
+          Designations:
+        </h2>
         <button
           className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
@@ -92,7 +104,9 @@ const Designation = () => {
             {designations.length === 0 ? (
               <tr>
                 <td colSpan="3" className="text-center p-4">
-                  <p className="text-gray-500 mt-2 text-xs md:text-sm">No designations found</p>
+                  <p className="text-gray-500 mt-2 text-xs md:text-sm">
+                    No designations found
+                  </p>
                 </td>
               </tr>
             ) : (
@@ -132,37 +146,11 @@ const Designation = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        >
-          &lt; Previous
-        </button>
-
-        <div className="flex space-x-2">
-          {[1, 2, 3, 4, 5, '...', 9, 10].map((page, index) => (
-            <button
-              key={index}
-              className={`px-3 py-1 rounded ${page === currentPage ? 'bg-[#FFD85F] text-black font-bold' : 'hover:bg-gray-200'}`}
-              disabled={page === '...'}
-              onClick={() => typeof page === 'number' && setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 10}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        >
-          Next &gt;
-        </button>
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={10} // ← Ideally, this should come from your API response
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
       {/* Add / Edit Popup */}
       <AddDesignationPopup
