@@ -91,7 +91,7 @@ export default function SalaryComponent() {
         <div className="relative inline-block text-left">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex justify-center w-full rounded-md shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="inline-flex justify-center w-full rounded-full shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
             + Add Salary Component ▾
           </button>

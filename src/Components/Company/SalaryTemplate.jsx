@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link } from 'react-router-dom'; // Import Link component for navigation
+import DeleteConfirmationPopup from '../SuperAdmin/DeleteConfirmationPopup';
 
 export default function SalaryTemplate() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState(null);
 
   useEffect(() => {
     // Mock data for the table
@@ -22,6 +25,23 @@ export default function SalaryTemplate() {
       { id: 10, name: 'Infosware Pvt. Ltd.', description: 'IT/ Software', status: 'Active' },
     ]);
   }, []);
+
+  const handleDeleteClick = (item) => {
+    setTemplateToDelete(item);
+    setIsDeletePopupOpen(true);
+  };
+
+  const handleConfirmDelete = (item) => {
+    // Perform the deletion logic here (e.g., remove from the state)
+    setData((prevData) => prevData.filter((dataItem) => dataItem.id !== item.id));
+    setIsDeletePopupOpen(false);
+    setTemplateToDelete(null);
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeletePopupOpen(false);
+    setTemplateToDelete(null);
+  };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
@@ -67,7 +87,7 @@ export default function SalaryTemplate() {
                   </button>
                   <button
                     className="text-gray-500 hover:text-gray-950"
-                    onClick={() => console.log("Delete template", item)}
+                    onClick={() => handleDeleteClick(item)}
                   >
                     <RiDeleteBin6Line />
                   </button>
@@ -103,6 +123,15 @@ export default function SalaryTemplate() {
           Next &gt;
         </button>
       </div>
+
+      {/* Delete Confirmation Popup */}
+      <DeleteConfirmationPopup
+        isOpen={isDeletePopupOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        data={templateToDelete}
+        message="Are you sure you want to delete this salary template?"
+      />
     </div>
   );
 }
