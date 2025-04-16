@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const AddDepartmentPopup = ({ isOpen, onClose, onSubmit }) => {
+const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
     name: "",
     code: "",
@@ -8,6 +8,22 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit }) => {
   });
 
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name || "",
+        code: initialData.code || "",
+        parentCode: initialData.parentCode || "",
+      });
+    } else {
+      setFormData({
+        name: "",
+        code: "",
+        parentCode: "",
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,7 +50,9 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg text-gray-500 font-semibold">Add Department</h2>
+          <h2 className="text-lg text-gray-500 font-semibold">
+            {initialData ? "Edit Department" : "Add Department"}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900 text-4xl"
@@ -96,7 +114,7 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit }) => {
             type="submit"
             className="w-full mt-2 bg-gray-200 hover:bg-yellow-300 text-gray-500 font-medium py-2 rounded-xl transition"
           >
-            Add Department
+            {initialData ? "Update Department" : "Add Department"}
           </button>
         </form>
       </div>
