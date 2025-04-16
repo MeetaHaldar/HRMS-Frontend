@@ -19,7 +19,7 @@ const ViewSalaryTemplate = () => {
           <button className="px-4 py-2 border rounded-full text-sm font-medium shadow-sm hover:bg-gray-100">
             + Add Salary Component
           </button>
-          <button className="px-4 py-2 bg-yellow-400 hover:bg-yellow-500 text-white rounded-full text-sm font-medium shadow">
+          <button className="px-4 py-2 bg-[#FFD85F] hover:bg-yellow-500 text-black rounded-full text-sm font-medium shadow">
             + Add Template
           </button>
         </div>

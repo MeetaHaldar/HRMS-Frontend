@@ -81,7 +81,7 @@ const HolidayList = () => {
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Holiday's List:</h2>
         <button
           onClick={handleAddClick}
-          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold shadow-md cursor-pointer"
+          className="bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold shadow-md cursor-pointer"
         >
           + Add New Holiday
         </button>
