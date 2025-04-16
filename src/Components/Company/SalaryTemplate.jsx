@@ -89,7 +89,7 @@ export default function SalaryTemplate() {
             <button
               key={index}
               className={`px-3 py-1 rounded ${
-                page === currentPage ? 'bg-yellow-300 text-black font-bold' : 'hover:bg-gray-200'
+                page === currentPage ? 'bg-[#FFD85F] text-black font-bold' : 'hover:bg-gray-200'
               }`}
               disabled={page === '...'}
               onClick={() => typeof page === 'number' && setCurrentPage(page)}

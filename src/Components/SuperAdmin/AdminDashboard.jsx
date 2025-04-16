@@ -7,6 +7,7 @@ import DeleteConfirmationPopup from "./DeleteConfirmationPopup";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+
   const [companies, setCompanies] = useState([
     {
       id: 1,
@@ -39,15 +40,14 @@ const AdminDashboard = () => {
       adminName: "Jane Smith",
     },
   ]);
+
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState(null);
-
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch(`/api/setCompanies?page=${currentPage}`)
@@ -63,41 +63,12 @@ const AdminDashboard = () => {
       });
   }, [currentPage]);
 
-  const handleLogout = () => {
-    fetch("/api/logout", { method: "POST" })
-      .then((response) => {
-        if (response.ok) {
-          alert("Logged out successfully");
-        }
-      })
-      .catch((error) => console.error("Error logging out:", error));
-  };
-
-  // Dummy: Load data via API (commented)
-  /*
-  useEffect(() => {
-    const fetchCompanies = async () => {
-      const res = await fetch("/api/companies");
-      const data = await res.json();
-      setCompanies(data);
-    };
-    fetchCompanies();
-  }, []);
-  */
-
   const handleEditClick = (company) => {
-    // Optional: Fetch by ID (commented)
-    /*
-    const res = await fetch(`/api/companies/${company.id}`);
-    const data = await res.json();
-    setSelectedCompany(data);
-    */
     setSelectedCompany(company);
     setShowEditModal(true);
   };
 
   const handleEditSubmit = (updatedData) => {
-    // Dummy update in state (replace with PUT API later)
     const updatedList = companies.map((comp) =>
       comp.id === updatedData.id
         ? { ...comp, ...updatedData, name: updatedData.companyName }
@@ -105,16 +76,8 @@ const AdminDashboard = () => {
     );
     setCompanies(updatedList);
     setShowEditModal(false);
-
-    // Real API call:
-    /*
-    await fetch(`/api/companies/${updatedData.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
-    });
-    */
   };
+
   const handleDeleteClick = (company) => {
     setCompanyToDelete(company);
     setShowDeletePopup(true);
@@ -140,7 +103,7 @@ const AdminDashboard = () => {
           Listed Companies:
         </h2>
         <button
-          className="bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2  text-xs md:text-sm rounded-full font-semibold cursor-pointer"
+          className="bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={() => navigate("/RegisterCompany")}
         >
           + New Company
@@ -151,9 +114,7 @@ const AdminDashboard = () => {
         <table className="w-full border-collapse text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
-              <th className="p-2 md:p-3">
-                <input type="checkbox" />
-              </th>
+              <th className="p-2 md:p-3"><input type="checkbox" /></th>
               <th className="p-2 md:p-3">Organisation's Name</th>
               <th className="p-2 md:p-3">Type</th>
               <th className="p-2 md:p-3">Contact Info</th>
@@ -163,7 +124,11 @@ const AdminDashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {companies.length === 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="7" className="text-center p-4">Loading...</td>
+              </tr>
+            ) : companies.length === 0 ? (
               <tr>
                 <td colSpan="7" className="text-center p-4">
                   <img
@@ -179,9 +144,7 @@ const AdminDashboard = () => {
             ) : (
               companies.map((company, index) => (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="p-2 md:p-3">
-                    <input type="checkbox" />
-                  </td>
+                  <td className="p-2 md:p-3"><input type="checkbox" /></td>
                   <td className="p-2 md:p-3">{company.name}</td>
                   <td className="p-2 md:p-3">{company.type}</td>
                   <td className="p-2 md:p-3">{company.email}</td>
@@ -190,9 +153,7 @@ const AdminDashboard = () => {
                   </td>
                   <td
                     className={`p-2 md:p-3 font-semibold ${
-                      company.status === "Active"
-                        ? "text-green-500"
-                        : "text-red-500"
+                      company.status === "Active" ? "text-green-500" : "text-red-500"
                     }`}
                   >
                     {company.status}
@@ -219,58 +180,46 @@ const AdminDashboard = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 text-gray-600 text-xs md:text-sm">
-        <button
-          className="px-2 py-1 rounded-md cursor-pointer"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        >
+      <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
+        <button className="hover:underline disabled:text-gray-400" disabled={currentPage === 1}>
           &lt; Previous
         </button>
-        <div className="flex space-x-1">
-          {[...Array(totalPages)].map((_, idx) => (
+
+        <div className="flex space-x-2">
+          {[1, 2, 3, 4, 5, '...', 9, 10].map((page, index) => (
             <button
-              key={idx}
-              className={`px-2 py-1 rounded-md cursor-pointer ${
-                currentPage === idx + 1 ? "bg-gray-300" : "hover:bg-gray-200"
+              key={index}
+              className={`px-3 py-1 rounded ${
+                page === currentPage ? 'bg-[#FFD85F] text-black font-bold' : 'hover:bg-gray-200'
               }`}
-              onClick={() => setCurrentPage(idx + 1)}
+              disabled={page === '...'}
+              onClick={() => typeof page === 'number' && setCurrentPage(page)}
             >
-              {idx + 1}
+              {page}
             </button>
           ))}
         </div>
-        <button
-          className="px-2 py-1 rounded-md cursor-pointer"
-          disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        >
+
+        <button className="hover:underline disabled:text-gray-400" disabled={currentPage === 10}>
           Next &gt;
         </button>
       </div>
 
-      {/* Logout */}
-      <div className="mt-4">
-        <button
-          className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 md:px-4 md:py-2 rounded-lg text-xs md:text-sm"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-      </div>
-
-      {/* Modal Popup */}
+      {/* Edit Modal */}
       <EditCompanyPopup
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSubmit={handleEditSubmit}
         initialData={selectedCompany}
       />
+
+      {/* Delete Confirmation Modal */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
-        onCancel={() => setShowDeletePopup(false)}
+        onClose={() => setShowDeletePopup(false)}
         onConfirm={confirmDelete}
-        companyName={companyToDelete?.name}
+        data={companyToDelete}
+        message={`Are you sure you want to delete "${companyToDelete?.name}"?`}
       />
     </div>
   );

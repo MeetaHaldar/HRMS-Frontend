@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import AddDesignationPopup from "./AddDesignationPopup";
-
+import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 const Designation = () => {
   const [designations, setDesignations] = useState([
     {
@@ -22,6 +22,9 @@ const Designation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [designationToDelete, setDesignationToDelete] = useState(null);
 
   useEffect(() => {
     // Replace this with your actual API.
@@ -54,10 +57,14 @@ const Designation = () => {
     setShowAddModal(false);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this designation?")) {
-      setDesignations(designations.filter((d) => d.id !== id));
-    }
+  const handleDeleteClick = (designation) => {
+    setDesignationToDelete(designation);
+    setShowDeletePopup(true);
+  };
+
+  const handleConfirmDelete = (designation) => {
+    setDesignations(designations.filter((d) => d.id !== designation.id));
+    setShowDeletePopup(false);
   };
 
   return (
@@ -91,11 +98,13 @@ const Designation = () => {
             ) : (
               designations.map((designation, index) => (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="p-2 md:p-3 text-yellow-600 cursor-pointer hover:underline"
-                      onClick={() => {
-                        setSelectedDesignation(designation);
-                        setShowAddModal(true);
-                      }}>
+                  <td
+                    className="p-2 md:p-3 text-yellow-600 cursor-pointer hover:underline"
+                    onClick={() => {
+                      setSelectedDesignation(designation);
+                      setShowAddModal(true);
+                    }}
+                  >
                     {designation.name}
                   </td>
                   <td className="p-2 md:p-3">{designation.department}</td>
@@ -111,7 +120,7 @@ const Designation = () => {
                     </button>
                     <button
                       className="text-gray-500 hover:text-gray-950"
-                      onClick={() => handleDelete(designation.id)}
+                      onClick={() => handleDeleteClick(designation)}
                     >
                       <RiDeleteBin6Line />
                     </button>
@@ -124,30 +133,31 @@ const Designation = () => {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 text-gray-600 text-xs md:text-sm">
+      <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
         <button
-          className="px-2 py-1 rounded-md cursor-pointer"
+          className="hover:underline disabled:text-gray-400"
           disabled={currentPage === 1}
           onClick={() => setCurrentPage(currentPage - 1)}
         >
           &lt; Previous
         </button>
-        <div className="flex space-x-1">
-          {[...Array(totalPages)].map((_, idx) => (
+
+        <div className="flex space-x-2">
+          {[1, 2, 3, 4, 5, '...', 9, 10].map((page, index) => (
             <button
-              key={idx}
-              className={`px-2 py-1 rounded-md cursor-pointer ${
-                currentPage === idx + 1 ? "bg-gray-300" : "hover:bg-gray-200"
-              }`}
-              onClick={() => setCurrentPage(idx + 1)}
+              key={index}
+              className={`px-3 py-1 rounded ${page === currentPage ? 'bg-[#FFD85F] text-black font-bold' : 'hover:bg-gray-200'}`}
+              disabled={page === '...'}
+              onClick={() => typeof page === 'number' && setCurrentPage(page)}
             >
-              {idx + 1}
+              {page}
             </button>
           ))}
         </div>
+
         <button
-          className="px-2 py-1 rounded-md cursor-pointer"
-          disabled={currentPage === totalPages}
+          className="hover:underline disabled:text-gray-400"
+          disabled={currentPage === 10}
           onClick={() => setCurrentPage(currentPage + 1)}
         >
           Next &gt;
@@ -160,6 +170,15 @@ const Designation = () => {
         onClose={() => setShowAddModal(false)}
         onSubmit={handleAddSubmit}
         initialData={selectedDesignation}
+      />
+
+      {/* Delete Confirmation Popup */}
+      <DeleteConfirmationPopup
+        isOpen={showDeletePopup}
+        onClose={() => setShowDeletePopup(false)}
+        onConfirm={handleConfirmDelete}
+        data={designationToDelete}
+        message={`Are you sure you want to delete "${designationToDelete?.name}"?`}
       />
     </div>
   );
