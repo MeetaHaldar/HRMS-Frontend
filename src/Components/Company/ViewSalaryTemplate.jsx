@@ -34,7 +34,7 @@ const ViewSalaryTemplate = () => {
           </button>
           <button
             className="px-4 py-2 bg-[#FFD85F] hover:bg-yellow-500 text-black rounded-full text-sm font-medium shadow"
-            onClick={() => navigate(`/AddNewSalaryTemplate`)}
+            onClick={() => navigate(`/companyAdmin/AddNewSalaryTemplate`)}
           >
             + Add Template
           </button>

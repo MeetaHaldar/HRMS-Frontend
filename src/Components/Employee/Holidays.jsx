@@ -16,7 +16,7 @@ const Holidays = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/api/holidays")
+    fetch("")
       .then((res) => res.json())
       .then((data) => {
         const fetched = data.holidays || [];
@@ -32,8 +32,8 @@ const Holidays = () => {
   }, []);
 
   return (
-    <div className="p-4 w-full flex justify-center">
-      <div className="w-full max-w-3xl">
+    <div className="p-2 w-full">
+
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-base md:text-lg text-gray-600 uppercase font-semibold">
             Holiday's List:
@@ -76,9 +76,8 @@ const Holidays = () => {
           </table>
         </div>
       </div>
-    </div>
+    
   );
 };
 
-export default Holidays;
-//                   
+export default Holidays;                

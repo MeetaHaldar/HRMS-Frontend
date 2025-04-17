@@ -7,7 +7,7 @@ const AddNewSalaryTemplate = () => {
   const navigate = useNavigate(); // Initialize navigate
 
   const handleCancel = () => {
-    navigate("/salaryTemplate"); // Redirect on cancel
+    navigate("/companyAdmin/salaryTemplate"); // Redirect on cancel
   };
 
   return (
@@ -147,7 +147,7 @@ const AddNewSalaryTemplate = () => {
 
       <div className="flex items-center p-4">
         <button className="flex items-center justify-center bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold cursor-pointer">
-          + Add Template
+          Save Template
         </button>
         <button
           onClick={handleCancel} // trigger navigation

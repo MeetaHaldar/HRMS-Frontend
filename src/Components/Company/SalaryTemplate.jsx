@@ -104,7 +104,7 @@ export default function SalaryTemplate() {
           Salary Templates:
         </h2>
         {/* Wrap the "Add Template" button with Link to navigate to AddNewSalaryTemplate page */}
-        <Link to="/AddNewSalaryTemplate">
+        <Link to="/companyAdmin/AddNewSalaryTemplate">
           <button className="inline-flex items-center bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2  text-xs md:text-sm rounded-full font-semibold cursor-pointer">
             + Add Template
           </button>
@@ -126,7 +126,7 @@ export default function SalaryTemplate() {
               <tr key={item.id} className="hover:bg-gray-50">
                 {/* Link wraps item.name to make it clickable and redirect */}
                 <td className="px-4 py-2 text-yellow-600 underline cursor-pointer">
-                  <Link to={`/viewSalaryTemplate`}>{item.name}</Link>
+                  <Link to={`/companyAdmin/viewSalaryTemplate`}>{item.name}</Link>
                 </td>
                 <td className="px-4 py-2">{item.description}</td>
                 <td className="px-4 py-2">
