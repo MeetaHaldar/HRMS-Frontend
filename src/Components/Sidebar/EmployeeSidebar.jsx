@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const employeeMenu = [
-  { label: 'Dashboard', to: '/employee/profile', icon: '' },
-  { label: 'Profile', to: '/employee/profile', icon: ''},
+  { label: 'Dashboard', to: '/employee/dashboard', icon: '' },
+  { label: 'Profile', to: '/employee/profile', icon: '' },
   { label: 'Holiday List', to: '/employee/holidays', icon: '' },
   { label: 'Leaves', to: '/employee/leaves', icon: '' },
   { label: 'Leave History', to: '/employee/leave-history', icon: '' },
@@ -11,6 +11,8 @@ const employeeMenu = [
 ];
 
 const EmployeeSidebar = ({ children }) => {
+  const location = useLocation(); 
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -20,16 +22,23 @@ const EmployeeSidebar = ({ children }) => {
         </div>
 
         <nav className="px-2 py-6 space-y-2 w-full">
-          {employeeMenu.map((item, index) => (
-            <Link
-              key={index}
-              to={item.to}
-              className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition text-gray-600 justify-center lg:justify-start"
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span className="hidden lg:inline">{item.label}</span>
-            </Link>
-          ))}
+          {employeeMenu.map((item, index) => {
+            const isActive = location.pathname === item.to;  // Exact match
+
+            return (
+              <Link
+                key={index}
+                to={item.to}
+                className={`flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start transition ${
+                  isActive ? 'bg-[##FFD85F]' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                style={isActive ? { backgroundColor: '#FFD85F' } : {}}
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span className="hidden lg:inline">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
 

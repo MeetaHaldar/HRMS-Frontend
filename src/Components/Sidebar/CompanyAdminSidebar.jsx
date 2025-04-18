@@ -15,7 +15,7 @@ import { FaQuestionCircle, FaBookOpen, FaPhoneVolume } from "react-icons/fa";  /
 import { FaIdBadge } from "react-icons/fa";
 import { PiBuildingOfficeLight } from "react-icons/pi";
 import { PiSunglasses } from "react-icons/pi";
-
+import { useLocation } from 'react-router-dom'; 
 
 const menuItems = [
   { label: 'Employees', to: '/listings1', icon: <FaPeopleGroup /> },
@@ -30,20 +30,20 @@ const settingsMenu = [
   { label: 'Departments', to: '/companyAdmin/Department', icon: <PiBuildingOfficeLight /> },
   { label: 'Designations', to: '/companyAdmin/Designation', icon: <FaIdBadge />},
   { label: 'Holidays', to: '/companyAdmin/HolidayList', icon: <PiSunglasses /> },
-  { label: 'Statutory Components', to: '/companyAdmin/contact', icon: <FaPhoneVolume /> },
+  { label: 'Statutory Components', to: '/companyAdmin/b', icon: <FaPhoneVolume /> },
   { label: 'Salary Components', to: '/companyAdmin/salaryComponent', icon: <FaPhoneVolume /> },
   { label: 'Salary Templates', to: '/companyAdmin/salaryTemplate', icon: <FaPhoneVolume /> },
-  { label: 'Taxes', to: '/companyAdmin/contact', icon: <FaPhoneVolume /> },
-  { label: 'Pay Schedule', to: '/companyAdmin/contact', icon: <FaPhoneVolume /> },
+  { label: 'Taxes', to: '/companyAdmin/z', icon: <FaPhoneVolume /> },
+  { label: 'Pay Schedule', to: '/companyAdmin/c', icon: <FaPhoneVolume /> },
   { label: 'Leave & Attendance', to: '/companyAdmin/leaves', icon: <FaPhoneVolume /> },
-  { label: 'User & Roles', to: '/companyAdmin/contact', icon: <FaPhoneVolume /> },
+  { label: 'User & Roles', to: '/companyAdmin/a', icon: <FaPhoneVolume /> },
 ];
 
 const CompanyAdminSidebar = ({ children }) => {
   const [isSettingsMenuActive, setIsSettingsMenuActive] = useState(false);
+  const location = useLocation();  // <-- Hook to detect the current path
 
   const handleSettingsClick = () => {
-    // Toggle settings sidebar visibility without navigating away from the page
     setIsSettingsMenuActive(!isSettingsMenuActive);
   };
 
@@ -57,24 +57,32 @@ const CompanyAdminSidebar = ({ children }) => {
         </div>
 
         <nav className="px-2 py-6 space-y-2 w-full">
-          {menuItems.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition text-gray-600 justify-center lg:justify-start"
-              onClick={item.label === 'Settings' ? handleSettingsClick : null} // Trigger only for Settings
-            >
-              {item.label === 'Settings' ? (
-                // If it's the settings button, don't use Link, handle click to toggle menu
-                <span className="text-xl">{item.icon}</span>
-              ) : (
-                // Use Link for navigation in all other cases
-                <Link to={item.to} className="flex items-center space-x-3">
+          {menuItems.map((item, index) => {
+            const isActive = location.pathname === item.to;
+
+            return (
+              <div
+                key={index}
+                className={`flex items-center space-x-3 p-2 rounded-md transition justify-center lg:justify-start ${
+                  item.label === 'Settings'
+                    ? 'hover:bg-gray-100 text-gray-600'
+                    : isActive
+                    ? 'bg-[#FFD85F] text-black'
+                    : 'hover:bg-gray-100 text-gray-600'
+                }`}
+                onClick={item.label === 'Settings' ? handleSettingsClick : null}
+              >
+                {item.label === 'Settings' ? (
                   <span className="text-xl">{item.icon}</span>
-                  <span className={`hidden lg:${isSettingsMenuActive ? 'hidden' : 'inline'}`}>{item.label}</span>
-                </Link>
-              )}
-            </div>
-          ))}
+                ) : (
+                  <Link to={item.to} className="flex items-center space-x-3">
+                    <span className="text-xl">{item.icon}</span>
+                    <span className={`hidden lg:${isSettingsMenuActive ? 'hidden' : 'inline'}`}>{item.label}</span>
+                  </Link>
+                )}
+              </div>
+            );
+          })}
         </nav>
       </div>
 
@@ -83,16 +91,21 @@ const CompanyAdminSidebar = ({ children }) => {
         <div className="w-64 bg-white shadow-lg h-full flex flex-col">
           <div className="flex items-center justify-center h-16 text-[#303030] font-bold text-2xl">Settings</div>
           <nav className="px-4 py-6 space-y-2">
-            {settingsMenu.map((item, index) => (
-              <Link
-                key={index}
-                to={item.to}
-                className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition text-gray-600"
-              >
-                <span className="text-xl">{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            ))}
+            {settingsMenu.map((item, index) => {
+              const isActive = location.pathname === item.to;
+              return (
+                <Link
+                  key={index}
+                  to={item.to}
+                  className={`flex items-center space-x-3 p-2 rounded-md transition ${
+                    isActive ? 'bg-[#FFD85F] text-black' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </nav>
         </div>
       )}

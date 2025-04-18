@@ -1,17 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MdSpaceDashboard } from "react-icons/md";
 import { FaBuilding } from "react-icons/fa";
 import { BsCardChecklist } from "react-icons/bs";
 
 const superAdminMenu = [
   { label: 'Dashboard', to: '/adminDashboard', icon: <MdSpaceDashboard /> },
-  { label: 'Company List', to: '/adminDashboard', icon: <FaBuilding /> },
-  { label: 'Company List', to: '/adminDashboard', icon: <FaBuilding /> },
-  { label: 'Subscription List', to: '/adminDashboard', icon: <BsCardChecklist /> },
+  { label: 'Company List', to: '/adminDashboard/companies', icon: <FaBuilding /> },
+  { label: 'Subscription List', to: '/adminDashboard/subscriptions', icon: <BsCardChecklist /> },
 ];
 
 const SuperAdminSidebar = ({ children }) => {
+  const location = useLocation(); // Get current route
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
@@ -21,16 +22,23 @@ const SuperAdminSidebar = ({ children }) => {
         </div>
 
         <nav className="px-2 py-6 space-y-2 w-full">
-          {superAdminMenu.map((item, index) => (
-            <Link
-              key={index}
-              to={item.to}
-              className="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition text-gray-600 justify-center lg:justify-start"
-            >
-              <span className="text-xl">{item.icon}</span>
-              <span className="hidden lg:inline">{item.label}</span>
-            </Link>
-          ))}
+          {superAdminMenu.map((item, index) => {
+            const isActive = location.pathname.startsWith(item.to);  // Active route logic
+
+            return (
+              <Link
+                key={index}
+                to={item.to}
+                className={`flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start transition ${
+                  isActive ? 'text-black' : 'text-gray-600 hover:bg-gray-100'
+                }`}
+                style={isActive ? { backgroundColor: '#FFD85F' } : {}}
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span className="hidden lg:inline">{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
 
