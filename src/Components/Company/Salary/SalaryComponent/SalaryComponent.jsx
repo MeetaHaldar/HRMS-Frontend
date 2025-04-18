@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
+import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
+import AddBenefitPopup from "./AddBenifitPopup"; // <-- Make sure path is correct
+import AddDeductionPopup from "./AddDeductionPopup"; // <-- Make sure path is correct
+import AddReimbursementPopup from "./AddReimbursementPopup"; // <-- Make sure path is correct
+import AddEarningsPopup from "./AddEarningsPopup"; // <-- Make sure path is correct
 export default function SalaryComponent() {
   const [activeTab, setActiveTab] = useState("earnings");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -10,6 +14,10 @@ export default function SalaryComponent() {
   const [totalPages, setTotalPages] = useState(1);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [showBenefitPopup, setShowBenefitPopup] = useState(false); // <-- Added this
+  const [showDeductionPopup, setShowDeductionPopup] = useState(false);
+  const [showReimbursementPopup, setShowReimbursementPopup] = useState(false);
+  const [showEarningsPopup, setShowEarningsPopup] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -18,18 +26,66 @@ export default function SalaryComponent() {
   const fetchData = () => {
     if (activeTab === "earnings") {
       setData([
-        { id: 1, name: "Earnings Name 1", type: "Type 1", calculation: "Calculation Type 1", epf: true, esi: true, status: "active" },
-        { id: 2, name: "Earnings Name 2", type: "Type 2", calculation: "Calculation Type 2", epf: true, esi: false, status: "inactive" },
+        {
+          id: 1,
+          name: "Earnings Name 1",
+          type: "Type 1",
+          calculation: "Calculation Type 1",
+          epf: true,
+          esi: true,
+          status: "active",
+        },
+        {
+          id: 2,
+          name: "Earnings Name 2",
+          type: "Type 2",
+          calculation: "Calculation Type 2",
+          epf: true,
+          esi: false,
+          status: "inactive",
+        },
       ]);
     } else if (activeTab === "deductions") {
       setData([
-        { id: 1, name: "Deduction Name 1", type: "Type 1", calculation: "Calculation Type 1", epf: false, esi: false, status: "active" },
-        { id: 2, name: "Deduction Name 2", type: "Type 2", calculation: "Calculation Type 2", epf: false, esi: true, status: "inactive" },
+        {
+          id: 1,
+          name: "Deduction Name 1",
+          type: "Type 1",
+          calculation: "Calculation Type 1",
+          epf: false,
+          esi: false,
+          status: "active",
+        },
+        {
+          id: 2,
+          name: "Deduction Name 2",
+          type: "Type 2",
+          calculation: "Calculation Type 2",
+          epf: false,
+          esi: true,
+          status: "inactive",
+        },
       ]);
     } else if (activeTab === "benefits") {
       setData([
-        { id: 1, name: "Benefit Name 1", type: "Type 1", calculation: "Calculation Type 1", epf: true, esi: true, status: "active" },
-        { id: 2, name: "Benefit Name 2", type: "Type 2", calculation: "Calculation Type 2", epf: false, esi: true, status: "inactive" },
+        {
+          id: 1,
+          name: "Benefit Name 1",
+          type: "Type 1",
+          calculation: "Calculation Type 1",
+          epf: true,
+          esi: true,
+          status: "active",
+        },
+        {
+          id: 2,
+          name: "Benefit Name 2",
+          type: "Type 2",
+          calculation: "Calculation Type 2",
+          epf: false,
+          esi: true,
+          status: "inactive",
+        },
       ]);
     }
   };
@@ -40,9 +96,14 @@ export default function SalaryComponent() {
   };
 
   const confirmDelete = (item) => {
-    setData(prevData => prevData.filter(d => d.id !== item.id));
+    setData((prevData) => prevData.filter((d) => d.id !== item.id));
     setShowDeletePopup(false);
     setSelectedItem(null);
+  };
+
+  const handleBenefitSubmit = (formData) => {
+    console.log("Benefit Submitted:", formData);
+    setShowBenefitPopup(false);
   };
 
   return (
@@ -62,10 +123,31 @@ export default function SalaryComponent() {
           {dropdownOpen && (
             <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white z-10">
               <div className="py-1">
-                {["Earnings", "Correction", "Benefits", "Deductions", "Reimbursements"].map((item, idx) => (
+                {[
+                  "Earnings",
+                  "Benefits",
+                  "Deductions",
+                  "Reimbursements",
+                ].map((item, idx) => (
                   <a
                     key={idx}
                     href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setDropdownOpen(false);
+                      if (item === "Benefits") {
+                        setShowBenefitPopup(true);
+                      }
+                      if (item === "Deductions") {
+                        setShowDeductionPopup(true);
+                      }
+                      if (item === "Reimbursements") {
+                        setShowReimbursementPopup(true);
+                      }
+                      if (item === "Earnings") {
+                        setShowEarningsPopup(true);
+                      }
+                    }}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     {item}
@@ -82,7 +164,11 @@ export default function SalaryComponent() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-4 rounded-lg font-semibold text-lg ${activeTab === tab ? "bg-[#FFD85F] text-gray-600" : "bg-gray-200 text-gray-500"}`}
+            className={`flex-1 py-4 rounded-lg font-semibold text-lg ${
+              activeTab === tab
+                ? "bg-[#FFD85F] text-gray-600"
+                : "bg-gray-200 text-gray-500"
+            }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
@@ -121,7 +207,13 @@ export default function SalaryComponent() {
                   {item.esi ? "Consider for ESI" : "-"}
                 </td>
                 <td className="px-4 py-2">
-                  <span className={`inline-block px-2 py-1 font-semibold ${item.status === "active" ? "text-green-500" : "text-gray-600"}`}>
+                  <span
+                    className={`inline-block px-2 py-1 font-semibold ${
+                      item.status === "active"
+                        ? "text-green-500"
+                        : "text-gray-600"
+                    }`}
+                  >
                     {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                   </span>
                 </td>
@@ -156,7 +248,11 @@ export default function SalaryComponent() {
             {[1, 2, 3, 4, 5, "...", 9, 10].map((page, index) => (
               <button
                 key={index}
-                className={`px-3 py-1 rounded ${page === currentPage ? "bg-[#FFD85F] text-black font-bold" : "hover:bg-gray-200"}`}
+                className={`px-3 py-1 rounded ${
+                  page === currentPage
+                    ? "bg-[#FFD85F] text-black font-bold"
+                    : "hover:bg-gray-200"
+                }`}
                 disabled={page === "..."}
                 onClick={() => typeof page === "number" && setCurrentPage(page)}
               >
@@ -174,13 +270,43 @@ export default function SalaryComponent() {
         </div>
       </div>
 
-      {/* Delete Popup */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
         onConfirm={confirmDelete}
         data={selectedItem}
         message={`Are you sure you want to delete "${selectedItem?.name}"?`}
+      />
+
+      <AddBenefitPopup
+        isOpen={showBenefitPopup}
+        onClose={() => setShowBenefitPopup(false)}
+        onSubmit={handleBenefitSubmit}
+      />
+
+      <AddDeductionPopup
+        isOpen={showDeductionPopup}
+        onClose={() => setShowDeductionPopup(false)}
+        onSubmit={(data) => {
+          console.log("Deduction Submitted:", data);
+          setShowDeductionPopup(false);
+        }}
+      />
+      <AddReimbursementPopup
+        isOpen={showReimbursementPopup}
+        onClose={() => setShowReimbursementPopup(false)}
+        onSubmit={(data) => {
+          console.log("Reimbursement Submitted:", data);
+          setShowReimbursementPopup(false);
+        }}
+      />
+      <AddEarningsPopup
+        isOpen={showEarningsPopup}
+        onClose={() => setShowEarningsPopup(false)}
+        onSubmit={(data) => {
+          console.log("Earnings Submitted:", data);
+          setShowEarningsPopup(false);
+        }}
       />
     </div>
   );

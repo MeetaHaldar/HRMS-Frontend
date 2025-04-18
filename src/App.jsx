@@ -11,14 +11,16 @@ import WFHhistory from "./Components/Employee/WFHhistory";
 import Department from "./Components/Company/Department";
 import Profile from "./Components/Employee/Profile";
 import Holidays from "./Components/Employee/Holidays";
-import SalaryComponent from "./Components/Company/SalaryComponent";
+import SalaryComponent from "./Components/Company/Salary/SalaryComponent/SalaryComponent";
 import Designation from "./Components/Company/Designation";
-import SalaryTemplate from "./Components/Company/SalaryTemplate";
-import AddNewSalaryTemplate from "./Components/Company/AddNewSalaryTemplate";
-import ViewSalaryTemplate from "./Components/Company/ViewSalaryTemplate";
+import SalaryTemplate from "./Components/Company/Salary/SalaryTemplate/SalaryTemplate";
+import AddNewSalaryTemplate from "./Components/Company/Salary/SalaryTemplate/AddNewSalaryTemplate";
+import ViewSalaryTemplate from "./Components/Company/Salary/SalaryTemplate/ViewSalaryTemplate";
 import EmployeeLayout from "./Layouts/EmployeeLayout";
 import SuperAdminLayout from "./Layouts/SuperAdminLayout";
 import CompanyAdminLayout from "./Layouts/CompanyAdminLayout";
+import AddBenefitPopup from "./Components/Company/Salary/SalaryComponent/AddBenifitPopup";
+import AttendanceCalendar from "./Components/Employee/AttendanceCalender";
 function App() {
   return (
     <>
@@ -40,6 +42,8 @@ function App() {
             <Route path="Designation" element={<Designation />} />
             <Route path="salaryComponent" element={<SalaryComponent />} />
             <Route path="SalaryTemplate" element={<SalaryTemplate />} />
+            <Route path="addBenifitpopup" element={<AddBenefitPopup />} />
+
             <Route
               path="addNewSalaryTemplate"
               element={<AddNewSalaryTemplate />}
@@ -54,6 +58,7 @@ function App() {
             <Route path="leaves" element={<Leaves />} />
             <Route path="leave-history" element={<LeaveHistory />} />
             <Route path="WFHhistory" element={<WFHhistory />} />
+            <Route path="calender" element={<AttendanceCalendar />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
 
           </Route>

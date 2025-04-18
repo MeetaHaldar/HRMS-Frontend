@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom"; // Import Link component for navigation
-import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
+import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
 
 export default function SalaryTemplate() {
   const navigate = useNavigate();
