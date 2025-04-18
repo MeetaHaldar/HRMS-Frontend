@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
-import AddBenefitPopup from "./AddBenifitPopup"; // <-- Make sure path is correct
-import AddDeductionPopup from "./AddDeductionPopup"; // <-- Make sure path is correct
-import AddReimbursementPopup from "./AddReimbursementPopup"; // <-- Make sure path is correct
-import AddEarningsPopup from "./AddEarningsPopup"; // <-- Make sure path is correct
+import AddBenefitPopup from "./AddBenifitPopup";
+import AddDeductionPopup from "./AddDeductionPopup";
+import AddReimbursementPopup from "./AddReimbursementPopup";
+import AddEarningsPopup from "./AddEarningsPopup";
+
 export default function SalaryComponent() {
   const [activeTab, setActiveTab] = useState("earnings");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -14,10 +15,11 @@ export default function SalaryComponent() {
   const [totalPages, setTotalPages] = useState(1);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [showBenefitPopup, setShowBenefitPopup] = useState(false); // <-- Added this
+  const [showBenefitPopup, setShowBenefitPopup] = useState(false);
   const [showDeductionPopup, setShowDeductionPopup] = useState(false);
   const [showReimbursementPopup, setShowReimbursementPopup] = useState(false);
   const [showEarningsPopup, setShowEarningsPopup] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -104,6 +106,20 @@ export default function SalaryComponent() {
   const handleBenefitSubmit = (formData) => {
     console.log("Benefit Submitted:", formData);
     setShowBenefitPopup(false);
+    setEditData(null);
+  };
+
+  const handleNameClick = (item) => {
+    setEditData(item);
+    if (activeTab === "earnings") {
+      setShowEarningsPopup(true);
+    } else if (activeTab === "deductions") {
+      setShowDeductionPopup(true);
+    } else if (activeTab === "benefits") {
+      setShowBenefitPopup(true);
+    } else if (activeTab === "Reimbursment") {
+      setShowReimbursementPopup(true);
+    }
   };
 
   return (
@@ -112,7 +128,6 @@ export default function SalaryComponent() {
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
           Salary Components:
         </h2>
-
         <div className="relative inline-block text-left">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -123,36 +138,27 @@ export default function SalaryComponent() {
           {dropdownOpen && (
             <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white z-10">
               <div className="py-1">
-                {[
-                  "Earnings",
-                  "Benefits",
-                  "Deductions",
-                  "Reimbursements",
-                ].map((item, idx) => (
-                  <a
-                    key={idx}
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setDropdownOpen(false);
-                      if (item === "Benefits") {
-                        setShowBenefitPopup(true);
-                      }
-                      if (item === "Deductions") {
-                        setShowDeductionPopup(true);
-                      }
-                      if (item === "Reimbursements") {
-                        setShowReimbursementPopup(true);
-                      }
-                      if (item === "Earnings") {
-                        setShowEarningsPopup(true);
-                      }
-                    }}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    {item}
-                  </a>
-                ))}
+                {["Earnings", "Benefits", "Deductions", "Reimbursements"].map(
+                  (item, idx) => (
+                    <a
+                      key={idx}
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setEditData(null); // make sure it's cleared for new item
+                        setDropdownOpen(false);
+                        if (item === "Benefits") setShowBenefitPopup(true);
+                        if (item === "Deductions") setShowDeductionPopup(true);
+                        if (item === "Reimbursements")
+                          setShowReimbursementPopup(true);
+                        if (item === "Earnings") setShowEarningsPopup(true);
+                      }}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      {item}
+                    </a>
+                  )
+                )}
               </div>
             </div>
           )}
@@ -193,7 +199,10 @@ export default function SalaryComponent() {
           <tbody>
             {data.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 text-yellow-600 underline cursor-pointer">
+                <td
+                  className="px-4 py-2 text-yellow-600 underline cursor-pointer"
+                  onClick={() => handleNameClick(item)}
+                >
                   {item.name}
                 </td>
                 <td className="px-4 py-2">
@@ -214,7 +223,8 @@ export default function SalaryComponent() {
                         : "text-gray-600"
                     }`}
                   >
-                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                    {item.status.charAt(0).toUpperCase() +
+                      item.status.slice(1)}
                   </span>
                 </td>
                 <td className="px-4 py-2 space-x-2">
@@ -280,33 +290,54 @@ export default function SalaryComponent() {
 
       <AddBenefitPopup
         isOpen={showBenefitPopup}
-        onClose={() => setShowBenefitPopup(false)}
+        onClose={() => {
+          setShowBenefitPopup(false);
+          setEditData(null);
+        }}
         onSubmit={handleBenefitSubmit}
+        editData={editData}
       />
 
       <AddDeductionPopup
         isOpen={showDeductionPopup}
-        onClose={() => setShowDeductionPopup(false)}
+        onClose={() => {
+          setShowDeductionPopup(false);
+          setEditData(null);
+        }}
         onSubmit={(data) => {
           console.log("Deduction Submitted:", data);
           setShowDeductionPopup(false);
+          setEditData(null);
         }}
+        editData={editData}
       />
+
       <AddReimbursementPopup
         isOpen={showReimbursementPopup}
-        onClose={() => setShowReimbursementPopup(false)}
+        onClose={() => {
+          setShowReimbursementPopup(false);
+          setEditData(null);
+        }}
         onSubmit={(data) => {
           console.log("Reimbursement Submitted:", data);
           setShowReimbursementPopup(false);
+          setEditData(null);
         }}
+        editData={editData}
       />
+
       <AddEarningsPopup
         isOpen={showEarningsPopup}
-        onClose={() => setShowEarningsPopup(false)}
+        onClose={() => {
+          setShowEarningsPopup(false);
+          setEditData(null);
+        }}
         onSubmit={(data) => {
           console.log("Earnings Submitted:", data);
           setShowEarningsPopup(false);
+          setEditData(null);
         }}
+        editData={editData}
       />
     </div>
   );

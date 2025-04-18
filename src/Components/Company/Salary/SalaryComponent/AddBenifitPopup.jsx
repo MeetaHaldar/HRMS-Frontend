@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 
-const AddBenefitPopup = ({ isOpen, onClose, onSubmit }) => {
+const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
   const [benefitPlanOptions, setBenefitPlanOptions] = useState([]);
   const [investmentOptions, setInvestmentOptions] = useState([]);
   const [formData, setFormData] = useState({
@@ -15,7 +15,7 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit }) => {
   });
 
   useEffect(() => {
-    // Simulating backend fetch
+    // Simulating backend fetch for benefit and investment options
     setBenefitPlanOptions([
       { id: 1, label: "Benefit Plan A" },
       { id: 2, label: "Benefit Plan B" },
@@ -26,6 +26,21 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit }) => {
       { id: 2, label: "Investment Option Y" },
     ]);
   }, []);
+
+  useEffect(() => {
+    if (item) {
+      // Pre-fill form data when editing an existing item
+      setFormData({
+        benefitPlan: item.benefitPlan || "",
+        investment: item.investment || "",
+        nameInPayslip: item.nameInPayslip || "",
+        includeContribution: item.includeContribution || false,
+        isSuperFund: item.isSuperFund || false,
+        isProRata: item.isProRata || false,
+        isActive: item.isActive || false,
+      });
+    }
+  }, [item]);
 
   if (!isOpen) return null;
 
@@ -76,12 +91,14 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit }) => {
       backgroundColor: "#8A8A8A", // Color of the separator line (if visible)
     }),
   };
-  
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-700">Benefits</h2>
+          <h2 className="text-lg font-semibold text-gray-700">
+            {item ? `Edit ${item.name}` : "Add Benefit"}
+          </h2>
           <button onClick={onClose} className="text-xl font-bold text-gray-500">
             ✕
           </button>
@@ -204,7 +221,7 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit }) => {
               onClick={handleSubmit}
               className="flex-1 bg-[#FFD85F] hover:bg-yellow-600 text-gray-700 font-semibold py-2 rounded-full mr-2"
             >
-              + Add Benefits
+              {item ? "Save Changes" : "+ Add Benefit"}
             </button>
             <button
               onClick={onClose}
