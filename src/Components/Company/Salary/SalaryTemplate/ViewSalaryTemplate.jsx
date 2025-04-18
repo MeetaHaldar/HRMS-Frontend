@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import Link component for navigation
+import { useNavigate } from "react-router-dom";
+import SalaryComponentDropdown from "./SalaryComponentDropdown";
 
 const ViewSalaryTemplate = () => {
   const navigate = useNavigate();
@@ -19,19 +20,33 @@ const ViewSalaryTemplate = () => {
     },
   ]);
 
-  const removeComponent = (index) => {
-    const updatedComponents = salaryComponents.filter((_, i) => i !== index);
-    setSalaryComponents(updatedComponents);
+  const handleAddComponent = (category, item) => {
+    const newComponent = {
+      name: item,
+      description: `(${category})`,
+      monthly: "₹ 0.00",
+      annual: "₹ 0.00",
+    };
+    setSalaryComponents(prev => [...prev, newComponent]);
   };
+
+  const handleDeleteComponent = (index) => {
+    setSalaryComponents(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const selectedComponents = salaryComponents.map(c => c.name);
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Infosware - Salary Template:</h2>
-        <div className="flex gap-2">
-          <button className="px-4 py-2 border rounded-full text-sm font-medium shadow-sm hover:bg-gray-100">
-            + Add Salary Component
-          </button>
+
+        <div className="flex gap-2 relative">
+          <SalaryComponentDropdown
+            onAddComponent={handleAddComponent}
+            selectedComponents={selectedComponents}
+          />
+
           <button
             className="px-4 py-2 bg-[#FFD85F] hover:bg-yellow-500 text-black rounded-full text-sm font-medium shadow"
             onClick={() => navigate(`/companyAdmin/AddNewSalaryTemplate`)}
@@ -52,12 +67,13 @@ const ViewSalaryTemplate = () => {
             </tr>
           </thead>
 
-          {/* Earning div above the table body */}
-          <div className="p-3 text-center font-semibold flex flex-row">
-            Earnings
-          </div>
-
           <tbody>
+            <tr>
+              <td className="p-3 font-semibold" colSpan="4">
+                Earnings
+              </td>
+            </tr>
+
             {salaryComponents.map((component, index) => (
               <tr key={index}>
                 <td className="p-3">
@@ -70,11 +86,10 @@ const ViewSalaryTemplate = () => {
                 </td>
                 <td className="p-3 text-center">{component.monthly}</td>
                 <td className="p-3 text-center">{component.annual}</td>
-                <td className="p-3 text-center flex justify-center items-center">
-                  ----
+                <td className="p-3 text-center">
                   <span
-                    className="ml-2 cursor-pointer text-red-500 font-bold"
-                    onClick={() => removeComponent(index)}
+                    className="ml-2 cursor-pointer text-gray-500 font-bold text-2xl"
+                    onClick={() => handleDeleteComponent(index)}
                   >
                     x
                   </span>

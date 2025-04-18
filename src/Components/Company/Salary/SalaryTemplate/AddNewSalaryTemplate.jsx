@@ -1,68 +1,46 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SalaryComponentDropdown from "./SalaryComponentDropdown";
 
 const AddNewSalaryTemplate = () => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-
-  const navigate = useNavigate(); // Initialize navigate
+  const [salaryComponents, setSalaryComponents] = useState([]);
+  const navigate = useNavigate();
 
   const handleCancel = () => {
-    navigate("/companyAdmin/salaryTemplate"); // Redirect on cancel
+    navigate("/companyAdmin/salaryTemplate");
   };
+
+  const handleAddComponent = (category, item) => {
+    const newComponent = {
+      name: item,
+      description: `(${category})`,
+      monthly: "₹ 0.00",
+      annual: "₹ 0.00",
+    };
+    setSalaryComponents((prev) => [...prev, newComponent]);
+  };
+
+  const handleRemoveComponent = (index) => {
+    setSalaryComponents((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const selectedComponents = salaryComponents.map((c) => c.name);
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-     
-     <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 gap-4">
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
-        Add New Salary Template:
+          Add New Salary Template:
         </h2>
 
-        <div className="relative inline-block text-left">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex justify-center w-full rounded-full shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            + Add Salary Component ▾
-          </button>
-          {dropdownOpen && (
-            <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white z-10">
-              <div className="py-1">
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Earnings
-                </a>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Correction
-                </a>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Benefits
-                </a>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Deductions
-                </a>
-                <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Reimbursements
-                </a>
-              </div>
-            </div>
-          )}
+        <div className="relative text-left">
+          <SalaryComponentDropdown
+            onAddComponent={handleAddComponent}
+            selectedComponents={selectedComponents}
+          />
         </div>
       </div>
+
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -71,7 +49,7 @@ const AddNewSalaryTemplate = () => {
           <input
             type="text"
             placeholder="Total Earnings"
-            className=" p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
         </div>
         <div>
@@ -81,7 +59,7 @@ const AddNewSalaryTemplate = () => {
           <input
             type="text"
             placeholder="Max 500 characters..."
-            className=" p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
         </div>
       </div>
@@ -89,7 +67,7 @@ const AddNewSalaryTemplate = () => {
       <div className="p-4 border border-gray-200 rounded-md">
         <div className="flex flex-row mb-2">
           <label className="text-gray-700 mr-2 basis-1/3">Annual CTC</label>
-          <div className="flex items-center bais-2/3">
+          <div className="flex items-center basis-2/3">
             <input
               type="text"
               value="₹ 0.00"
@@ -107,41 +85,53 @@ const AddNewSalaryTemplate = () => {
               <th className="py-2">Calculation Type</th>
               <th className="py-2">Monthly Amt.</th>
               <th className="py-2">Annual Amt.</th>
+              <th className="py-2 text-center">Action</th>
             </tr>
           </thead>
+
           <tbody>
-            <tr>
-              <td className="py-2 font-medium">Earnings</td>
-            </tr>
-            <tr>
-              <td className="py-2">Basic</td>
-              <td className="py-2 text-gray-500 italic">(50% of Annual CTC)</td>
-              <td className="py-2">₹ 0.00</td>
-              <td className="py-2">₹ 0.00</td>
-            </tr>
-            <tr>
-              <td className="py-2">
-                Fixed Allowance
-                <div className="text-xs text-gray-500">
-                  Monthly CTC - Sum of all components
-                </div>
-              </td>
-              <td className="py-2">Fixed Amount</td>
-              <td className="py-2">₹ 0.00</td>
-              <td className="py-2">₹ 0.00</td>
-            </tr>
+            {salaryComponents.length > 0 && (
+              <tr>
+                <td className="py-2 font-medium">Earnings</td>
+                <td colSpan="4"></td>
+              </tr>
+            )}
+
+            {salaryComponents.map((component, index) => (
+              <tr key={index}>
+                <td className="py-2">
+                  {component.name}
+                  <div className="text-xs text-gray-500">
+                    {component.description}
+                  </div>
+                </td>
+                <td className="py-2 text-gray-500 italic">(Custom)</td>
+                <td className="py-2">₹ 0.00</td>
+                <td className="py-2">₹ 0.00</td>
+                <td className="py-2 text-center">
+                  <span
+                    className="text-red-500 cursor-pointer text-2xl"
+                    onClick={() => handleRemoveComponent(index)}
+                  >
+                    x
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+
+          <tfoot className="border-t border-gray-300">
             <tr>
               <td className="py-2 font-medium">Cost to Company</td>
               <td></td>
               <td className="py-2 font-semibold">₹ 0.00</td>
-              <td className="py-2 font-semibold">
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-gray-400">Total Pay</span>
-                  <span>₹ 0.00</span>
-                </div>
+              <td className="py-2 font-semibold text-left">
+                <span className="text-xs text-gray-400 block">Total Pay</span>
+                <span>₹ 0.00</span>
               </td>
+              <td></td>
             </tr>
-          </tbody>
+          </tfoot>
         </table>
       </div>
 
@@ -150,7 +140,7 @@ const AddNewSalaryTemplate = () => {
           Save Template
         </button>
         <button
-          onClick={handleCancel} // trigger navigation
+          onClick={handleCancel}
           className="flex items-center justify-center ml-4 w-1/9 border border-gray-300 text-gray-900 px-5 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold cursor-pointer hover:bg-gray-300"
         >
           Cancel

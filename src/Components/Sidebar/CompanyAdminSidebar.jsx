@@ -21,10 +21,7 @@ const menuItems = [
   { label: 'Employees', to: '/listings1', icon: <FaPeopleGroup /> },
   { label: 'Pay Runs', to: '/listings2', icon: <FaArrowTrendUp /> },
   { label: 'Approvals', to: '/listings3', icon: <FaClipboardCheck /> },
-  { label: 'Form 16', to: '/organisations', icon: <FaWpforms /> },
-  { label: 'Loans', to: '/listings4', icon: <LuReceiptIndianRupee /> },
   { label: 'Documents', to: '/logs', icon: <FaFolderPlus /> },
-  { label: 'Reports', to: '/support', icon: <GoReport /> },
   { label: 'Settings', to: '', icon: <IoSettingsOutline /> }, // Settings button will toggle the menu
 ];
 
