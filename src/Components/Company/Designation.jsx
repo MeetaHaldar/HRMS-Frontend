@@ -4,18 +4,11 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import AddDesignationPopup from "./AddDesignationPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
+
 const Designation = () => {
   const [designations, setDesignations] = useState([
-    {
-      id: 1,
-      name: "IT - Developers",
-      department: "IT/ Software",
-    },
-    {
-      id: 2,
-      name: "IT - Designers",
-      department: "IT/ Software",
-    },
+    { id: 1, name: "IT - Developers", department: "IT/ Software" },
+    { id: 2, name: "IT - Designers", department: "IT/ Software" },
   ]);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -23,12 +16,10 @@ const Designation = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [designationToDelete, setDesignationToDelete] = useState(null);
 
   useEffect(() => {
-    // Replace this with your actual API.
     fetch(`/api/designations?page=${currentPage}`)
       .then((res) => res.json())
       .then((data) => {
@@ -49,9 +40,7 @@ const Designation = () => {
 
   const handleAddSubmit = (newDesignation) => {
     const updatedList = selectedDesignation
-      ? designations.map((d) =>
-          d.id === selectedDesignation.id ? newDesignation : d
-        )
+      ? designations.map((d) => (d.id === selectedDesignation.id ? newDesignation : d))
       : [...designations, newDesignation];
 
     setDesignations(updatedList);
@@ -63,26 +52,15 @@ const Designation = () => {
     setShowDeletePopup(true);
   };
 
-  const handleConfirmDelete = (designation) => {
-    setDesignations(designations.filter((d) => d.id !== designation.id));
+  const handleConfirmDelete = () => {
+    setDesignations((prev) => prev.filter((d) => d.id !== designationToDelete.id));
     setShowDeletePopup(false);
   };
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      const response = await fetch(`/api/salary-templates?page=${currentPage}`);
-      const result = await response.json();
-      setData(result.data);
-      setTotalPages(result.totalPages);
-    };
 
-    fetchTemplates();
-  }, [currentPage]);
   return (
-    <div className="p-2 md:p-6 w-full">
+    <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
-          Designations:
-        </h2>
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Designations:</h2>
         <button
           className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
@@ -91,7 +69,7 @@ const Designation = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex-grow overflow-x-auto">
         <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
@@ -110,8 +88,8 @@ const Designation = () => {
                 </td>
               </tr>
             ) : (
-              designations.map((designation, index) => (
-                <tr key={index} className="hover:bg-gray-100">
+              designations.map((designation) => (
+                <tr key={designation.id} className="hover:bg-gray-100">
                   <td
                     className="p-2 md:p-3 text-yellow-600 cursor-pointer hover:underline"
                     onClick={() => {
@@ -148,11 +126,10 @@ const Designation = () => {
 
       <Pagination
         currentPage={currentPage}
-        totalPages={10} // ← Ideally, this should come from your API response
+        totalPages={totalPages}
         onPageChange={(page) => setCurrentPage(page)}
       />
 
-      {/* Add / Edit Popup */}
       <AddDesignationPopup
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -160,7 +137,6 @@ const Designation = () => {
         initialData={selectedDesignation}
       />
 
-      {/* Delete Confirmation Popup */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}

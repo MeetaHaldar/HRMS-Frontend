@@ -2,7 +2,6 @@
 import React from 'react';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  // Dynamic page range logic
   const getPageNumbers = () => {
     const maxPagesToShow = 5;
     let start = Math.max(1, currentPage - 2);
@@ -16,12 +15,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
-
     return pages;
   };
 
   return (
-    <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
+    <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
       <button
         className="hover:underline disabled:text-gray-400"
         disabled={currentPage === 1}

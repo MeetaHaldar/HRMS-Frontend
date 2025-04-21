@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import HolidayPopup from "./HolidayPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
-
+import Pagination from "../Pagination";
 const HolidayList = () => {
   const [holidays, setHolidays] = useState([
     { id: 1, name: "New Year's Day", date: "2025-01-01", duration: "1 Day" },
@@ -76,9 +76,12 @@ const HolidayList = () => {
   };
 
   return (
-    <div className="p-2 md:p-6 w-full">
+    <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
+
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Holiday's List:</h2>
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
+          Holiday's List:
+        </h2>
         <button
           onClick={handleAddClick}
           className="bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold shadow-md cursor-pointer"
@@ -87,7 +90,7 @@ const HolidayList = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex-grow overflow-x-auto">
         <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
@@ -100,7 +103,9 @@ const HolidayList = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="4" className="text-center p-4">Loading...</td>
+                <td colSpan="4" className="text-center p-4">
+                  Loading...
+                </td>
               </tr>
             ) : holidays.length === 0 ? (
               <tr>
@@ -110,7 +115,9 @@ const HolidayList = () => {
                     alt="No Holidays Found"
                     className="mx-auto w-24 h-24 opacity-50"
                   />
-                  <p className="text-gray-500 mt-2 text-xs md:text-sm">No holidays found</p>
+                  <p className="text-gray-500 mt-2 text-xs md:text-sm">
+                    No holidays found
+                  </p>
                 </td>
               </tr>
             ) : (
@@ -140,37 +147,12 @@ const HolidayList = () => {
         </table>
       </div>
 
-     {/* Pagination */}
-     <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        >
-          &lt; Previous
-        </button>
-
-        <div className="flex space-x-2">
-          {[1, 2, 3, 4, 5, '...', 9, 10].map((page, index) => (
-            <button
-              key={index}
-              className={`px-3 py-1 rounded ${page === currentPage ? 'bg-[#FFD85F] text-black font-bold' : 'hover:bg-gray-200'}`}
-              disabled={page === '...'}
-              onClick={() => typeof page === 'number' && setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 10}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        >
-          Next &gt;
-        </button>
-      </div>
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={10} // Replace this with: totalPages if dynamic
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
       {/* Add / Edit Popup */}
       <HolidayPopup

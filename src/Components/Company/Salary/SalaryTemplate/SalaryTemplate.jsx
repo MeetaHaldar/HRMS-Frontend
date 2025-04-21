@@ -3,7 +3,7 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom"; // Import Link component for navigation
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
-
+import Pagination from "../../../Pagination";
 export default function SalaryTemplate() {
   const navigate = useNavigate();
 
@@ -98,7 +98,8 @@ export default function SalaryTemplate() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
+
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg md:text-lg text-gray-500 font-semiboldtext-2xl font-semibold">
           Salary Templates:
@@ -111,7 +112,7 @@ export default function SalaryTemplate() {
         </Link>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex-grow overflow-x-auto">
         <table className="min-w-full">
           <thead className="bg-gray-200">
             <tr>
@@ -162,38 +163,12 @@ export default function SalaryTemplate() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 1}
-        >
-          &lt; Previous
-        </button>
-
-        <div className="flex space-x-2">
-          {[1, 2, 3, 4, 5, "...", 9, 10].map((page, index) => (
-            <button
-              key={index}
-              className={`px-3 py-1 rounded ${
-                page === currentPage
-                  ? "bg-[#FFD85F] text-black font-bold"
-                  : "hover:bg-gray-200"
-              }`}
-              disabled={page === "..."}
-              onClick={() => typeof page === "number" && setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 10}
-        >
-          Next &gt;
-        </button>
-      </div>
+      
+      <Pagination
+        currentPage={currentPage}
+        totalPages={10} // Replace this with: totalPages if dynamic
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
       {/* Delete Confirmation Popup */}
       <DeleteConfirmationPopup

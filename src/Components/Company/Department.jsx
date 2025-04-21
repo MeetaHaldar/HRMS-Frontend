@@ -3,23 +3,12 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import AddDepartmentPopup from "./AddDepartmentPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
+import Pagination from "../Pagination";
 
 const Department = () => {
   const [departments, setDepartments] = useState([
-    {
-      id: 1,
-      name: "Human Resources",
-      code: "HR01",
-      parentId: "0",
-      totalEmployees: 15,
-    },
-    {
-      id: 2,
-      name: "Engineering",
-      code: "ENG02",
-      parentId: "0",
-      totalEmployees: 40,
-    },
+    { id: 1, name: "Human Resources", code: "HR01", parentId: "0", totalEmployees: 15 },
+    { id: 2, name: "Engineering", code: "ENG02", parentId: "0", totalEmployees: 40 },
   ]);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -27,7 +16,6 @@ const Department = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [departmentToDelete, setDepartmentToDelete] = useState(null);
 
@@ -46,20 +34,16 @@ const Department = () => {
   }, [currentPage]);
 
   const handleAddClick = () => {
-    setSelectedDepartment(null); // Set to null to indicate it's a new department
+    setSelectedDepartment(null);
     setShowAddModal(true);
   };
 
   const handleAddSubmit = (newDepartment) => {
     if (selectedDepartment) {
-      // Update department if selectedDepartment is present
       setDepartments((prev) =>
-        prev.map((dept) =>
-          dept.id === newDepartment.id ? newDepartment : dept
-        )
+        prev.map((dept) => (dept.id === newDepartment.id ? newDepartment : dept))
       );
     } else {
-      // Add new department
       setDepartments((prev) => [...prev, newDepartment]);
     }
     setShowAddModal(false);
@@ -71,9 +55,7 @@ const Department = () => {
   };
 
   const handleDeleteConfirm = () => {
-    setDepartments((prev) =>
-      prev.filter((d) => d.id !== departmentToDelete.id)
-    );
+    setDepartments((prev) => prev.filter((d) => d.id !== departmentToDelete.id));
     setShowDeletePopup(false);
   };
 
@@ -82,11 +64,9 @@ const Department = () => {
   };
 
   return (
-    <div className="p-2 md:p-6 w-full">
+    <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
-          Departments:
-        </h2>
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Departments:</h2>
         <button
           className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
@@ -95,7 +75,7 @@ const Department = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="flex-grow overflow-x-auto">
         <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
@@ -127,7 +107,7 @@ const Department = () => {
                       className="text-gray-500 hover:text-gray-950"
                       onClick={() => {
                         setSelectedDepartment(department);
-                        setShowAddModal(true); // Open the modal with the selected department's data
+                        setShowAddModal(true);
                       }}
                     >
                       <FiEdit />
@@ -146,53 +126,25 @@ const Department = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 1}
-          onClick={() => setCurrentPage(currentPage - 1)}
-        >
-          &lt; Previous
-        </button>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={10} // Replace this with: totalPages if dynamic
+        onPageChange={(page) => setCurrentPage(page)}
+      />
 
-        <div className="flex space-x-2">
-          {[1, 2, 3, 4, 5, '...', 9, 10].map((page, index) => (
-            <button
-              key={index}
-              className={`px-3 py-1 rounded ${page === currentPage ? 'bg-[#FFD85F] text-black font-bold' : 'hover:bg-gray-200'}`}
-              disabled={page === '...'}
-              onClick={() => typeof page === 'number' && setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 10}
-          onClick={() => setCurrentPage(currentPage + 1)}
-        >
-          Next &gt;
-        </button>
-      </div>
-
-      {/* Modal Popup */}
       <AddDepartmentPopup
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSubmit={handleAddSubmit}
-        initialData={selectedDepartment} // Prefill data if editing
+        initialData={selectedDepartment}
       />
 
-      {/* Delete Confirmation Popup */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={handleCancelDelete}
         onConfirm={handleDeleteConfirm}
         data={departmentToDelete}
-        message={`Are you sure you want to delete the department: ${departmentToDelete?.name}?`} // Show department name
+        message={`Are you sure you want to delete the department: ${departmentToDelete?.name}?`}
       />
     </div>
   );

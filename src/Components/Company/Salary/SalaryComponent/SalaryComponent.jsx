@@ -6,6 +6,7 @@ import AddBenefitPopup from "./AddBenifitPopup";
 import AddDeductionPopup from "./AddDeductionPopup";
 import AddReimbursementPopup from "./AddReimbursementPopup";
 import AddEarningsPopup from "./AddEarningsPopup";
+import Pagination from "../../../Pagination";
 
 export default function SalaryComponent() {
   const [activeTab, setActiveTab] = useState("earnings");
@@ -123,7 +124,7 @@ export default function SalaryComponent() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen">
+    <div className="p-8 bg-gray-50 min-h-screen flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
           Salary Components:
@@ -145,12 +146,11 @@ export default function SalaryComponent() {
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        setEditData(null); // make sure it's cleared for new item
+                        setEditData(null);
                         setDropdownOpen(false);
                         if (item === "Benefits") setShowBenefitPopup(true);
                         if (item === "Deductions") setShowDeductionPopup(true);
-                        if (item === "Reimbursements")
-                          setShowReimbursementPopup(true);
+                        if (item === "Reimbursements") setShowReimbursementPopup(true);
                         if (item === "Earnings") setShowEarningsPopup(true);
                       }}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -164,7 +164,7 @@ export default function SalaryComponent() {
           )}
         </div>
       </div>
-
+  
       <div className="flex w-full space-x-4 mb-6">
         {["earnings", "deductions", "benefits", "Reimbursment"].map((tab) => (
           <button
@@ -180,8 +180,8 @@ export default function SalaryComponent() {
           </button>
         ))}
       </div>
-
-      <div className="overflow-x-auto">
+  
+      <div className="flex-grow overflow-auto">
         <table className="min-w-full">
           <thead className="bg-gray-200">
             <tr>
@@ -223,8 +223,7 @@ export default function SalaryComponent() {
                         : "text-gray-600"
                     }`}
                   >
-                    {item.status.charAt(0).toUpperCase() +
-                      item.status.slice(1)}
+                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                   </span>
                 </td>
                 <td className="px-4 py-2 space-x-2">
@@ -245,41 +244,17 @@ export default function SalaryComponent() {
             ))}
           </tbody>
         </table>
-
-        <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
-          <button
-            className="hover:underline disabled:text-gray-400"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            &lt; Previous
-          </button>
-          <div className="flex space-x-2">
-            {[1, 2, 3, 4, 5, "...", 9, 10].map((page, index) => (
-              <button
-                key={index}
-                className={`px-3 py-1 rounded ${
-                  page === currentPage
-                    ? "bg-[#FFD85F] text-black font-bold"
-                    : "hover:bg-gray-200"
-                }`}
-                disabled={page === "..."}
-                onClick={() => typeof page === "number" && setCurrentPage(page)}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-          <button
-            className="hover:underline disabled:text-gray-400"
-            disabled={currentPage === 10}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            Next &gt;
-          </button>
-        </div>
       </div>
-
+  
+      <div className="mt-4">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={10} // Replace with dynamic totalPages if needed
+          onPageChange={(page) => setCurrentPage(page)}
+        />
+      </div>
+  
+      {/* All your popups remain the same below */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
@@ -287,7 +262,7 @@ export default function SalaryComponent() {
         data={selectedItem}
         message={`Are you sure you want to delete "${selectedItem?.name}"?`}
       />
-
+  
       <AddBenefitPopup
         isOpen={showBenefitPopup}
         onClose={() => {
@@ -297,7 +272,7 @@ export default function SalaryComponent() {
         onSubmit={handleBenefitSubmit}
         editData={editData}
       />
-
+  
       <AddDeductionPopup
         isOpen={showDeductionPopup}
         onClose={() => {
@@ -311,7 +286,7 @@ export default function SalaryComponent() {
         }}
         editData={editData}
       />
-
+  
       <AddReimbursementPopup
         isOpen={showReimbursementPopup}
         onClose={() => {
@@ -325,7 +300,7 @@ export default function SalaryComponent() {
         }}
         editData={editData}
       />
-
+  
       <AddEarningsPopup
         isOpen={showEarningsPopup}
         onClose={() => {
@@ -341,4 +316,5 @@ export default function SalaryComponent() {
       />
     </div>
   );
+  
 }

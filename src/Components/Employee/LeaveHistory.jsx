@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-
+import Pagination from "../Pagination";
 const LeaveHistory = () => {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     // Simulated API delay with dummy data
@@ -11,7 +13,8 @@ const LeaveHistory = () => {
         {
           startDate: "2025-03-01",
           endDate: "2025-03-03",
-          reason: "Family function lorem3 ipsum dolor sit amet, consectetur adipiscing elit.",
+          reason:
+            "Family function lorem3 ipsum dolor sit amet, consectetur adipiscing elit.",
           status: "Approved",
           requestedDate: "2025-02-25",
           approval: "Manager A",
@@ -53,12 +56,13 @@ const LeaveHistory = () => {
   };
 
   return (
-    <div className="p-2 md:p-6 w-full">
+    <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
+
       <h2 className="text-lg md:text-lg uppercase text-gray-500 font-semibold mb-4">
         Leave History:
       </h2>
 
-      <div className="overflow-x-auto">
+      <div className="flex-grow overflow-x-auto">
         <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-500">
@@ -114,6 +118,11 @@ const LeaveHistory = () => {
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={10} // Replace this with: totalPages if dynamic
+        onPageChange={(page) => setCurrentPage(page)}
+      />
     </div>
   );
 };
