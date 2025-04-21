@@ -18,9 +18,9 @@ import { PiSunglasses } from "react-icons/pi";
 import { useLocation } from 'react-router-dom'; 
 
 const menuItems = [
-  { label: 'Employees', to: '/listings1', icon: <FaPeopleGroup /> },
-  { label: 'Pay Runs', to: '/listings2', icon: <FaArrowTrendUp /> },
-  { label: 'Approvals', to: '/listings3', icon: <FaClipboardCheck /> },
+  { label: 'Employees', to: '/companyAdmin/employeeList', icon: <FaPeopleGroup /> },
+  { label: 'Pay Runs', to: '/companyAdmin', icon: <FaArrowTrendUp /> },
+  { label: 'Approvals', to: '/companyAdmin', icon: <FaClipboardCheck /> },
   { label: 'Documents', to: '/logs', icon: <FaFolderPlus /> },
   { label: 'Settings', to: '', icon: <IoSettingsOutline /> }, // Settings button will toggle the menu
 ];
