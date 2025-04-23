@@ -1,0 +1,78 @@
+/* Smaller text for entire calendar */
+.rbc-month-view {
+  font-size: 1rem;
+}
+
+/* Compact rows */
+.rbc-month-row {
+  min-height: 6px !important;
+  margin-bottom: 10px !important; /* Adds spacing between rows */
+}
+
+/* Compact and spaced calendar day box */
+.rbc-day-bg {
+  height: 30px !important;
+  width: 15px !important;
+  margin: 2px !important; /* Adds spacing between boxes */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+}
+
+/* Remove padding from cells */
+.rbc-date-cell {
+  padding: 0 !important;
+  text-align: center;
+}
+
+/* Date number styling */
+.rbc-date-cell > a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 2px;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+/* Header spacing and text */
+.rbc-header {
+  padding: 4px 0;
+  font-weight: 500;
+}
+
+/* Style for days outside of current month */
+.rbc-day-bg.rbc-off-range {
+  border-style: dotted;
+  border-width: 2px;
+  border-color: #d1d5db; /* Tailwind's border-gray-300 */
+}
+
+/* Optional tooltip style */
+.custom-tooltip {
+  position: absolute;
+  z-index: 100;
+  background-color: #333;
+  color: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+/* Add vertical gap between date boxes */
+.rbc-day-bg {
+  margin-bottom: 4px !important; /* Adjust as needed */
+}
+
+/* Optional: Adjusting overall day cell height and spacing */
+.rbc-month-view {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.rbc-month-row {
+  display: flex;
+  gap: 4px; /* Adds horizontal gap between boxes */
+}

@@ -20,9 +20,10 @@ import EmployeeLayout from "./Layouts/EmployeeLayout";
 import SuperAdminLayout from "./Layouts/SuperAdminLayout";
 import CompanyAdminLayout from "./Layouts/CompanyAdminLayout";
 import AddBenefitPopup from "./Components/Company/Salary/SalaryComponent/AddBenifitPopup";
-import AttendanceCalendar from "./Components/Employee/AttendanceCalender";
+import AttendanceCalendar from "./Components/Employee/Dashboard/AttendanceCalendar";
 import LeaaveRequest from "./Components/Employee/Manager/LeaveRequest";
 import EmployeeList from "./Components/Company/EmployeeList";
+import Dashboard from "./Components/Employee/Dashboard/Dashboard";
 function App() {
   return (
     <>
@@ -57,6 +58,8 @@ function App() {
           </Route>
           {/* employeeee */}
           <Route path="/employee" element={<EmployeeLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+
             <Route path="profile" element={<Profile />} />
             <Route path="leaveRequest" element={<LeaaveRequest />} />
 
