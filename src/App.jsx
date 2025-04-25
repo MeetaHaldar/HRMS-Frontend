@@ -24,6 +24,7 @@ import AttendanceCalendar from "./Components/Employee/Dashboard/AttendanceCalend
 import LeaaveRequest from "./Components/Employee/Manager/LeaveRequest";
 import EmployeeList from "./Components/Company/EmployeeList";
 import Dashboard from "./Components/Employee/Dashboard/Dashboard";
+import DocumentManager from "./Components/Company/Documents/DocumentManager";
 function App() {
   return (
     <>
@@ -41,6 +42,8 @@ function App() {
             {/* Company Routes */}
             <Route path="RegisterEmployee" element={<RegisterEmployee />} />
             <Route path="employeeList" element={<EmployeeList />} />
+            <Route path="documents" element={<DocumentManager />} />
+
 
             <Route path="HolidayList" element={<HolidayList />} />
             <Route path="Department" element={<Department />} />

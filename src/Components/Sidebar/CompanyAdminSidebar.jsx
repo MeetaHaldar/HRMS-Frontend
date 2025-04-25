@@ -21,7 +21,7 @@ const menuItems = [
   { label: 'Employees', to: '/companyAdmin/employeeList', icon: <FaPeopleGroup /> },
   { label: 'Pay Runs', to: '/companyAdmin', icon: <FaArrowTrendUp /> },
   { label: 'Approvals', to: '/companyAdmin', icon: <FaClipboardCheck /> },
-  { label: 'Documents', to: '/logs', icon: <FaFolderPlus /> },
+  { label: 'Documents', to: '/companyAdmin/documents', icon: <FaFolderPlus /> },
   { label: 'Settings', to: '', icon: <IoSettingsOutline /> }, // Settings button will toggle the menu
 ];
 

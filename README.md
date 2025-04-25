@@ -1,5 +1,14 @@
 # React + Vite
 
+Calender color code:
+
+bg-[#A7F3D0] -Present
+bg-[#FF6051]- Absent
+bg-[#BFDBFE] -Holiday
+bg-[#FFD85F]-Late
+
+
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
