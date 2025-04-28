@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import AddNewFolder from "./AddNewFolder";
 
 const AddNewFolderButton = () => {
   const [showPopup, setShowPopup] = useState(false);
 
   const handleClick = () => {
-    // Show popup (you can implement the popup later)
     setShowPopup(true);
   };
 
@@ -17,13 +17,7 @@ const AddNewFolderButton = () => {
         + Add New Folder
         <span className="absolute bottom-1 left-0 w-full border-b-2 border-gray-600"></span>
       </button>
-
-      {/* Popup will go here later */}
-      {showPopup && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          {/* Popup content */}
-        </div>
-      )}
+      <AddNewFolder isOpen={showPopup} onClose={() => setShowPopup(false)} />
     </div>
   );
 };

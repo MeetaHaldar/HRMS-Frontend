@@ -1,19 +1,21 @@
-import React from 'react';
-import { FaTrash } from 'react-icons/fa';
+import React from "react";
+import { FaTrash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const TrashButton = () => {
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    // Redirect to the trash page (you can use react-router-dom here)
+    navigate("/companyAdmin/documents/trash");
   };
 
   return (
     <button
       onClick={handleClick}
-      className="text-gray-500 text-xl p-2 rounded-full flex items-center space-x-2"
+      className="fixed cursor-pointer bottom-8 right-8 z-50 text-gray-600 p-3 hover:bg-gray-100 flex items-center space-x-2"
     >
-      <FaTrash />
-      <span className="underline">Trash</span>
+      <FaTrash className="text-xl" />
+      <span className="underline text-s">Trash</span>
     </button>
   );
 };

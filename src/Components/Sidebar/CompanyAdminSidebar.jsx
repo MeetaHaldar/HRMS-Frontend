@@ -1,16 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { IoIosMenu } from "react-icons/io";
-import { RxCross1 } from "react-icons/rx";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaFolderPlus } from "react-icons/fa";
-import { LuReceiptIndianRupee } from "react-icons/lu";
-import { FaWpforms } from "react-icons/fa";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { FaClipboardCheck } from "react-icons/fa6";
 import { FaArrowTrendUp } from "react-icons/fa6";
-import { MdSpaceDashboard } from "react-icons/md";
-import { GoReport } from "react-icons/go";
 import { FaQuestionCircle, FaBookOpen, FaPhoneVolume } from "react-icons/fa";  // Added icons for settings menu
 import { FaIdBadge } from "react-icons/fa";
 import { PiBuildingOfficeLight } from "react-icons/pi";

@@ -1,100 +1,53 @@
-import { useState, useEffect } from "react";
-import { FiEdit } from "react-icons/fi";
-import { RiDeleteBin6Line } from "react-icons/ri";
-import { FiMail, FiTrash2, FiFolderPlus } from "react-icons/fi";
-import DeleteConfirmationPopup from "../../SuperAdmin/DeleteConfirmationPopup";
-// import FileUpload from "./FileUpload";
-import UploadDocumentPopup from "./UploadDocumentPopup";
+import { useState } from "react";
+import {
+  FiFolderPlus,
+  FiTrash2,
+  FiMail,
+  FiPlus,
+  FiEdit2,
+} from "react-icons/fi";
+import UploadDocumentPopup from "./UploadDocumentPopup"; // make sure the path is correct!
 import AddNewFolderButton from "./AddNewFolderButton";
 import TrashButton from "./TrashButton";
-
-export default function DocumentsManager() {
+export default function DocumentManager() {
   const [activeTab, setActiveTab] = useState("all");
-  const [documents, setDocuments] = useState([
-    {
-      id: 1,
-      name: "Company_Policy.pdf",
-      folder: "Organisation",
-      updatedBy: "Admin",
-      updatedOn: "2025-04-01",
-    },
-    {
-      id: 2,
-      name: "Employee_Guide.docx",
-      folder: "Employee",
-      updatedBy: "HR",
-      updatedOn: "2025-04-02",
-    },
-    {
-      id: 3,
-      name: "Holiday_Calendar.xlsx",
-      folder: "Organisation",
-      updatedBy: "Admin",
-      updatedOn: "2025-04-03",
-    },
-    {
-      id: 4,
-      name: "Performance_Review.pdf",
-      folder: "Employee",
-      updatedBy: "Manager",
-      updatedOn: "2025-04-04",
-    },
-    {
-      id: 5,
-      name: "Training_Schedule.pdf",
-      folder: "Organisation",
-      updatedBy: "Trainer",
-      updatedOn: "2025-04-05",
-    },
-  ]);
-
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
-  const [showUploadPopup, setShowUploadPopup] = useState(false); // NEW
+  const [isUploadPopupOpen, setIsUploadPopupOpen] = useState(false);
 
-  useEffect(() => {
-    fetchDocuments();
-  }, [activeTab]);
-
-  const fetchDocuments = () => {
-    if (activeTab === "all") {
-      setDocuments([]);
-    } else if (activeTab === "organisation") {
-      setDocuments([
-        {
-          id: 3,
-          name: "Holiday Calendar.xlsx",
-          folder: "Organisation",
-          updatedBy: "Admin",
-          updatedOn: "2025-04-03",
-        },
-      ]);
-    } else if (activeTab === "employee") {
-      setDocuments([
-        {
-          id: 4,
-          name: "Performance Review.pdf",
-          folder: "Employee",
-          updatedBy: "Manager",
-          updatedOn: "2025-04-04",
-        },
-      ]);
-    }
-    setSelectedIds([]);
-  };
-
-  const handleDelete = (doc) => {
-    setSelectedDocument(doc);
-    setShowDeletePopup(true);
-  };
-
-  const confirmDelete = () => {
-    setDocuments((prev) =>
-      prev.filter((doc) => doc.id !== selectedDocument.id)
-    );
-    setShowDeletePopup(false);
-    setSelectedDocument(null);
+  const cardData = {
+    all: [],
+    organisation: [
+      {
+        id: 1,
+        name: "Company Policy.pdf",
+        folder: "Organisation",
+        uploadedBy: "Admin",
+        uploadedOn: "2025-04-01",
+      },
+      {
+        id: 2,
+        name: "Holiday List.docx",
+        folder: "Organisation",
+        uploadedBy: "Admin",
+        uploadedOn: "2025-04-02",
+      },
+    ],
+    employee: [
+      {
+        id: 3,
+        name: "John Resume.pdf",
+        folder: "Employee",
+        uploadedBy: "John Doe",
+        uploadedOn: "2025-04-03",
+      },
+      {
+        id: 4,
+        name: "Jane Offer Letter.pdf",
+        folder: "Employee",
+        uploadedBy: "Jane Smith",
+        uploadedOn: "2025-04-04",
+      },
+    ],
   };
 
   const toggleSelect = (id) => {
@@ -104,28 +57,53 @@ export default function DocumentsManager() {
   };
 
   const allSelected =
-    documents.length > 0 && selectedIds.length === documents.length;
+    cardData[activeTab]?.length > 0 &&
+    selectedIds.length === cardData[activeTab]?.length;
 
   const toggleSelectAll = () => {
     if (allSelected) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(documents.map((doc) => doc.id));
+      setSelectedIds(cardData[activeTab].map((doc) => doc.id));
     }
+  };
+
+  const handleUpload = (newDoc) => {
+    // Add new document to the correct tab
+    cardData[newDoc.folder.toLowerCase()].push({
+      id: Date.now(), // simple unique ID
+      ...newDoc,
+    });
+    setIsUploadPopupOpen(false);
+  };
+
+  const handleDelete = (id) => {
+    // Delete the document
+    const updatedData = cardData[activeTab].filter((doc) => doc.id !== id);
+    cardData[activeTab] = updatedData;
+    setSelectedIds(selectedIds.filter((docId) => docId !== id));
+  };
+
+  const handleEdit = (id) => {
+    // Handle edit functionality (you can open a form or popup for editing)
+    console.log(`Edit document with id: ${id}`);
   };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col relative">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg text-gray-600 font-semibold">Documents</h2>
         <button
-          onClick={() => setShowUploadPopup(true)}
-          className="bg-[#FFD85F] hover:bg-yellow-400 text-gray-800 font-bold py-2 px-4 rounded-full shadow"
+          onClick={() => setIsUploadPopupOpen(true)}
+          className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-yellow-400 text-gray-700 font-semibold py-2 px-4 rounded-full shadow"
         >
-          + Add Document
+          <FiPlus />
+          <span>Add Document</span>
         </button>
       </div>
 
+      {/* Tabs */}
       <div className="flex w-full space-x-4 mb-6">
         {[
           { key: "all", label: "All Documents" },
@@ -134,7 +112,10 @@ export default function DocumentsManager() {
         ].map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setActiveTab(tab.key)}
+            onClick={() => {
+              setActiveTab(tab.key);
+              setSelectedIds([]); 
+            }}
             className={`flex-1 py-6 rounded-lg font-semibold text-lg shadow ${
               activeTab === tab.key
                 ? "bg-[#FFD85F] text-gray-600"
@@ -146,7 +127,8 @@ export default function DocumentsManager() {
         ))}
       </div>
 
-      {selectedIds.length > 0 && (
+      {/* Selection Toolbar */}
+      {selectedIds.length > 0 && activeTab !== "all" && (
         <div className="absolute py-3 w-1/5 left-8 right-8 top-[200px] mb-2 z-10 bg-white border border-gray-300 rounded-lg p-3 shadow-md flex space-x-4 items-center">
           <button
             title="Move To"
@@ -169,16 +151,38 @@ export default function DocumentsManager() {
         </div>
       )}
 
+      {/* Content */}
       <div className="flex-grow overflow-auto">
-        {documents.length === 0 && activeTab === "all" ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <p className="text-gray-500 text-lg mb-4">No files found</p>
-            <button
-              onClick={() => setShowUploadPopup(true)}
-              className="text-gray-800 font-semibold py-2 px-6 underline"
-            >
-             + Add New Documents Now
-            </button>
+        {activeTab === "all" ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {cardData.all.length === 0 ? (
+              <div className="col-span-full flex flex-col items-center justify-center text-gray-400 py-20">
+                No Documents Available
+                <span
+                  className="text-black underline cursor-pointer "
+                  onClick={() => setIsUploadPopupOpen(true)}
+                >
+                  + Add New Documents Now
+                </span>
+              </div>
+            ) : (
+              cardData.all.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="bg-white p-6 rounded-xl shadow hover:shadow-md transition cursor-pointer"
+                >
+                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
+                    {doc.name}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Uploaded By: {doc.uploadedBy}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Uploaded On: {doc.uploadedOn}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         ) : (
           <table className="min-w-full border border-gray-600 rounded-xl overflow-hidden">
@@ -193,21 +197,25 @@ export default function DocumentsManager() {
                   />
                 </th>
                 <th className="px-4 py-3 text-left border-b border-gray-300">
-                  Folder Name
+                  Document Name
                 </th>
                 <th className="px-4 py-3 text-left border-b border-gray-300">
-                  Name
+                  Folder
+                </th>
+                <th className="px-4 py-3 text-left border-b border-gray-300">
+                  Uploaded By
                 </th>
                 <th className="px-4 py-3 text-left border-b border-gray-300">
                   Uploaded On
                 </th>
-                <th className="px-4 py-3 text-left border-b border-gray-300 rounded-tr-xl">
+                <th className="px-4 py-3 text-left border-b border-gray-300">
                   Actions
-                </th>
+                </th>{" "}
+              
               </tr>
             </thead>
             <tbody className="text-sm text-gray-700">
-              {documents.map((doc) => (
+              {cardData[activeTab].map((doc) => (
                 <tr
                   key={doc.id}
                   className="border-b border-gray-200 hover:bg-gray-50 transition"
@@ -224,16 +232,14 @@ export default function DocumentsManager() {
                     {doc.name}
                   </td>
                   <td className="px-4 py-2">{doc.folder}</td>
-                  <td className="px-4 py-2">{doc.updatedBy}</td>
-                  <td className="px-4 py-2 space-x-2 flex items-center">
-                    <button className="text-gray-500 hover:text-gray-800">
-                      <FiEdit />
+                  <td className="px-4 py-2">{doc.uploadedBy}</td>
+                  <td className="px-4 py-2">{doc.uploadedOn}</td>
+                  <td className="px-4 py-2 flex space-x-2">
+                    <button onClick={() => handleEdit(doc.id)} className="">
+                      <FiEdit2 />
                     </button>
-                    <button
-                      className="text-gray-500 hover:text-gray-800"
-                      onClick={() => handleDelete(doc)}
-                    >
-                      <RiDeleteBin6Line />
+                    <button onClick={() => handleDelete(doc.id)} className="">
+                      <FiTrash2 />
                     </button>
                   </td>
                 </tr>
@@ -242,20 +248,19 @@ export default function DocumentsManager() {
           </table>
         )}
       </div>
-      <TrashButton />
-      <AddNewFolderButton />
-      <DeleteConfirmationPopup
-        isOpen={showDeletePopup}
-        onClose={() => setShowDeletePopup(false)}
-        onConfirm={confirmDelete}
-        data={selectedDocument}
-        message={`Are you sure you want to delete "${selectedDocument?.name}"?`}
-      />
-
+      {(activeTab === "employee" || activeTab === "organisation") && (
+        <div className="text-gray-500 text-lg font-semibold flex justify-center mt-8">
+          <AddNewFolderButton />
+        </div>
+      )}
+      <div className="p-8 bg-gray-50 min-h-screen flex flex-col relative">
+        <TrashButton />
+      </div>
       {/* Upload Document Popup */}
       <UploadDocumentPopup
-        isOpen={showUploadPopup} // 👈 this passes the open/close state
-        onClose={() => setShowUploadPopup(false)} // 👈 this closes the popup
+        isOpen={isUploadPopupOpen}
+        onClose={() => setIsUploadPopupOpen(false)}
+        onUpload={handleUpload}
       />
     </div>
   );

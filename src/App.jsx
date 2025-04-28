@@ -25,6 +25,7 @@ import LeaaveRequest from "./Components/Employee/Manager/LeaveRequest";
 import EmployeeList from "./Components/Company/EmployeeList";
 import Dashboard from "./Components/Employee/Dashboard/Dashboard";
 import DocumentManager from "./Components/Company/Documents/DocumentManager";
+import Trash from "./Components/Company/Documents/Trash";
 function App() {
   return (
     <>
@@ -36,14 +37,13 @@ function App() {
             <Route path="/adminDashboard" element={<AdminDashboard />} />
             <Route path="/RegisterCompany" element={<RegisterCompany />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
-
           </Route>
           <Route path="/companyAdmin" element={<CompanyAdminLayout />}>
             {/* Company Routes */}
             <Route path="RegisterEmployee" element={<RegisterEmployee />} />
             <Route path="employeeList" element={<EmployeeList />} />
             <Route path="documents" element={<DocumentManager />} />
-
+            <Route path="documents/trash" element={<Trash />} />
 
             <Route path="HolidayList" element={<HolidayList />} />
             <Route path="Department" element={<Department />} />
@@ -61,7 +61,7 @@ function App() {
           </Route>
           {/* employeeee */}
           <Route path="/employee" element={<EmployeeLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
 
             <Route path="profile" element={<Profile />} />
             <Route path="leaveRequest" element={<LeaaveRequest />} />
@@ -72,7 +72,6 @@ function App() {
             <Route path="WFHhistory" element={<WFHhistory />} />
             <Route path="calender" element={<AttendanceCalendar />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
-
           </Route>
         </Routes>
       </Router>
