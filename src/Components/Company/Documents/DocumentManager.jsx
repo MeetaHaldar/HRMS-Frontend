@@ -6,15 +6,21 @@ import {
   FiPlus,
   FiEdit2,
 } from "react-icons/fi";
-import UploadDocumentPopup from "./UploadDocumentPopup"; // make sure the path is correct!
+import UploadDocumentPopup from "./UploadDocumentPopup";
 import AddNewFolderButton from "./AddNewFolderButton";
 import TrashButton from "./TrashButton";
+import EditDocumentPopup from "./EditDocumentPopup";
+import TrashDeleteConfirmationPopup from "./TrashDeleteConfirmationPopup";
+
 export default function DocumentManager() {
   const [activeTab, setActiveTab] = useState("all");
   const [selectedIds, setSelectedIds] = useState([]);
   const [isUploadPopupOpen, setIsUploadPopupOpen] = useState(false);
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [documentToEdit, setDocumentToEdit] = useState(null);
+  const [deleteDocId, setDeleteDocId] = useState(null);
 
-  const cardData = {
+  const [cardData, setCardData] = useState({
     all: [],
     organisation: [
       {
@@ -48,6 +54,10 @@ export default function DocumentManager() {
         uploadedOn: "2025-04-04",
       },
     ],
+  });
+
+  const getCombinedAllDocuments = () => {
+    return [...cardData.organisation, ...cardData.employee];
   };
 
   const toggleSelect = (id) => {
@@ -56,44 +66,71 @@ export default function DocumentManager() {
     );
   };
 
+  const allDocs =
+    activeTab === "all" ? getCombinedAllDocuments() : cardData[activeTab];
   const allSelected =
-    cardData[activeTab]?.length > 0 &&
-    selectedIds.length === cardData[activeTab]?.length;
+    allDocs.length > 0 && selectedIds.length === allDocs.length;
 
   const toggleSelectAll = () => {
     if (allSelected) {
       setSelectedIds([]);
     } else {
-      setSelectedIds(cardData[activeTab].map((doc) => doc.id));
+      setSelectedIds(allDocs.map((doc) => doc.id));
     }
   };
 
   const handleUpload = (newDoc) => {
-    // Add new document to the correct tab
-    cardData[newDoc.folder.toLowerCase()].push({
-      id: Date.now(), // simple unique ID
+    const updated = { ...cardData };
+    updated[newDoc.folder.toLowerCase()].push({
+      id: Date.now(),
       ...newDoc,
     });
+    setCardData(updated);
     setIsUploadPopupOpen(false);
   };
 
-  const handleDelete = (id) => {
-    // Delete the document
-    const updatedData = cardData[activeTab].filter((doc) => doc.id !== id);
-    cardData[activeTab] = updatedData;
-    setSelectedIds(selectedIds.filter((docId) => docId !== id));
+  const confirmDelete = (id) => {
+    setDeleteDocId(id); // can be "bulk" or a specific doc.id
+  };
+
+  const handleConfirmDelete = () => {
+    const updated = { ...cardData };
+    const toDelete = deleteDocId === "bulk" ? selectedIds : [deleteDocId];
+
+    Object.keys(updated).forEach((key) => {
+      updated[key] = updated[key].filter((doc) => !toDelete.includes(doc.id));
+    });
+
+    setCardData(updated);
+    setSelectedIds([]);
+    setDeleteDocId(null);
   };
 
   const handleEdit = (id) => {
-    // Handle edit functionality (you can open a form or popup for editing)
-    console.log(`Edit document with id: ${id}`);
+    const doc = allDocs.find((d) => d.id === id);
+    setDocumentToEdit(doc);
+    setIsEditPopupOpen(true);
+  };
+
+  const handleSaveEditedDoc = (updatedDoc) => {
+    const updated = { ...cardData };
+
+    Object.keys(updated).forEach((key) => {
+      updated[key] = updated[key].map((doc) =>
+        doc.id === updatedDoc.id ? updatedDoc : doc
+      );
+    });
+
+    setCardData(updated);
+    setDocumentToEdit(null);
+    setIsEditPopupOpen(false);
   };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col relative">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg text-gray-600 font-semibold">Documents</h2>
+        <h2 className="text-lg text-gray-600 font-semibold">Documents:</h2>
         <button
           onClick={() => setIsUploadPopupOpen(true)}
           className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-yellow-400 text-gray-700 font-semibold py-2 px-4 rounded-full shadow"
@@ -114,7 +151,7 @@ export default function DocumentManager() {
             key={tab.key}
             onClick={() => {
               setActiveTab(tab.key);
-              setSelectedIds([]); 
+              setSelectedIds([]);
             }}
             className={`flex-1 py-6 rounded-lg font-semibold text-lg shadow ${
               activeTab === tab.key
@@ -128,7 +165,7 @@ export default function DocumentManager() {
       </div>
 
       {/* Selection Toolbar */}
-      {selectedIds.length > 0 && activeTab !== "all" && (
+      {selectedIds.length > 0 && (
         <div className="absolute py-3 w-1/5 left-8 right-8 top-[200px] mb-2 z-10 bg-white border border-gray-300 rounded-lg p-3 shadow-md flex space-x-4 items-center">
           <button
             title="Move To"
@@ -139,6 +176,7 @@ export default function DocumentManager() {
           <button
             title="Delete"
             className="text-gray-700 hover:text-black text-xl"
+            onClick={() => confirmDelete("bulk")}
           >
             <FiTrash2 />
           </button>
@@ -151,49 +189,28 @@ export default function DocumentManager() {
         </div>
       )}
 
-      {/* Content */}
+      {/* Document Table */}
       <div className="flex-grow overflow-auto">
-        {activeTab === "all" ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {cardData.all.length === 0 ? (
-              <div className="col-span-full flex flex-col items-center justify-center text-gray-400 py-20">
-                No Documents Available
-                <span
-                  className="text-black underline cursor-pointer "
-                  onClick={() => setIsUploadPopupOpen(true)}
-                >
-                  + Add New Documents Now
-                </span>
-              </div>
-            ) : (
-              cardData.all.map((doc) => (
-                <div
-                  key={doc.id}
-                  className="bg-white p-6 rounded-xl shadow hover:shadow-md transition cursor-pointer"
-                >
-                  <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                    {doc.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Uploaded By: {doc.uploadedBy}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Uploaded On: {doc.uploadedOn}
-                  </p>
-                </div>
-              ))
-            )}
+        {allDocs.length === 0 ? (
+          <div className="flex flex-col items-center justify-center text-gray-400 py-20">
+            No Documents Available
+            <span
+              className="text-black underline cursor-pointer"
+              onClick={() => setIsUploadPopupOpen(true)}
+            >
+              + Add New Documents Now
+            </span>
           </div>
         ) : (
-          <table className="min-w-full border border-gray-600 rounded-xl overflow-hidden">
+          <table className="min-w-full  border-separate border-spacing-0 border border-gray-400 rounded-xl overflow-hidden">
             <thead>
-              <tr className="bg-gray-100 text-gray-600 text-sm">
+              <tr className="bg-gray-200 text-gray-600 text-sm">
                 <th className="px-4 py-3 text-left rounded-tl-xl border-b border-gray-300">
                   <input
                     type="checkbox"
                     checked={allSelected}
                     onChange={toggleSelectAll}
-                    className="form-checkbox h-5 w-5 text-gray-600 border-gray-400"
+                    className="form-checkbox h-5 w-5 text-gray-600 border-gray-400 bg-gray-100 accent-gray-50"
                   />
                 </th>
                 <th className="px-4 py-3 text-left border-b border-gray-300">
@@ -210,12 +227,11 @@ export default function DocumentManager() {
                 </th>
                 <th className="px-4 py-3 text-left border-b border-gray-300">
                   Actions
-                </th>{" "}
-              
+                </th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-700">
-              {cardData[activeTab].map((doc) => (
+              {allDocs.map((doc) => (
                 <tr
                   key={doc.id}
                   className="border-b border-gray-200 hover:bg-gray-50 transition"
@@ -225,7 +241,7 @@ export default function DocumentManager() {
                       type="checkbox"
                       checked={selectedIds.includes(doc.id)}
                       onChange={() => toggleSelect(doc.id)}
-                      className="form-checkbox h-5 w-5 text-gray-600 border-gray-400"
+                      className="form-checkbox h-5 w-5 text-gray-600 border-gray-400 bg-gray-100 accent-gray-50"
                     />
                   </td>
                   <td className="px-4 py-2 font-semibold underline text-gray-800 cursor-pointer">
@@ -235,10 +251,10 @@ export default function DocumentManager() {
                   <td className="px-4 py-2">{doc.uploadedBy}</td>
                   <td className="px-4 py-2">{doc.uploadedOn}</td>
                   <td className="px-4 py-2 flex space-x-2">
-                    <button onClick={() => handleEdit(doc.id)} className="">
+                    <button onClick={() => handleEdit(doc.id)}>
                       <FiEdit2 />
                     </button>
-                    <button onClick={() => handleDelete(doc.id)} className="">
+                    <button onClick={() => confirmDelete(doc.id)}>
                       <FiTrash2 />
                     </button>
                   </td>
@@ -248,19 +264,36 @@ export default function DocumentManager() {
           </table>
         )}
       </div>
+
+      {/* Add Folder for org/employee */}
       {(activeTab === "employee" || activeTab === "organisation") && (
-        <div className="text-gray-500 text-lg font-semibold flex justify-center mt-8">
+        <div className="flex flex-col items-center justify-center text-gray-500 text-lg font-semibold mt-8 space-y-2">
+          <div>or</div>
           <AddNewFolderButton />
         </div>
       )}
+
+      {/* Trash Button */}
       <div className="p-8 bg-gray-50 min-h-screen flex flex-col relative">
         <TrashButton />
       </div>
-      {/* Upload Document Popup */}
+
+      {/* Upload/Edit/Delete Popups */}
       <UploadDocumentPopup
         isOpen={isUploadPopupOpen}
         onClose={() => setIsUploadPopupOpen(false)}
         onUpload={handleUpload}
+      />
+      <EditDocumentPopup
+        isOpen={isEditPopupOpen}
+        onClose={() => setIsEditPopupOpen(false)}
+        onSave={handleSaveEditedDoc}
+        document={documentToEdit}
+      />
+      <TrashDeleteConfirmationPopup
+        isOpen={deleteDocId !== null}
+        onClose={() => setDeleteDocId(null)}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

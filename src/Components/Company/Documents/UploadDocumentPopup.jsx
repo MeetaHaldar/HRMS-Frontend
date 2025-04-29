@@ -6,7 +6,10 @@ import AddNewFolderButton from "./AddNewFolderButton";
 export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
   const [step, setStep] = useState(1); // 1: Upload Step, 2: Document Details Step
   const [file, setFile] = useState(null);
-  const [folderType, setFolderType] = useState("");
+  const [folderType, setFolderType] = useState({
+    "Organisation Folder": false,
+    "Employee Folder": false,
+  });
   const [folderName, setFolderName] = useState("");
   const [associateDocument, setAssociateDocument] = useState("");
   const [isDragOver, setIsDragOver] = useState(false);
@@ -23,12 +26,18 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
   };
 
   const handleSave = () => {
-    if (file && folderType && folderName) {
+    if (
+      file &&
+      (folderType["Organisation Folder"] || folderType["Employee Folder"]) &&
+      folderName
+    ) {
       onUpload({
         name: file.name,
         size: file.size,
         folder: folderName,
-        folderType,
+        folderType: folderType["Organisation Folder"]
+          ? "Organisation Folder"
+          : "Employee Folder",
         associateDocument,
         uploadedBy: "You",
         uploadedOn: new Date().toLocaleDateString(),
@@ -40,7 +49,10 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
   const handleClose = () => {
     setFile(null);
     setStep(1);
-    setFolderType("");
+    setFolderType({
+      "Organisation Folder": false,
+      "Employee Folder": false,
+    });
     setFolderName("");
     setAssociateDocument("");
     onClose();
@@ -71,8 +83,8 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50  backdrop-blur-sm">
-      <div className="bg-white rounded-xl w-full max-w-md p-6 relative shadow-lg">
+    <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl px-6 py-5 w-[430px] relative shadow-lg">
         {/* Close button */}
         <button
           onClick={handleClose}
@@ -120,13 +132,23 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
 
         {step === 2 && file && (
           <div className="space-y-4">
-            <div className="flex items-center bg-gray-100 p-4 rounded-lg justify-between">
+            {/* New label for Selected Document */}
+            <div className="mb-2">
+              <label className="block text-sm text-gray-700">
+                Selected Document
+              </label>
+            </div>
+
+            {/* Dashed border and light yellow background for the uploaded document */}
+            <div className="flex items-center bg-[#FFFAEB] border-dashed border-2 p-4 rounded-lg justify-between">
               <div>
                 <p className="font-semibold text-gray-700">{file.name}</p>
                 <p className="text-sm text-gray-400">{file.size}</p>
               </div>
               <div className="flex items-center space-x-3 text-gray-500">
-                <button>
+                <button
+                  onClick={() => setStep(1)} // Allows re-uploading the document
+                >
                   <FiEdit2 />
                 </button>
                 <button
@@ -141,32 +163,42 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
             </div>
 
             <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2">
+              <label className="flex items-center space-x-2 text-sm text-gray-700">
                 <input
-                  type="radio"
-                  name="folderType"
-                  value="Organisation Folder"
-                  checked={folderType === "Organisation Folder"}
-                  onChange={(e) => setFolderType(e.target.value)}
+                  type="checkbox"
+                  checked={folderType["Organisation Folder"]}
+                  onChange={(e) =>
+                    setFolderType((prev) => ({
+                      ...prev,
+                      "Organisation Folder": e.target.checked,
+                    }))
+                  }
+                  className="accent-yellow-500"
                 />
-                <span className="text-gray-600">Organisation Folder</span>
+                <span>Organisation Folder</span>
               </label>
-              <label className="flex items-center space-x-2">
+              <label className="flex items-center space-x-2 text-sm text-gray-700">
                 <input
-                  type="radio"
-                  name="folderType"
-                  value="Employee Folder"
-                  checked={folderType === "Employee Folder"}
-                  onChange={(e) => setFolderType(e.target.value)}
+                  type="checkbox"
+                  checked={folderType["Employee Folder"]}
+                  onChange={(e) =>
+                    setFolderType((prev) => ({
+                      ...prev,
+                      "Employee Folder": e.target.checked,
+                    }))
+                  }
+                  className="accent-yellow-500"
                 />
-                <span className="text-gray-600">Employee Folder</span>
+                <span>Employee Folder</span>
               </label>
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-gray-600 mb-1">Folder Name*</label>
+            <div className="mb-4">
+              <label className="block text-sm text-gray-700 mb-1">
+                Folder Name<span className="text-red-500">*</span>
+              </label>
               <select
-                className="border border-gray-300 rounded-lg p-2"
+                className="w-full border border-dashed bg-[#FFFAEB] px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
                 value={folderName}
                 onChange={(e) => setFolderName(e.target.value)}
               >
@@ -175,16 +207,15 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
                 <option value="Folder 2">Folder 2</option>
                 <option value="Folder 3">Folder 3</option>
               </select>
-              <AddNewFolderButton />
             </div>
 
-            {folderType === "Employee Folder" && (
-              <div className="flex flex-col mt-4">
-                <label className="text-gray-600 mb-1">
-                  Associate Document To*
+            {folderType["Employee Folder"] && (
+              <div className="mb-4">
+                <label className="block text-sm text-gray-700 mb-1">
+                  Associate Document To<span className="text-red-500">*</span>
                 </label>
                 <select
-                  className="border border-gray-300 rounded-lg p-2"
+                  className="w-full border border-dashed bg-[#FFFAEB] px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
                   value={associateDocument}
                   onChange={(e) => setAssociateDocument(e.target.value)}
                 >
@@ -195,6 +226,14 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
                 </select>
               </div>
             )}
+
+            {/* "or" and "+ Add New Folder" below fields */}
+            <div className="flex flex-col items-center mt-4 text-sm text-gray-600">
+              <span className="mb-1">or</span>
+              <span className="text-black font-semibold cursor-pointer hover:underline">
+                <AddNewFolderButton />
+              </span>
+            </div>
           </div>
         )}
 
@@ -203,13 +242,13 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
           <button
             onClick={handleSave}
             disabled={step === 1}
-            className="bg-[#FFD85F] w-1/2 hover:bg-yellow-400 text-gray-800 font-bold py-2 px-4 rounded-full shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-1/2 py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
             Save Documents
           </button>
           <button
             onClick={handleClose}
-            className="border border-gray-300 w-1/2 text-gray-600 hover:bg-gray-100 py-2 px-4 rounded-full"
+            className="w-1/2 py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition"
           >
             Cancel
           </button>

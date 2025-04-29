@@ -40,7 +40,9 @@ const Designation = () => {
 
   const handleAddSubmit = (newDesignation) => {
     const updatedList = selectedDesignation
-      ? designations.map((d) => (d.id === selectedDesignation.id ? newDesignation : d))
+      ? designations.map((d) =>
+          d.id === selectedDesignation.id ? newDesignation : d
+        )
       : [...designations, newDesignation];
 
     setDesignations(updatedList);
@@ -53,14 +55,18 @@ const Designation = () => {
   };
 
   const handleConfirmDelete = () => {
-    setDesignations((prev) => prev.filter((d) => d.id !== designationToDelete.id));
+    setDesignations((prev) =>
+      prev.filter((d) => d.id !== designationToDelete.id)
+    );
     setShowDeletePopup(false);
   };
 
   return (
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Designations:</h2>
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
+          Designations:
+        </h2>
         <button
           className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
@@ -70,7 +76,7 @@ const Designation = () => {
       </div>
 
       <div className="flex-grow overflow-x-auto">
-        <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
+        <table className="w-full border-collapse text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
               <th className="p-2 md:p-3">Designation Name</th>
@@ -91,7 +97,7 @@ const Designation = () => {
               designations.map((designation) => (
                 <tr key={designation.id} className="hover:bg-gray-100">
                   <td
-                    className="p-2 md:p-3 text-yellow-600 cursor-pointer hover:underline"
+                    className="p-2 md:p-3 text-yellow-600 cursor-pointer underline underline-offset-2"
                     onClick={() => {
                       setSelectedDesignation(designation);
                       setShowAddModal(true);

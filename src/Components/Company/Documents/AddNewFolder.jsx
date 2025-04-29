@@ -7,19 +7,20 @@ const AddNewFolder = ({ isOpen, onClose }) => {
   const [isEmployeeFolder, setIsEmployeeFolder] = useState(false);
 
   const handleSave = () => {
-    // Add your save logic here, e.g., making an API call or updating state
     console.log({
       folderName,
       folderDescription,
       isOrgFolder,
       isEmployeeFolder,
     });
-
-    // Close the popup after saving
     onClose();
   };
 
   const handleCancel = () => {
+    setFolderName("");
+    setFolderDescription("");
+    setIsOrgFolder(false);
+    setIsEmployeeFolder(false);
     onClose();
   };
 
@@ -27,68 +28,78 @@ const AddNewFolder = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="bg-white p-6 rounded-lg w-96">
-        <h2 className="text-xl font-semibold mb-4">Add New Folder</h2>
+      <div className="bg-white p-6 rounded-xl w-[430px]">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg text-gray-700 font-semibold">
+            Add New Folder
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-900 text-3xl leading-none"
+          >
+            &times;
+          </button>
+        </div>
+
+        <div className="border-b border-gray-200 mb-4" />
+
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">Folder Name</label>
+          <label className="block text-sm text-gray-700 font-medium mb-1">
+            Folder Name <span className="text-red-500">*</span>
+          </label>
           <input
             type="text"
             value={folderName}
             onChange={(e) => setFolderName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Enter folder name"
+            className="w-full px-4 py-2 border border-dashed border-gray-400 bg-[#FFFAEB] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
           />
         </div>
 
         <div className="mb-4">
           <div className="flex justify-between">
-            <div className="flex items-center">
+            <label className="flex items-center text-sm text-gray-700">
               <input
                 type="checkbox"
-                id="organizationFolder"
                 checked={isOrgFolder}
                 onChange={() => setIsOrgFolder(!isOrgFolder)}
-                className="mr-2"
+                className="mr-2 h-5 w-5 accent-yellow-500"
               />
-              <label htmlFor="organizationFolder" className="text-sm">
-                Organization Folder
-              </label>
-            </div>
-            <div className="flex items-center">
+              Organization Folder
+            </label>
+            <label className="flex items-center text-sm text-gray-700">
               <input
                 type="checkbox"
-                id="employeeFolder"
                 checked={isEmployeeFolder}
                 onChange={() => setIsEmployeeFolder(!isEmployeeFolder)}
-                className="mr-2"
+                className="mr-2 h-5 w-5 accent-yellow-500"
               />
-              <label htmlFor="employeeFolder" className="text-sm">
-                Employee Folder
-              </label>
-            </div>
+              Employee Folder
+            </label>
           </div>
         </div>
+
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-1">
-            Folder Description
+          <label className="block text-sm text-gray-700 font-medium mb-1">
+            Folder Description <span className="text-red-500">*</span>
           </label>
           <textarea
             value={folderDescription}
             onChange={(e) => setFolderDescription(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Enter folder description"
+            className="w-full px-4 py-2 border border-dashed border-gray-400 bg-[#FFFAEB] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            rows={4}
           />
         </div>
-        <div className="flex space-x-2">
+
+        <div className="flex space-x-4">
           <button
             onClick={handleSave}
-            className="bg-yellow-500 text-white py-2 px-4 rounded-md w-full hover:bg-yellow-600"
+            className="w-full py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition"
           >
             Save Folder
           </button>
           <button
             onClick={handleCancel}
-            className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md w-full hover:bg-gray-400"
+            className="w-full py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition"
           >
             Cancel
           </button>

@@ -60,7 +60,7 @@ const EmployeeList = () => {
       department: "Support",
       position: "Support Engineer",
       status: "Active",
-    }
+    },
   ]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -99,18 +99,18 @@ const EmployeeList = () => {
   return (
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Employee List</h2>
-        <button
-          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
-        >
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
+          Employee List
+        </h2>
+        <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer">
           + New Employee
         </button>
       </div>
 
       <div className="flex-grow overflow-x-auto">
         <table className="w-full border-collapse rounded-lg text-xs md:text-sm">
-          <thead className="bg-gray-200 text-left text-gray-600 rounded-t-lg overflow-hidden">
-            <tr >
+          <thead className="bg-gray-200 text-left text-gray-600 rounded-full overflow-hidden">
+            <tr>
               <th className="p-2 md:p-3">Employee Code</th>
               <th className="p-2 md:p-3">Employee Name</th>
               <th className="p-2 md:p-3">Contact Info.</th>
@@ -124,11 +124,15 @@ const EmployeeList = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="8" className="text-center p-4">Loading...</td>
+                <td colSpan="8" className="text-center p-4">
+                  Loading...
+                </td>
               </tr>
             ) : employees.length === 0 ? (
               <tr>
-                <td colSpan="8" className="text-center p-4 text-gray-500">No employees found</td>
+                <td colSpan="8" className="text-center p-4 text-gray-500">
+                  No employees found
+                </td>
               </tr>
             ) : (
               employees.map((employee, index) => (
@@ -136,7 +140,8 @@ const EmployeeList = () => {
                   <td className="p-2 md:p-3">{employee.code}</td>
                   <td className="p-2 md:p-3">{employee.name}</td>
                   <td className="p-2 md:p-3">
-                    {employee.email}<br />
+                    {employee.email}
+                    <br />
                     {employee.phone}
                   </td>
                   <td className="p-2 md:p-3">{employee.joiningDate}</td>
@@ -144,9 +149,7 @@ const EmployeeList = () => {
                   <td className="p-2 md:p-3">{employee.position}</td>
                   <td className="p-2 md:p-3">{employee.status}</td>
                   <td className="p-2 md:p-3 flex space-x-2">
-                    <button
-                      className="text-gray-500 hover:text-gray-950"
-                    >
+                    <button className="text-gray-500 hover:text-gray-950">
                       <FiEdit />
                     </button>
                     <button
