@@ -1,17 +1,17 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const employeeMenu = [
-  { label: 'Dashboard', to: '/employee/dashboard', icon: '' },
-  { label: 'Profile', to: '/employee/profile', icon: '' },
-  { label: 'Holiday List', to: '/employee/holidays', icon: '' },
-  { label: 'Leaves', to: '/employee/leaves', icon: '' },
-  { label: 'Leave History', to: '/employee/leave-history', icon: '' },
-  { label: 'WFH History', to: '/employee/WFHhistory', icon: '' },
+  { label: "Dashboard", to: "/employee/dashboard", icon: "" },
+  { label: "Profile", to: "/employee/profile", icon: "" },
+  { label: "Holiday List", to: "/employee/holidays", icon: "" },
+  { label: "Leaves", to: "/employee/leaves", icon: "" },
+  { label: "Leave History", to: "/employee/leave-history", icon: "" },
+  { label: "WFH History", to: "/employee/WFHhistory", icon: "" },
 ];
 
 const EmployeeSidebar = ({ children }) => {
-  const location = useLocation(); 
+  const location = useLocation();
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -23,16 +23,16 @@ const EmployeeSidebar = ({ children }) => {
 
         <nav className="px-2 py-6 space-y-2 w-full">
           {employeeMenu.map((item, index) => {
-            const isActive = location.pathname === item.to;  // Exact match
+            const isActive = location.pathname === item.to; // Exact match
 
             return (
               <Link
                 key={index}
                 to={item.to}
                 className={`flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start transition ${
-                  isActive ? 'bg-[##FFD85F]' : 'text-gray-600 hover:bg-gray-100'
+                  isActive ? "bg-[##FFD85F]" : "text-gray-600 hover:bg-gray-100"
                 }`}
-                style={isActive ? { backgroundColor: '#FFD85F' } : {}}
+                style={isActive ? { backgroundColor: "#FFD85F" } : {}}
               >
                 <span className="text-xl">{item.icon}</span>
                 <span className="hidden lg:inline">{item.label}</span>
@@ -48,9 +48,7 @@ const EmployeeSidebar = ({ children }) => {
           <span className="text-xl font-semibold">Employee Panel</span>
         </header>
 
-        <main className="p-6 flex-1 overflow-auto">
-          {children}
-        </main>
+        <main className="p-6 flex-1 overflow-auto">{children}</main>
       </div>
     </div>
   );

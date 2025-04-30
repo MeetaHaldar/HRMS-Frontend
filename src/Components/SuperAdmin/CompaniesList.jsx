@@ -5,7 +5,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import EditCompanyPopup from "./EditCompanyPopup";
 import DeleteConfirmationPopup from "./DeleteConfirmationPopup";
 
-const AdminDashboard = () => {
+const CompaniesList = () => {
   const navigate = useNavigate();
 
   const [companies, setCompanies] = useState([
@@ -114,7 +114,9 @@ const AdminDashboard = () => {
         <table className="w-full border-collapse text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
-              <th className="p-2 md:p-3"><input type="checkbox" /></th>
+              <th className="p-2 md:p-3">
+                <input type="checkbox" />
+              </th>
               <th className="p-2 md:p-3">Organisation's Name</th>
               <th className="p-2 md:p-3">Type</th>
               <th className="p-2 md:p-3">Contact Info</th>
@@ -126,7 +128,9 @@ const AdminDashboard = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="7" className="text-center p-4">Loading...</td>
+                <td colSpan="7" className="text-center p-4">
+                  Loading...
+                </td>
               </tr>
             ) : companies.length === 0 ? (
               <tr>
@@ -144,7 +148,9 @@ const AdminDashboard = () => {
             ) : (
               companies.map((company, index) => (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="p-2 md:p-3"><input type="checkbox" /></td>
+                  <td className="p-2 md:p-3">
+                    <input type="checkbox" />
+                  </td>
                   <td className="p-2 md:p-3">{company.name}</td>
                   <td className="p-2 md:p-3">{company.type}</td>
                   <td className="p-2 md:p-3">{company.email}</td>
@@ -153,7 +159,9 @@ const AdminDashboard = () => {
                   </td>
                   <td
                     className={`p-2 md:p-3 font-semibold ${
-                      company.status === "Active" ? "text-green-500" : "text-red-500"
+                      company.status === "Active"
+                        ? "text-green-500"
+                        : "text-red-500"
                     }`}
                   >
                     {company.status}
@@ -181,26 +189,34 @@ const AdminDashboard = () => {
 
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
-        <button className="hover:underline disabled:text-gray-400" disabled={currentPage === 1}>
+        <button
+          className="hover:underline disabled:text-gray-400"
+          disabled={currentPage === 1}
+        >
           &lt; Previous
         </button>
 
         <div className="flex space-x-2">
-          {[1, 2, 3, 4, 5, '...', 9, 10].map((page, index) => (
+          {[1, 2, 3, 4, 5, "...", 9, 10].map((page, index) => (
             <button
               key={index}
               className={`px-3 py-1 rounded ${
-                page === currentPage ? 'bg-[#FFD85F] text-black font-bold' : 'hover:bg-gray-200'
+                page === currentPage
+                  ? "bg-[#FFD85F] text-black font-bold"
+                  : "hover:bg-gray-200"
               }`}
-              disabled={page === '...'}
-              onClick={() => typeof page === 'number' && setCurrentPage(page)}
+              disabled={page === "..."}
+              onClick={() => typeof page === "number" && setCurrentPage(page)}
             >
               {page}
             </button>
           ))}
         </div>
 
-        <button className="hover:underline disabled:text-gray-400" disabled={currentPage === 10}>
+        <button
+          className="hover:underline disabled:text-gray-400"
+          disabled={currentPage === 10}
+        >
           Next &gt;
         </button>
       </div>
@@ -225,4 +241,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default CompaniesList;

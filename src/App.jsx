@@ -3,7 +3,7 @@ import "./App.css";
 import RegisterCompany from "./Components/SuperAdmin/RegisterCompany";
 import RegisterEmployee from "./Components/Company/RegisterEmployee";
 import SignIn from "./Components/SignIn";
-import AdminDashboard from "./Components/SuperAdmin/AdminDashboard";
+import CompaniesList from "./Components/SuperAdmin/CompaniesList";
 import HolidayList from "./Components/Company/HolidayList";
 import Leaves from "./Components/Employee/Leaves";
 import LeaveHistory from "./Components/Employee/LeaveHistory";
@@ -26,6 +26,8 @@ import EmployeeList from "./Components/Company/EmployeeList";
 import Dashboard from "./Components/Employee/Dashboard/Dashboard";
 import DocumentManager from "./Components/Company/Documents/DocumentManager";
 import Trash from "./Components/Company/Documents/Trash";
+import SubscribedCompanyList from "./Components/SuperAdmin/Subscription/SubscribedCompanyList";
+import Subscription from "./Components/SuperAdmin/Subscription/Subscription";
 function App() {
   return (
     <>
@@ -33,9 +35,13 @@ function App() {
         <Routes>
           <Route path="/SignIn" element={<SignIn />} />
           <Route path="/" element={<SuperAdminLayout />}>
-            <Route path="companies" element={<AdminDashboard />} />
-            <Route path="/adminDashboard" element={<AdminDashboard />} />
+            <Route path="/CompaniesList" element={<CompaniesList />} />
             <Route path="/RegisterCompany" element={<RegisterCompany />} />
+            <Route
+              path="/subscribedCompanyList"
+              element={<SubscribedCompanyList />}
+            />
+            <Route path="Subscription" element={<Subscription />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           <Route path="/companyAdmin" element={<CompanyAdminLayout />}>

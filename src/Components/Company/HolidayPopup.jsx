@@ -66,8 +66,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Holiday Name"
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 onfocus:outline-none"
             />
           </div>
 
@@ -81,7 +80,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
               value={formData.date}
               onChange={handleChange}
               required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
             />
           </div>
 
@@ -96,8 +95,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
               value={formData.duration}
               onChange={handleChange}
               required
-              placeholder="e.g. 1 Day"
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 "
             />
           </div>
 

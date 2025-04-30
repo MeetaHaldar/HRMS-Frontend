@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiExternalLink } from "react-icons/fi";
 import ApplyLeavePopup from "./ApplyLeavePopup"; // make sure path is correct
-
+import LeaveHistory from "./LeaveHistory";
 const Leaves = () => {
   const [leaveData, setLeaveData] = useState({
     granted: 0,
@@ -12,7 +12,10 @@ const Leaves = () => {
 
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
   });
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -47,7 +50,9 @@ const Leaves = () => {
       if (!response.ok) throw new Error("Failed to apply leave");
 
       // Optionally refresh data
-      const updatedData = await fetch(`/api/leaves?month=${selectedMonth}`).then(res => res.json());
+      const updatedData = await fetch(
+        `/api/leaves?month=${selectedMonth}`
+      ).then((res) => res.json());
       setLeaveData({
         granted: updatedData.granted || 0,
         taken: updatedData.taken || 0,
@@ -100,7 +105,7 @@ const Leaves = () => {
         {statCard("Leaves Balance", leaveData.balance)}
         {statCard("Pending Leaves", leaveData.pending)}
       </div>
-
+      <LeaveHistory />
       {/* Popup */}
       <ApplyLeavePopup
         isOpen={isPopupOpen}
