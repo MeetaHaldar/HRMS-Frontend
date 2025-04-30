@@ -26,7 +26,7 @@ const menuItems = [
 const settingsMenu = [
   {
     label: "Organisation Profile",
-    to: "/companyAdmin/faq",
+    to: "/companyAdmin/companyProfile",
     icon: <FaQuestionCircle />,
   },
   {

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import WFH from "./WFH";
 import Pagination from "../Pagination";
 const WFHhistory = () => {
   const [wfhRecords, setWfhRecords] = useState([]);
@@ -55,13 +56,13 @@ const WFHhistory = () => {
 
   return (
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
-
+      <WFH />
       <h2 className="text-lg md:text-lg uppercase text-gray-500 font-semibold mb-4">
         Work From Home History:
       </h2>
 
       <div className="flex-grow overflow-x-auto">
-        <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
+        <table className="w-full border-collapse rounded-lg text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-500">
               <th className="p-2 md:p-3">Start Date</th>
