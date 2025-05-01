@@ -97,7 +97,7 @@ const Designation = () => {
               designations.map((designation) => (
                 <tr key={designation.id} className="hover:bg-gray-100">
                   <td
-                    className="p-2 md:p-3 text-yellow-600 cursor-pointer underline underline-offset-2"
+                    className="p-2 md:p-3 text-yellow-600 cursor-pointer underline underline-offset-3"
                     onClick={() => {
                       setSelectedDesignation(designation);
                       setShowAddModal(true);

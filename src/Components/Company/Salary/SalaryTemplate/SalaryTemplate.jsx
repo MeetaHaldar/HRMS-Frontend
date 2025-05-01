@@ -99,7 +99,6 @@ export default function SalaryTemplate() {
 
   return (
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
-
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-lg md:text-lg text-gray-500 font-semiboldtext-2xl font-semibold">
           Salary Templates:
@@ -126,8 +125,10 @@ export default function SalaryTemplate() {
             {data.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50">
                 {/* Link wraps item.name to make it clickable and redirect */}
-                <td className="px-4 py-2 text-yellow-600 underline cursor-pointer">
-                  <Link to={`/companyAdmin/viewSalaryTemplate`}>{item.name}</Link>
+                <td className="px-4 py-2 text-yellow-600 underline underline-offset-3 cursor-pointer">
+                  <Link to={`/companyAdmin/viewSalaryTemplate`}>
+                    {item.name}
+                  </Link>
                 </td>
                 <td className="px-4 py-2">{item.description}</td>
                 <td className="px-4 py-2">
@@ -163,7 +164,7 @@ export default function SalaryTemplate() {
       </div>
 
       {/* Pagination */}
-      
+
       <Pagination
         currentPage={currentPage}
         totalPages={10} // Replace this with: totalPages if dynamic

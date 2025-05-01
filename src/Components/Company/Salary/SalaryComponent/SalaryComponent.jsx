@@ -150,7 +150,8 @@ export default function SalaryComponent() {
                         setDropdownOpen(false);
                         if (item === "Benefits") setShowBenefitPopup(true);
                         if (item === "Deductions") setShowDeductionPopup(true);
-                        if (item === "Reimbursements") setShowReimbursementPopup(true);
+                        if (item === "Reimbursements")
+                          setShowReimbursementPopup(true);
                         if (item === "Earnings") setShowEarningsPopup(true);
                       }}
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -164,7 +165,7 @@ export default function SalaryComponent() {
           )}
         </div>
       </div>
-  
+
       <div className="flex w-full space-x-4 mb-6">
         {["earnings", "deductions", "benefits", "Reimbursment"].map((tab) => (
           <button
@@ -180,7 +181,7 @@ export default function SalaryComponent() {
           </button>
         ))}
       </div>
-  
+
       <div className="flex-grow overflow-auto">
         <table className="min-w-full">
           <thead className="bg-gray-200">
@@ -200,7 +201,7 @@ export default function SalaryComponent() {
             {data.map((item) => (
               <tr key={item.id} className="hover:bg-gray-50">
                 <td
-                  className="px-4 py-2 text-yellow-600 underline cursor-pointer"
+                  className="px-4 py-2 text-yellow-600 underline underline-offset-4 cursor-pointer"
                   onClick={() => handleNameClick(item)}
                 >
                   {item.name}
@@ -245,7 +246,7 @@ export default function SalaryComponent() {
           </tbody>
         </table>
       </div>
-  
+
       <div className="mt-4">
         <Pagination
           currentPage={currentPage}
@@ -253,7 +254,7 @@ export default function SalaryComponent() {
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
-  
+
       {/* All your popups remain the same below */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
@@ -262,7 +263,7 @@ export default function SalaryComponent() {
         data={selectedItem}
         message={`Are you sure you want to delete "${selectedItem?.name}"?`}
       />
-  
+
       <AddBenefitPopup
         isOpen={showBenefitPopup}
         onClose={() => {
@@ -272,7 +273,7 @@ export default function SalaryComponent() {
         onSubmit={handleBenefitSubmit}
         editData={editData}
       />
-  
+
       <AddDeductionPopup
         isOpen={showDeductionPopup}
         onClose={() => {
@@ -286,7 +287,7 @@ export default function SalaryComponent() {
         }}
         editData={editData}
       />
-  
+
       <AddReimbursementPopup
         isOpen={showReimbursementPopup}
         onClose={() => {
@@ -300,7 +301,7 @@ export default function SalaryComponent() {
         }}
         editData={editData}
       />
-  
+
       <AddEarningsPopup
         isOpen={showEarningsPopup}
         onClose={() => {
@@ -316,5 +317,4 @@ export default function SalaryComponent() {
       />
     </div>
   );
-  
 }
