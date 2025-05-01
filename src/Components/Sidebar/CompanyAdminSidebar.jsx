@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoSettingsOutline } from "react-icons/io5";
-import { FaFolderPlus } from "react-icons/fa";
-import { FaPeopleGroup } from "react-icons/fa6";
-import { FaClipboardCheck } from "react-icons/fa6";
-import { FaArrowTrendUp } from "react-icons/fa6";
-import { FaQuestionCircle, FaBookOpen, FaPhoneVolume } from "react-icons/fa"; // Added icons for settings menu
-import { FaIdBadge } from "react-icons/fa";
-import { PiBuildingOfficeLight } from "react-icons/pi";
-import { PiSunglasses } from "react-icons/pi";
-import { useLocation } from "react-router-dom";
+import {
+  FaFolderPlus,
+  FaClipboardCheck,
+  FaQuestionCircle,
+  FaBookOpen,
+  FaPhoneVolume,
+  FaIdBadge,
+} from "react-icons/fa";
+import { FaPeopleGroup, FaArrowTrendUp } from "react-icons/fa6";
+import { PiBuildingOfficeLight, PiSunglasses } from "react-icons/pi";
 
 const menuItems = [
   {
@@ -20,7 +21,16 @@ const menuItems = [
   { label: "Pay Runs", to: "/companyAdmin", icon: <FaArrowTrendUp /> },
   { label: "Approvals", to: "/companyAdmin", icon: <FaClipboardCheck /> },
   { label: "Documents", to: "/companyAdmin/documents", icon: <FaFolderPlus /> },
-  { label: "Settings", to: "", icon: <IoSettingsOutline /> }, // Settings button will toggle the menu
+  {
+    label: "Subscription",
+    icon: <FaBookOpen />,
+    isExpandable: true,
+    subItems: [
+      { label: "All Subscriptions", to: "/companyAdmin/subscriptionPlans" },
+      { label: "My Subscriptions", to: "/companyAdmin/my-subscriptions" },
+    ],
+  },
+  { label: "Settings", to: "", icon: <IoSettingsOutline /> }, // Triggers settings panel
 ];
 
 const settingsMenu = [
@@ -71,7 +81,8 @@ const settingsMenu = [
 
 const CompanyAdminSidebar = ({ children }) => {
   const [isSettingsMenuActive, setIsSettingsMenuActive] = useState(false);
-  const location = useLocation(); // <-- Hook to detect the current path
+  const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
+  const location = useLocation();
 
   const handleSettingsClick = () => {
     setIsSettingsMenuActive(!isSettingsMenuActive);
@@ -92,6 +103,56 @@ const CompanyAdminSidebar = ({ children }) => {
         <nav className="px-2 py-6 space-y-2 w-full">
           {menuItems.map((item, index) => {
             const isActive = location.pathname === item.to;
+
+            if (item.isExpandable) {
+              return (
+                <div key={index} className="w-full">
+                  <div
+                    onClick={() => setIsSubscriptionOpen(!isSubscriptionOpen)}
+                    className={`flex items-center space-x-3 p-2 rounded-md transition cursor-pointer ${
+                      isSubscriptionOpen
+                        ? "bg-[#FFD85F] text-black"
+                        : "hover:bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    <span
+                      className={`hidden lg:${
+                        isSettingsMenuActive ? "hidden" : "inline"
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+
+                  {/* Submenu */}
+                  <div
+                    className={`ml-10 mt-1 overflow-hidden transition-all duration-300 ease-in-out ${
+                      isSubscriptionOpen
+                        ? "max-h-40 opacity-100"
+                        : "max-h-0 opacity-0"
+                    }`}
+                  >
+                    {item.subItems.map((subItem, subIdx) => {
+                      const isSubActive = location.pathname === subItem.to;
+                      return (
+                        <Link
+                          key={subIdx}
+                          to={subItem.to}
+                          className={`block py-1 text-sm transition ${
+                            isSubActive
+                              ? "text-black font-semibold"
+                              : "text-gray-600 hover:text-gray-800"
+                          }`}
+                        >
+                          {subItem.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            }
 
             return (
               <div
@@ -158,7 +219,6 @@ const CompanyAdminSidebar = ({ children }) => {
         <header className="flex items-center justify-between p-4 bg-white shadow-md lg:hidden">
           <span className="text-xl font-semibold">My App</span>
         </header>
-
         <main className="p-6 flex-1 overflow-auto">{children}</main>
       </div>
     </div>

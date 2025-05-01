@@ -29,6 +29,8 @@ import Trash from "./Components/Company/Documents/Trash";
 import SubscribedCompanyList from "./Components/SuperAdmin/Subscription/SubscribedCompanyList";
 import Subscription from "./Components/SuperAdmin/Subscription/Subscription";
 import CompanyProfile from "./Components/Company/CompanyProfile";
+import SubscriptionPlans from "./Components/Company/Subscription/SubscriptionPlans";
+import MySubscription from "./Components/Company/Subscription/MySubscription";
 function App() {
   return (
     <>
@@ -66,6 +68,8 @@ function App() {
 
             <Route path="viewSalaryTemplate" element={<ViewSalaryTemplate />} />
             <Route path="companyProfile" element={<CompanyProfile />} />
+            <Route path="subscriptionPlans" element={<SubscriptionPlans />} />
+            <Route path="my-subscriptions" element={<MySubscription />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           {/* employeeee */}
