@@ -17,7 +17,7 @@ const MySubscription = () => {
     navigate("/companyAdmin/SubscriptionPlans");
   };
   return (
-    <div className="p-6 space-y-6 text-sm text-gray-700">
+    <div className="p-6 space-y-6">
       {/* Current Subscription Title & Toggle */}
       <div className="flex items-center justify-between">
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">

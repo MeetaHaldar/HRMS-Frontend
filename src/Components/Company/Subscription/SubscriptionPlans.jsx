@@ -74,7 +74,7 @@ const SubscriptionPlans = () => {
         {/* Toggle */}
         <div className="flex items-center gap-2 border border-dashed border-gray-400 rounded-full w-fit p-1 transition-transform duration-200 ease-in-out shadow-sm">
           <button
-            className={`px-4 py-1 rounded-full text-sm font-medium transition-transform transform active:scale-95 ${
+            className={`px-4 py-1 rounded-full text-sm font-medium transition-transform transform active:scale-95 cursor-pointer ${
               planType === "Monthly"
                 ? "bg-yellow-400 text-gray-800"
                 : "text-gray-400"
@@ -87,7 +87,7 @@ const SubscriptionPlans = () => {
             Monthly
           </button>
           <button
-            className={`px-4 py-1 rounded-full text-sm font-medium transition-transform transform active:scale-95 ${
+            className={`px-4 py-1 rounded-full text-sm font-medium transition-transform transform active:scale-95 cursor-pointer ${
               planType === "Annually"
                 ? "bg-yellow-400 text-gray-800"
                 : "text-gray-400"
@@ -140,7 +140,7 @@ const SubscriptionPlans = () => {
               </li>
             </ul>
             <div className="flex justify-center">
-              <button className="mt-3 bg-[#FFD85F] w-2/3 text-gray-800 py-2 px-6 rounded-full font-semibold shadow hover:bg-yellow-500 transition">
+              <button className="mt-3 bg-[#FFD85F] w-2/3 text-gray-800 py-2 px-6 rounded-full font-semibold shadow hover:bg-yellow-500 transition cursor-pointer">
                 Get Started
               </button>
             </div>
@@ -153,7 +153,7 @@ const SubscriptionPlans = () => {
         <div className="text-center mt-6">
           <button
             onClick={() => setShowAll(true)}
-            className="text-gray-700 font-semibold underline hover:text-black"
+            className="text-gray-700 font-semibold underline hover:text-black cursor-pointer"
           >
             Browse/ View All Plans
           </button>

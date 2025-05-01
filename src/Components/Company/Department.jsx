@@ -7,8 +7,20 @@ import Pagination from "../Pagination";
 
 const Department = () => {
   const [departments, setDepartments] = useState([
-    { id: 1, name: "Human Resources", code: "HR01", parentId: "0", totalEmployees: 15 },
-    { id: 2, name: "Engineering", code: "ENG02", parentId: "0", totalEmployees: 40 },
+    {
+      id: 1,
+      name: "Human Resources",
+      code: "HR01",
+      parentId: "0",
+      totalEmployees: 15,
+    },
+    {
+      id: 2,
+      name: "Engineering",
+      code: "ENG02",
+      parentId: "0",
+      totalEmployees: 40,
+    },
   ]);
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -41,7 +53,9 @@ const Department = () => {
   const handleAddSubmit = (newDepartment) => {
     if (selectedDepartment) {
       setDepartments((prev) =>
-        prev.map((dept) => (dept.id === newDepartment.id ? newDepartment : dept))
+        prev.map((dept) =>
+          dept.id === newDepartment.id ? newDepartment : dept
+        )
       );
     } else {
       setDepartments((prev) => [...prev, newDepartment]);
@@ -55,7 +69,9 @@ const Department = () => {
   };
 
   const handleDeleteConfirm = () => {
-    setDepartments((prev) => prev.filter((d) => d.id !== departmentToDelete.id));
+    setDepartments((prev) =>
+      prev.filter((d) => d.id !== departmentToDelete.id)
+    );
     setShowDeletePopup(false);
   };
 
@@ -66,7 +82,9 @@ const Department = () => {
   return (
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">Departments:</h2>
+        <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
+          Departments:
+        </h2>
         <button
           className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
@@ -76,7 +94,7 @@ const Department = () => {
       </div>
 
       <div className="flex-grow overflow-x-auto">
-        <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
+        <table className="w-full border-collapse rounded-lg text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
               <th className="p-2 md:p-3">Department Name</th>

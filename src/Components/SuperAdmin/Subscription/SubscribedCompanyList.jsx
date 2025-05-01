@@ -54,7 +54,7 @@ const SubscribedCompanyList = () => {
             {companies.map((company) => (
               <tr key={company.id} className="text-sm text-gray-700">
                 <td
-                  className="py-2 px-4 underline underline-offset-2 text-gray-500 font-bold cursor-pointer"
+                  className="py-2 px-4 underline underline-offset-3 text-gray-500 font-bold cursor-pointer"
                   onClick={() => navigate(`/company/${company.id}`)}
                 >
                   {company.name}

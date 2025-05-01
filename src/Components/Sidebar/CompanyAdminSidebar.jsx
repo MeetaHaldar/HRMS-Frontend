@@ -55,11 +55,6 @@ const settingsMenu = [
     icon: <PiSunglasses />,
   },
   {
-    label: "Statutory Components",
-    to: "/companyAdmin/b",
-    icon: <FaPhoneVolume />,
-  },
-  {
     label: "Salary Components",
     to: "/companyAdmin/salaryComponent",
     icon: <FaPhoneVolume />,
@@ -76,7 +71,6 @@ const settingsMenu = [
     to: "/companyAdmin/leaves",
     icon: <FaPhoneVolume />,
   },
-  { label: "User & Roles", to: "/companyAdmin/a", icon: <FaPhoneVolume /> },
 ];
 
 const CompanyAdminSidebar = ({ children }) => {

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AddNewFolder from "./AddNewFolder";
 
-const AddNewFolderButton = () => {
+const AddNewFolderButton = ({ className = "" }) => {
   const [showPopup, setShowPopup] = useState(false);
 
   const handleClick = () => {
@@ -12,10 +12,9 @@ const AddNewFolderButton = () => {
     <div className="flex justify-center">
       <button
         onClick={handleClick}
-        className="text-gray-600 text-lg font-semibold relative"
+        className={`relative underline underline-offset-2 ${className}`}
       >
         + Add New Folder
-        <span className="absolute bottom-1 left-0 w-full border-b-2 border-gray-600"></span>
       </button>
       <AddNewFolder isOpen={showPopup} onClose={() => setShowPopup(false)} />
     </div>

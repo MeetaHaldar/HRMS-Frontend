@@ -77,7 +77,6 @@ const HolidayList = () => {
 
   return (
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
-
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
           Holiday's List:
@@ -91,7 +90,7 @@ const HolidayList = () => {
       </div>
 
       <div className="flex-grow overflow-x-auto">
-        <table className="w-full border-collapse bg-white shadow-md rounded-lg text-xs md:text-sm">
+        <table className="w-full border-collapse rounded-lg text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
               <th className="p-2 md:p-3">Holidays</th>

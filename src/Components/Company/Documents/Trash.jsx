@@ -10,6 +10,7 @@ export default function Trash() {
   const [isRestorePopupOpen, setIsRestorePopupOpen] = useState(false);
   const [documentsToDelete, setDocumentsToDelete] = useState([]);
   const [documentsToRestore, setDocumentsToRestore] = useState([]);
+  const [isToolbarOpen, setIsToolbarOpen] = useState(false); // Track if toolbar is open
 
   const [cardData, setCardData] = useState({
     organisation: [
@@ -69,6 +70,7 @@ export default function Trash() {
         ...cardData.employee.map((doc) => doc.id),
       ]);
     }
+    setIsToolbarOpen(true); // Open the toolbar when something is selected
   };
 
   const handleRestoreSingle = (doc) => {
@@ -101,6 +103,7 @@ export default function Trash() {
     );
     setIsRestorePopupOpen(false);
     setDocumentsToRestore([]);
+    setIsToolbarOpen(false); // Close toolbar after restore
   };
 
   const handleDeleteSingle = (doc) => {
@@ -133,6 +136,7 @@ export default function Trash() {
     );
     setIsDeletePopupOpen(false);
     setDocumentsToDelete([]);
+    setIsToolbarOpen(false); // Close toolbar after delete
   };
 
   const hasDocuments =
@@ -151,21 +155,31 @@ export default function Trash() {
 
       <div className="relative">
         {/* Toolbar Above Table Header */}
-        {selectedIds.length > 0 && (
+        {isToolbarOpen && selectedIds.length > 0 && (
           <div className="absolute -top-4 left-4 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-md flex space-x-4 items-center">
             <button
               title="Restore"
               onClick={handleBulkRestore}
-              className="text-gray-700 hover:text-black text-xl"
+              className="text-gray-700 hover:text-black text-xl cursor-pointer"
             >
               <MdSettingsBackupRestore />
             </button>
             <button
               title="Delete"
               onClick={handleBulkDelete}
-              className="text-gray-700 hover:text-black text-xl"
+              className="text-gray-700 hover:text-black text-xl cursor-pointer"
             >
               <FiTrash2 />
+            </button>
+            <button
+              title="Cancel"
+              onClick={() => {
+                setIsToolbarOpen(false);
+                setSelectedIds([]); // Clear selected IDs when cancel is clicked
+              }} // Close the toolbar when cancel is clicked
+              className="text-gray-500 text-xs underline underline-offset-2 cursor-pointer"
+            >
+              Cancel
             </button>
           </div>
         )}

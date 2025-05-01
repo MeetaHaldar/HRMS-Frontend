@@ -11,7 +11,7 @@ import AddNewFolderButton from "./AddNewFolderButton";
 import TrashButton from "./TrashButton";
 import EditDocumentPopup from "./EditDocumentPopup";
 import TrashDeleteConfirmationPopup from "./TrashDeleteConfirmationPopup";
-
+import MoveToFolderPopup from "./MoveToFolderPopup";
 export default function DocumentManager() {
   const [activeTab, setActiveTab] = useState("all");
   const [selectedIds, setSelectedIds] = useState([]);
@@ -19,7 +19,7 @@ export default function DocumentManager() {
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
   const [documentToEdit, setDocumentToEdit] = useState(null);
   const [deleteDocId, setDeleteDocId] = useState(null);
-
+  const [isMoveToPopupOpen, setIsMoveToPopupOpen] = useState(false);
   const [cardData, setCardData] = useState({
     all: [],
     organisation: [
@@ -165,26 +165,31 @@ export default function DocumentManager() {
       </div>
 
       {/* Selection Toolbar */}
+
       {selectedIds.length > 0 && (
         <div className="absolute py-3 w-1/5 left-8 right-8 top-[200px] mb-2 z-10 bg-white border border-gray-300 rounded-lg p-3 shadow-md flex space-x-4 items-center">
           <button
             title="Move To"
-            className="text-gray-700 hover:text-black text-xl"
+            onClick={() => setIsMoveToPopupOpen(true)}
+            className="text-gray-700 hover:text-black text-xl cursor-pointer"
           >
             <FiFolderPlus />
           </button>
           <button
             title="Delete"
-            className="text-gray-700 hover:text-black text-xl"
+            className="text-gray-700 hover:text-black text-xl cursor-pointer"
             onClick={() => confirmDelete("bulk")}
           >
             <FiTrash2 />
           </button>
           <button
-            title="Share by Mail"
-            className="text-gray-700 hover:text-black text-xl"
+            className="text-gray-500 text-xs underline underline-offset-2 cursor-pointer absolute right-4 top-1/2 transform -translate-y-1/2"
+            onClick={() => {
+              setSelectedIds([]);
+              setIsMoveToPopupOpen(false);
+            }}
           >
-            <FiMail />
+            Cancel
           </button>
         </div>
       )}
@@ -244,7 +249,7 @@ export default function DocumentManager() {
                       className="form-checkbox h-5 w-5 text-gray-600 border-gray-400 bg-gray-100 accent-gray-50"
                     />
                   </td>
-                  <td className="px-4 py-2 font-semibold underline text-gray-800 cursor-pointer">
+                  <td className="px-4 py-2 font-semibold underline underline-offset-4 text-gray-800 cursor-pointer">
                     {doc.name}
                   </td>
                   <td className="px-4 py-2">{doc.folder}</td>
@@ -295,6 +300,10 @@ export default function DocumentManager() {
         onClose={() => setDeleteDocId(null)}
         onConfirm={handleConfirmDelete}
       />
+
+      {isMoveToPopupOpen && (
+        <MoveToFolderPopup onClose={() => setIsMoveToPopupOpen(false)} />
+      )}
     </div>
   );
 }
