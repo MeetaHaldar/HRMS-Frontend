@@ -31,6 +31,8 @@ import Subscription from "./Components/SuperAdmin/Subscription/Subscription";
 import CompanyProfile from "./Components/Company/CompanyProfile";
 import SubscriptionPlans from "./Components/Company/Subscription/SubscriptionPlans";
 import MySubscription from "./Components/Company/Subscription/MySubscription";
+import TaxDetailsForm from "./Components/Company/TaxDetailsForm";
+
 function App() {
   return (
     <>
@@ -70,6 +72,7 @@ function App() {
             <Route path="companyProfile" element={<CompanyProfile />} />
             <Route path="subscriptionPlans" element={<SubscriptionPlans />} />
             <Route path="my-subscriptions" element={<MySubscription />} />
+            <Route path="taxDetails" element={<TaxDetailsForm />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           {/* employeeee */}

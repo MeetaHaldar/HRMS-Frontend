@@ -64,7 +64,7 @@ const settingsMenu = [
     to: "/companyAdmin/salaryTemplate",
     icon: <FaPhoneVolume />,
   },
-  { label: "Taxes", to: "/companyAdmin/z", icon: <FaPhoneVolume /> },
+  { label: "Taxes", to: "/companyAdmin/TaxDetails", icon: <FaPhoneVolume /> },
   { label: "Pay Schedule", to: "/companyAdmin/c", icon: <FaPhoneVolume /> },
   {
     label: "Leave & Attendance",
