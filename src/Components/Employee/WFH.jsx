@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FiExternalLink } from "react-icons/fi";
-import ApplyWFHPopup from "./ApplyWFHPopup"; // create this component
+import ApplyWFHPopup from "./ApplyWFHPopup";
 
 const WFH = () => {
   const [wfhData, setWFHData] = useState({
@@ -68,9 +67,6 @@ const WFH = () => {
 
   const statCard = (title, value) => (
     <div className="bg-[#f3f3f3] px-6 py-4 rounded-xl relative shadow-sm flex flex-col justify-between">
-      <div className="absolute top-2 right-2 text-gray-400">
-        <FiExternalLink />
-      </div>
       <p className="text-gray-500 font-semibold text-lg">{title}</p>
       <p className="text-gray-600 font-medium text-xl">
         {String(value).padStart(2, "0")}
@@ -87,7 +83,7 @@ const WFH = () => {
           </h2>
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="bg-[#FFD85F] text-gray-800 font-semibold px-5 py-2 rounded-full shadow hover:bg-blue-300 transition"
+            className="bg-[#FFD85F] text-gray-800 font-semibold px-5 py-2 rounded-full shadow hover:bg-yellow-300 transition"
           >
             Apply WFH
           </button>

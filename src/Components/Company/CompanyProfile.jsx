@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Pencil, UploadCloud, Save } from "lucide-react";
+import { UploadCloud, Save } from "lucide-react";
+import { FiEdit } from "react-icons/fi";
 
 const CompanyProfile = () => {
   const [editTop, setEditTop] = useState(false);
@@ -64,7 +65,7 @@ const CompanyProfile = () => {
           onClick={() => setEditTop(!editTop)}
           className="absolute top-0 right-0 text-gray-500 hover:text-black"
         >
-          <Pencil size={16} />
+          <FiEdit />
         </button>
 
         <div className="flex items-start gap-4">
@@ -138,7 +139,7 @@ const CompanyProfile = () => {
             onClick={() => setEditCompany(!editCompany)}
             className="absolute top-0 right-0 text-gray-500 mr-3 hover:text-black"
           >
-            <Pencil size={16} />
+            <FiEdit />
           </button>
           {Object.entries(companyData)
             .filter(([key]) => !["name", "tagline"].includes(key))
@@ -198,7 +199,7 @@ const CompanyProfile = () => {
             onClick={() => setEditAdmin(!editAdmin)}
             className="absolute top-0 right-0 text-gray-500 hover:text-black"
           >
-            <Pencil size={16} />
+            <FiEdit />
           </button>
           {Object.entries(adminData).map(([key, value]) => (
             <div key={key} className="flex items-start gap-x-4 py-1">

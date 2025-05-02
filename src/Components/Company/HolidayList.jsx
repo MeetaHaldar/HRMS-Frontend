@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
+
 import HolidayPopup from "./HolidayPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
@@ -127,16 +129,16 @@ const HolidayList = () => {
                   <td className="p-2 md:p-3">{holiday.duration}</td>
                   <td className="p-2 md:p-3 flex space-x-2">
                     <button
-                      className="text-gray-500 hover:text-gray-950"
+                      className="text-gray-500 hover:text-gray-800"
                       onClick={() => handleEditClick(holiday)}
                     >
                       <FaEdit />
                     </button>
                     <button
-                      className="text-gray-500 hover:text-gray-950"
+                      className="text-gray-500 hover:text-gray-800"
                       onClick={() => handleDeleteClick(holiday)}
                     >
-                      <FaTrash />
+                      <RiDeleteBin6Line />
                     </button>
                   </td>
                 </tr>

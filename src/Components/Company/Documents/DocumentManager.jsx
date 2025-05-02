@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  FiFolderPlus,
-  FiTrash2,
-  FiMail,
-  FiPlus,
-  FiEdit2,
-} from "react-icons/fi";
+import { FiFolderPlus, FiTrash2, FiPlus, FiEdit } from "react-icons/fi";
 import UploadDocumentPopup from "./UploadDocumentPopup";
 import AddNewFolderButton from "./AddNewFolderButton";
 import TrashButton from "./TrashButton";
@@ -257,7 +251,7 @@ export default function DocumentManager() {
                   <td className="px-4 py-2">{doc.uploadedOn}</td>
                   <td className="px-4 py-2 flex space-x-2">
                     <button onClick={() => handleEdit(doc.id)}>
-                      <FiEdit2 />
+                      <FiEdit />
                     </button>
                     <button onClick={() => confirmDelete(doc.id)}>
                       <FiTrash2 />

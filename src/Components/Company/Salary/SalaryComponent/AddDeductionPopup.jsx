@@ -22,7 +22,12 @@ const AddDeductionPopup = ({ isOpen, onClose, onSubmit }) => {
       <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl w-[90%] max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-800">Deductions</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          >
+            &times;
+          </button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -42,7 +47,8 @@ const AddDeductionPopup = ({ isOpen, onClose, onSubmit }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select the deduction frequency <span className="text-red-500">*</span>
+              Select the deduction frequency{" "}
+              <span className="text-red-500">*</span>
             </label>
             <div className="space-y-2">
               <label className="flex items-center space-x-2">
@@ -82,14 +88,15 @@ const AddDeductionPopup = ({ isOpen, onClose, onSubmit }) => {
           </div>
 
           <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
-            <strong>Note:</strong> Once you associate this component with an employee, 
-            you will only be able to edit the Name and Amount/Percentage. Changes will apply only to new employees.
+            <strong>Note:</strong> Once you associate this component with an
+            employee, you will only be able to edit the Name and
+            Amount/Percentage. Changes will apply only to new employees.
           </div>
 
           <div className="flex justify-between items-center pt-4">
             <button
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold py-2 px-6 rounded-full"
+              className="bg-yellow-400 hover:bg-yellow-500 text-gray-700 font-semibold py-2 px-6 rounded-full"
             >
               + Add Deductions
             </button>
