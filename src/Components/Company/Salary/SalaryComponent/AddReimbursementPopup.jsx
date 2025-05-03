@@ -40,7 +40,7 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none cursor-pointer "
           >
             &times;
           </button>
@@ -170,14 +170,14 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
           <div className="flex justify-between items-center pt-2 gap-4">
             <button
               type="submit"
-              className="w-1/2 text-sm text-nowrap bg-yellow-400 hover:bg-yellow-500 text-gray-700 font-semibold py-2 px-6 rounded-full text-center"
+              className="w-1/2 text-sm text-nowrap bg-[#FFD85F] hover:bg-yellow-500 text-gray-700 font-semibold py-2 px-6 rounded-full text-center  cursor-pointer"
             >
               + Add Reimbursement
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="w-1/2  border border-gray-400 text-gray-700 font-semibold py-1 px-6 rounded-full hover:bg-gray-100 text-center"
+              className="w-1/2  border border-gray-400 text-gray-700 font-semibold py-1 px-6 rounded-full hover:bg-gray-100 text-center  cursor-pointer"
             >
               Cancel
             </button>

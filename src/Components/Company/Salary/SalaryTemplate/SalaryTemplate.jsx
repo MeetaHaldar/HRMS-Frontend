@@ -144,14 +144,14 @@ export default function SalaryTemplate() {
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button
-                    className="text-gray-500 hover:text-gray-950"
+                    className="text-gray-500 hover:text-gray-950 cursor-pointer"
                     onClick={() => navigate(`/viewSalaryTemplate`)}
                   >
                     <FiEdit />
                   </button>
 
                   <button
-                    className="text-gray-500 hover:text-gray-950"
+                    className="text-gray-500 hover:text-gray-950 cursor-pointer"
                     onClick={() => handleDeleteClick(item)}
                   >
                     <RiDeleteBin6Line />

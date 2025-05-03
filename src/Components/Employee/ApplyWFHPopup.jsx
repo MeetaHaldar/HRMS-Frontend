@@ -52,7 +52,7 @@ const ApplyWFHPopup = ({ isOpen, onClose, onSubmit }) => {
           <h2 className="text-lg text-gray-500 font-semibold">Apply for WFH</h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-4xl"
+            className="text-gray-600 hover:text-gray-900 text-4xl cursor-pointer"
           >
             &times;
           </button>
@@ -114,7 +114,7 @@ const ApplyWFHPopup = ({ isOpen, onClose, onSubmit }) => {
 
           <button
             type="submit"
-            className="w-full mt-2 bg-gray-200 hover:bg-blue-300 text-gray-500 font-medium py-2 rounded-xl transition"
+            className="w-full mt-2 bg-gray-300 text-gray-600 font-medium py-2 rounded-xl transition cursor-pointer shadow-md hover:bg-[#FFD85F]"
           >
             Apply WFH
           </button>

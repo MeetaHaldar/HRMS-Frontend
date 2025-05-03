@@ -49,7 +49,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-3xl leading-none"
+            className="text-gray-600 hover:text-gray-900 text-3xl leading-none cursor-pointer"
           >
             &times;
           </button>
@@ -101,7 +101,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
 
           <button
             type="submit"
-            className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-xl transition"
+            className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-xl transition cursor-pointer"
           >
             {isEdit ? "Save Changes" : "Add Holiday"}
           </button>

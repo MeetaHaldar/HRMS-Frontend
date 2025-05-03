@@ -28,9 +28,8 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-
     onSubmit(formData);
-    setFormData({ title: ""});
+    setFormData({ title: "" });
     onClose();
   };
 
@@ -45,7 +44,7 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-4xl"
+            className="text-gray-600 hover:text-gray-900 text-4xl  cursor-pointer"
           >
             &times;
           </button>
@@ -65,7 +64,6 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
             </label>
             <input
               name="title"
-              placeholder="e.g. Senior Software Engineer"
               value={formData.title}
               onChange={handleChange}
               required
@@ -75,7 +73,7 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
 
           <button
             type="submit"
-            className="w-full mt-2 bg-gray-200 hover:bg-yellow-300 text-gray-500 font-medium py-2 rounded-xl transition"
+            className="w-full mt-2 bg-gray-200 hover:bg-yellow-300 text-gray-500 font-medium py-2 rounded-xl transition  cursor-pointer"
           >
             {initialData ? "Update Designation" : "Add Designation"}
           </button>

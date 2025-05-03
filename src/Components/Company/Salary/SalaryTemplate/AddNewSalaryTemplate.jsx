@@ -110,7 +110,7 @@ const AddNewSalaryTemplate = () => {
                 <td className="py-2">₹ 0.00</td>
                 <td className="py-2 text-center">
                   <span
-                    className="text-red-500 cursor-pointer text-2xl"
+                    className="text-gray-500 cursor-pointer text-2xl"
                     onClick={() => handleRemoveComponent(index)}
                   >
                     x

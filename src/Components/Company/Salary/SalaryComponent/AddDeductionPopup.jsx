@@ -24,7 +24,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSubmit }) => {
           <h2 className="text-xl font-semibold text-gray-800">Deductions</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none  cursor-pointer"
           >
             &times;
           </button>
@@ -96,14 +96,14 @@ const AddDeductionPopup = ({ isOpen, onClose, onSubmit }) => {
           <div className="flex justify-between items-center pt-4">
             <button
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-500 text-gray-700 font-semibold py-2 px-6 rounded-full"
+              className="bg-yellow-400 hover:bg-yellow-500 text-gray-700 font-semibold py-2 px-6 rounded-full  cursor-pointer w-1/2 mr-2"
             >
               + Add Deductions
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="border border-gray-400 text-gray-700 font-semibold py-2 px-6 rounded-full hover:bg-gray-100"
+              className="border border-gray-400 text-gray-700 font-semibold py-2 px-6 rounded-full hover:bg-gray-100  cursor-pointer w-1/2"
             >
               Cancel
             </button>

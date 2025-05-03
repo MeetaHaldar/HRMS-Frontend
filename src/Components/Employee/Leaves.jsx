@@ -81,7 +81,7 @@ const Leaves = () => {
           <h2 className="text-lg font-semibold text-gray-500">Leaves:</h2>
           <button
             onClick={() => setIsPopupOpen(true)}
-            className="bg-yellow-400 text-gray-800 font-semibold px-5 py-2 rounded-full shadow hover:bg-yellow-300 transition"
+            className="bg-[#FFD85F] text-gray-800 font-semibold px-5 py-2 shadow-md rounded-full shadow hover:bg-yellow-500 transition cursor-pointer"
           >
             Apply Leaves
           </button>

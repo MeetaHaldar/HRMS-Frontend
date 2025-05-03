@@ -129,13 +129,13 @@ const HolidayList = () => {
                   <td className="p-2 md:p-3">{holiday.duration}</td>
                   <td className="p-2 md:p-3 flex space-x-2">
                     <button
-                      className="text-gray-500 hover:text-gray-800"
+                      className="text-gray-500 hover:text-gray-800 cursor-pointer"
                       onClick={() => handleEditClick(holiday)}
                     >
                       <FaEdit />
                     </button>
                     <button
-                      className="text-gray-500 hover:text-gray-800"
+                      className="text-gray-500 hover:text-gray-800 cursor-pointer"
                       onClick={() => handleDeleteClick(holiday)}
                     >
                       <RiDeleteBin6Line />
@@ -167,7 +167,7 @@ const HolidayList = () => {
       {/* Delete Confirmation Popup */}
       <DeleteConfirmationPopup
         isOpen={isDeleteConfirmOpen}
-        onCancel={() => setIsDeleteConfirmOpen(false)}
+        onClose={() => setIsDeleteConfirmOpen(false)}
         onConfirm={handleDeleteConfirmed}
         message="Are you sure you want to delete this holiday?"
       />

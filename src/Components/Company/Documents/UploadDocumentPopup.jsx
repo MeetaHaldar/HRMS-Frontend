@@ -88,7 +88,7 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl  cursor-pointer"
         >
           <IoMdClose />
         </button>
@@ -147,11 +147,13 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
               </div>
               <div className="flex items-center space-x-3 text-gray-500">
                 <button
-                  onClick={() => setStep(1)} // Allows re-uploading the document
+                  onClick={() => setStep(1)}
+                  className=" cursor-pointer" // Allows re-uploading the document
                 >
                   <FiEdit2 />
                 </button>
                 <button
+                  className=" cursor-pointer"
                   onClick={() => {
                     setFile(null);
                     setStep(1);
@@ -230,7 +232,7 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
             {/* "or" and "+ Add New Folder" below fields */}
             <div className="flex flex-col items-center mt-4 text-sm text-gray-600">
               <span className="mb-1">or</span>
-              <span className="text-black font-semibold cursor-pointer hover:underline">
+              <span className="text-black font-semibold cursor-pointer">
                 <AddNewFolderButton />
               </span>
             </div>
@@ -242,13 +244,13 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
           <button
             onClick={handleSave}
             disabled={step === 1}
-            className="w-1/2 py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-1/2 py-2 rounded-full bg-[#FFD85F] hover:bg-[#FFD85F] text-sm font-semibold text-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
             Save Documents
           </button>
           <button
             onClick={handleClose}
-            className="w-1/2 py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition"
+            className="w-1/2 py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition  cursor-pointer"
           >
             Cancel
           </button>

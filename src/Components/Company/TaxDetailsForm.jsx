@@ -60,7 +60,7 @@ export default function TaxDetailsForm() {
     <div className="max-w-4xl mx-auto p-2 space-y-6 font-sans">
       {/* Edit icon */}
       <div className="text-right">
-        <button onClick={() => setEditMode(true)}>
+        <button onClick={() => setEditMode(true)} className="cursor-pointer">
           <FiEdit />
         </button>
       </div>
@@ -232,7 +232,7 @@ export default function TaxDetailsForm() {
       {editMode && (
         <div className="flex gap-4 mt-6">
           <button
-            className="bg-yellow-400 text-gray-800 hover:bg-yellow-500 w-1/4 py-2 rounded-full font-semibold shadow-md cursor-pointer"
+            className="bg-[#FFD85F] text-gray-800 hover:bg-yellow-500 w-1/4 py-2 rounded-full font-semibold shadow-md cursor-pointer"
             onClick={() => setEditMode(false)}
           >
             Save

@@ -99,7 +99,10 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
           <h2 className="text-lg font-semibold text-gray-700">
             {item ? `Edit ${item.name}` : "Add Benefit"}
           </h2>
-          <button onClick={onClose} className="text-xl font-bold text-gray-500">
+          <button
+            onClick={onClose}
+            className="text-xl font-bold text-gray-500  cursor-pointer"
+          >
             ✕
           </button>
         </div>
@@ -112,8 +115,12 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
             </label>
             <Select
               name="benefitPlan"
-              value={benefitPlanOptions.find(option => option.label === formData.benefitPlan)}
-              onChange={(selectedOption) => handleSelectChange("benefitPlan", selectedOption)}
+              value={benefitPlanOptions.find(
+                (option) => option.label === formData.benefitPlan
+              )}
+              onChange={(selectedOption) =>
+                handleSelectChange("benefitPlan", selectedOption)
+              }
               options={benefitPlanOptions}
               styles={customStyles}
               className="w-full"
@@ -124,12 +131,17 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
           {/* Investment Dropdown using react-select */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">
-              Associate this benefit with <span className="text-red-500">*</span>
+              Associate this benefit with{" "}
+              <span className="text-red-500">*</span>
             </label>
             <Select
               name="investment"
-              value={investmentOptions.find(option => option.label === formData.investment)}
-              onChange={(selectedOption) => handleSelectChange("investment", selectedOption)}
+              value={investmentOptions.find(
+                (option) => option.label === formData.investment
+              )}
+              onChange={(selectedOption) =>
+                handleSelectChange("investment", selectedOption)
+              }
               options={investmentOptions}
               styles={customStyles}
               className="w-full"
@@ -163,7 +175,10 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
                   onChange={handleChange}
                   className="accent-yellow-500"
                 />
-                <span>Include employer's contribution in employee’s salary structure.</span>
+                <span>
+                  Include employer's contribution in employee’s salary
+                  structure.
+                </span>
               </label>
             </div>
 
@@ -213,19 +228,21 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
           </div>
 
           <p className="text-xs text-gray-500 leading-relaxed mt-2">
-            <strong>Note:</strong> Once you associate this deduction with an employee, you will only be able to edit the Name in Payslip. The change will be reflected in both new and existing employees.
+            <strong>Note:</strong> Once you associate this deduction with an
+            employee, you will only be able to edit the Name in Payslip. The
+            change will be reflected in both new and existing employees.
           </p>
 
           <div className="flex justify-between mt-6">
             <button
               onClick={handleSubmit}
-              className="flex-1 bg-[#FFD85F] hover:bg-yellow-600 text-gray-700 font-semibold py-2 rounded-full mr-2"
+              className="flex-1 bg-[#FFD85F] hover:bg-yellow-600 text-gray-700 font-semibold py-2 rounded-full mr-2  cursor-pointer"
             >
               {item ? "Save Changes" : "+ Add Benefit"}
             </button>
             <button
               onClick={onClose}
-              className="flex-1 border border-gray-300 hover:bg-gray-100 text-gray-600 font-medium py-2 rounded-full"
+              className="flex-1 border border-gray-300 hover:bg-gray-100 text-gray-600 font-medium py-2 rounded-full  cursor-pointer"
             >
               Cancel
             </button>

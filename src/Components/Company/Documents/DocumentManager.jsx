@@ -127,7 +127,7 @@ export default function DocumentManager() {
         <h2 className="text-lg text-gray-600 font-semibold">Documents:</h2>
         <button
           onClick={() => setIsUploadPopupOpen(true)}
-          className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-yellow-400 text-gray-700 font-semibold py-2 px-4 rounded-full shadow"
+          className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-yellow-400 text-gray-700 font-semibold py-2 px-4 rounded-full cursor-pointer shadow"
         >
           <FiPlus />
           <span>Add Document</span>
@@ -147,7 +147,7 @@ export default function DocumentManager() {
               setActiveTab(tab.key);
               setSelectedIds([]);
             }}
-            className={`flex-1 py-6 rounded-lg font-semibold text-lg shadow ${
+            className={`flex-1 py-6 rounded-lg font-semibold text-lg shadow cursor-pointer ${
               activeTab === tab.key
                 ? "bg-[#FFD85F] text-gray-600"
                 : "text-gray-500"

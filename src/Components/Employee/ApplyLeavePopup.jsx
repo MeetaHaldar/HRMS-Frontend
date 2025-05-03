@@ -49,10 +49,12 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg text-gray-500 font-semibold">Apply for {formData.leaveType}</h2>
+          <h2 className="text-lg text-gray-500 font-semibold">
+            Apply for {formData.leaveType}
+          </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-4xl"
+            className="text-gray-600 hover:text-gray-900 text-4xl cursor-pointer"
           >
             &times;
           </button>
@@ -77,8 +79,8 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
               required
               className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="Leave">Leave</option>
-              <option value="WFH">Work From Home</option>
+              <option value="Leave1">Leave</option>
+              <option value="Leave2">Leave2</option>
             </select>
           </div>
 
@@ -130,7 +132,7 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
 
           <button
             type="submit"
-            className="w-full mt-2 bg-gray-200 hover:bg-yellow-300 text-gray-500 font-medium py-2 rounded-xl transition"
+            className="w-full mt-2 bg-gray-200 hover:bg-[#FFD85F] text-gray-500 font-medium py-2 rounded-xl transition cursor-pointer shadow-md"
           >
             Apply {formData.leaveType}
           </button>

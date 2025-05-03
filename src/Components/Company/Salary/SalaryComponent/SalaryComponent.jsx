@@ -132,7 +132,7 @@ export default function SalaryComponent() {
         <div className="relative inline-block text-left">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex justify-center w-full rounded-full shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="inline-flex justify-center w-full rounded-full shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50  cursor-pointer"
           >
             + Add Salary Component ▾
           </button>
@@ -154,7 +154,7 @@ export default function SalaryComponent() {
                           setShowReimbursementPopup(true);
                         if (item === "Earnings") setShowEarningsPopup(true);
                       }}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-[#FFD85F]"
                     >
                       {item}
                     </a>
@@ -171,7 +171,7 @@ export default function SalaryComponent() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-4 rounded-lg font-semibold text-lg ${
+            className={`flex-1 py-4 rounded-lg font-semibold text-lg cursor-pointer ${
               activeTab === tab
                 ? "bg-[#FFD85F] text-gray-600"
                 : "bg-gray-200 text-gray-500"
@@ -229,13 +229,13 @@ export default function SalaryComponent() {
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button
-                    className="text-gray-500 hover:text-gray-950"
+                    className="text-gray-500 hover:text-gray-950  cursor-pointer"
                     onClick={() => console.log("Edit item", item)}
                   >
                     <FiEdit />
                   </button>
                   <button
-                    className="text-gray-500 hover:text-gray-950"
+                    className="text-gray-500 hover:text-gray-950 cursor-pointer"
                     onClick={() => handleDelete(item)}
                   >
                     <RiDeleteBin6Line />

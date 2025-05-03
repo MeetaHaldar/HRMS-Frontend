@@ -12,7 +12,7 @@ const AddNewFolderButton = ({ className = "" }) => {
     <div className="flex justify-center">
       <button
         onClick={handleClick}
-        className={`relative underline underline-offset-2 ${className}`}
+        className={`relative cursor-pointer underline underline-offset-2 ${className}`}
       >
         + Add New Folder
       </button>

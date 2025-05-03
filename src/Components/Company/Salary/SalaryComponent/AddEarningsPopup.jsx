@@ -57,7 +57,7 @@ const AddEarningsPopup = ({ isOpen, onClose, onSubmit }) => {
           <h2 className="text-lg font-semibold">Earnings</h2>
           <button
             onClick={handleClose}
-            className="text-gray-600 hover:text-black text-xl"
+            className="text-gray-600 hover:text-black text-xl  cursor-pointer"
           >
             &times;
           </button>
@@ -194,14 +194,14 @@ const AddEarningsPopup = ({ isOpen, onClose, onSubmit }) => {
           <div className="flex justify-between gap-4">
             <button
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded-full w-1/2"
+              className="bg-[#FFD85F] hover:bg-yellow-500 px-4 py-2 rounded-full w-1/2  cursor-pointer"
             >
               + Add Earnings
             </button>
             <button
               type="button"
               onClick={handleClose}
-              className="border px-4 py-2 rounded-full text-gray-700 w-1/2 "
+              className="border px-4 py-2 rounded-full text-gray-700 w-1/2  cursor-pointer"
             >
               Cancel
             </button>

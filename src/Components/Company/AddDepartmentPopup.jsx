@@ -55,7 +55,7 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-4xl"
+            className="text-gray-600 hover:text-gray-900 text-4xl  cursor-pointer"
           >
             &times;
           </button>
@@ -75,11 +75,10 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
             </label>
             <input
               name="name"
-              placeholder="e.g. Human Resources"
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#FFD85D]"
             />
           </div>
 
@@ -89,11 +88,10 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
             </label>
             <input
               name="code"
-              placeholder="e.g. HR001"
               value={formData.code}
               onChange={handleChange}
               required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#FFD85D]"
             />
           </div>
 
@@ -103,16 +101,15 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
             </label>
             <input
               name="parentCode"
-              placeholder="e.g. ADMIN01"
               value={formData.parentCode}
               onChange={handleChange}
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#FFD85D]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full mt-2 bg-gray-200 hover:bg-yellow-300 text-gray-500 font-medium py-2 rounded-xl transition"
+            className="w-full mt-2 bg-gray-200 hover:bg- text-gray-500 font-medium py-2 rounded-xl transition  cursor-pointer"
           >
             {initialData ? "Update Department" : "Add Department"}
           </button>

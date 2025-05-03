@@ -35,7 +35,7 @@ const AddNewFolder = ({ isOpen, onClose }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-3xl leading-none"
+            className="text-gray-600 hover:text-gray-900 text-3xl leading-none  cursor-pointer"
           >
             &times;
           </button>
@@ -93,13 +93,13 @@ const AddNewFolder = ({ isOpen, onClose }) => {
         <div className="flex space-x-4">
           <button
             onClick={handleSave}
-            className="w-full py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition"
+            className="w-full py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition  cursor-pointer"
           >
             Save Folder
           </button>
           <button
             onClick={handleCancel}
-            className="w-full py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition"
+            className="w-full py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition  cursor-pointer"
           >
             Cancel
           </button>
