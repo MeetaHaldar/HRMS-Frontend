@@ -32,7 +32,10 @@ import CompanyProfile from "./Components/Company/CompanyProfile";
 import SubscriptionPlans from "./Components/Company/Subscription/SubscriptionPlans";
 import MySubscription from "./Components/Company/Subscription/MySubscription";
 import TaxDetailsForm from "./Components/Company/TaxDetailsForm";
-
+import WorkShift from "./Components/Company/LeaveAndAttendance/WorkShift";
+import WFHManager from "./Components/Company/LeaveAndAttendance/WFHManager";
+import RegularizationSettings from "./Components/Company/LeaveAndAttendance/RegularizationSettings";
+import LeaveType from "./Components/Company/LeaveAndAttendance/LeaveType";
 function App() {
   return (
     <>
@@ -73,6 +76,13 @@ function App() {
             <Route path="subscriptionPlans" element={<SubscriptionPlans />} />
             <Route path="my-subscriptions" element={<MySubscription />} />
             <Route path="taxDetails" element={<TaxDetailsForm />} />
+            <Route path="workShift" element={<WorkShift />} />
+            <Route path="wfhManager" element={<WFHManager />} />
+            <Route
+              path="regularizationSettings"
+              element={<RegularizationSettings />}
+            />
+            <Route path="leaveType" element={<LeaveType />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           {/* employeeee */}
