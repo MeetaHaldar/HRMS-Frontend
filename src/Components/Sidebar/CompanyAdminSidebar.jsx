@@ -23,6 +23,12 @@ const menuItems = [
   { label: "Approvals", to: "/companyAdmin", icon: <FaClipboardCheck /> },
   { label: "Documents", to: "/companyAdmin/documents", icon: <FaFolderPlus /> },
   {
+    label: "Leave & Attendance",
+    to: "LeaveAttendanceOverview",
+    icon: <FaFolderPlus />,
+  },
+
+  {
     label: "Subscription",
     icon: <FaBookOpen />,
     isExpandable: true,

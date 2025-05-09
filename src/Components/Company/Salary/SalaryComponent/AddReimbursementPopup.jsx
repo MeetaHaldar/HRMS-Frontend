@@ -57,7 +57,9 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
               required
               className="w-full px-4 py-2  rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
             >
-              <option value="">Select reimbursement type...</option>
+              <option value="" className="hover:bg-[#FFD85F]">
+                Select reimbursement type...
+              </option>
               {dummyReimbursementTypes.map((type) => (
                 <option key={type.id} value={type.label}>
                   {type.label}
