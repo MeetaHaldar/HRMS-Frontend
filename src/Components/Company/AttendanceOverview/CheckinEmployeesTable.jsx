@@ -47,7 +47,7 @@ export default function CheckinEmployeesTable() {
   // Custom input component for the date picker
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <div
-      className="flex items-center gap-2 cursor-pointer border rounded px-2 py-1"
+      className="flex items-center gap-2 cursor-pointer px-2 py-1"
       onClick={onClick}
       ref={ref}
     >

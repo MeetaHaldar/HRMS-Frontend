@@ -15,11 +15,20 @@ import { PiBuildingOfficeLight, PiSunglasses } from "react-icons/pi";
 
 const menuItems = [
   {
+    label: "Dashboard",
+    to: "/companyAdmin/CompanyDashboard",
+    icon: <FaPeopleGroup />,
+  },
+  {
     label: "Employees",
     to: "/companyAdmin/employeeList",
     icon: <FaPeopleGroup />,
   },
-  { label: "Pay Runs", to: "/companyAdmin", icon: <FaArrowTrendUp /> },
+  {
+    label: "Pay Runs",
+    to: "/companyAdmin/paySchedule",
+    icon: <FaArrowTrendUp />,
+  },
   { label: "Approvals", to: "/companyAdmin", icon: <FaClipboardCheck /> },
   { label: "Documents", to: "/companyAdmin/documents", icon: <FaFolderPlus /> },
   {

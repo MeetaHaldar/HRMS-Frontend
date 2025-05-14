@@ -16,6 +16,7 @@ function App() {
           </Route>
           <Route path="/companyAdmin" element={<CompanyAdminLayout />}>
             {/* Company Routes */}
+            <Route path="CompanyDashboard" element={<CompanyDashboard />} />
             <Route path="RegisterEmployee" element={<RegisterEmployee />} />
             <Route path="employeeList" element={<EmployeeList />} />
             <Route path="documents" element={<DocumentManager />} />
@@ -64,7 +65,7 @@ function App() {
               path="checkinEmployees"
               element={<CheckinEmployeesTable />}
             />
-
+            <Route path="paySchedule" element={<PayScheduleForm />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           {/* employeeee */}
@@ -132,3 +133,5 @@ import YetToCheckinEmployeesTable from "./Components/Company/AttendanceOverview/
 import OnLeaveEmployeesTable from "./Components/Company/AttendanceOverview/OnLeaveEmployeesTable";
 import LeaveRequestsTable from "./Components/Company/AttendanceOverview/LeaveRequestsTable";
 import CheckinEmployeesTable from "./Components/Company/AttendanceOverview/CheckinEmployeesTable";
+import CompanyDashboard from "./Components/Company/Dashboard/CompanyDashboard";
+import PayScheduleForm from "./Components/Company/PayScheduleForm";
