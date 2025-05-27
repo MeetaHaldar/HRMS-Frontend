@@ -4,43 +4,11 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import EditCompanyPopup from "./EditCompanyPopup";
 import DeleteConfirmationPopup from "./DeleteConfirmationPopup";
+import axios from "axios";
 
 const CompaniesList = () => {
   const navigate = useNavigate();
-
-  const [companies, setCompanies] = useState([
-    {
-      id: 1,
-      name: "Tech Solutions Ltd.",
-      type: "IT Services",
-      email: "contact@techsolutions.com",
-      phone: "+1234567890",
-      city: "New York",
-      country: "USA",
-      status: "Active",
-      subdomain: "techsolutions.example.com",
-      address: "123 Tech Street, New York",
-      paymentMode: "Credit Card",
-      maxEmployees: "100",
-      adminName: "John Doe",
-    },
-    {
-      id: 2,
-      name: "Creative Minds Inc.",
-      type: "Design Agency",
-      email: "info@creativeminds.com",
-      phone: "+9876543210",
-      city: "San Francisco",
-      country: "USA",
-      status: "Inactive",
-      subdomain: "creativeminds.example.com",
-      address: "456 Design Blvd, San Francisco",
-      paymentMode: "Debit Card",
-      maxEmployees: "50",
-      adminName: "Jane Smith",
-    },
-  ]);
-
+  const [companies, setCompanies] = useState([]);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -49,19 +17,33 @@ const CompaniesList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
-    fetch(`/api/setCompanies?page=${currentPage}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setCompanies(data.companies);
-        setTotalPages(data.totalPages);
-        setLoading(false);
-      })
-      .catch((error) => {
+    const fetchCompanies = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `https://www.attend-pay.com/api/auth/company/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = response.data;
+        console.log(data);
+        setCompanies(data || []);
+        setTotalPages(data.totalPages || 1);
+      } catch (error) {
         console.error("Error fetching companies:", error);
+      } finally {
         setLoading(false);
-      });
-  }, [currentPage]);
+      }
+    };
+
+    fetchCompanies();
+  }, [currentPage, token]);
 
   const handleEditClick = (company) => {
     setSelectedCompany(company);
@@ -85,13 +67,18 @@ const CompaniesList = () => {
 
   const confirmDelete = async () => {
     try {
-      await fetch(`/api/companies/${companyToDelete.id}`, {
-        method: "DELETE",
-      });
+      await axios.delete(
+        `https://www.attend-pay.com/api/auth/company/${companyToDelete.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setCompanies(companies.filter((c) => c.id !== companyToDelete.id));
-      setShowDeletePopup(false);
     } catch (error) {
       console.error("Error deleting company:", error);
+    } finally {
       setShowDeletePopup(false);
     }
   };
@@ -192,21 +179,21 @@ const CompaniesList = () => {
         <button
           className="hover:underline disabled:text-gray-400"
           disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
         >
           &lt; Previous
         </button>
 
         <div className="flex space-x-2">
-          {[1, 2, 3, 4, 5, "...", 9, 10].map((page, index) => (
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
             <button
-              key={index}
+              key={page}
               className={`px-3 py-1 rounded ${
                 page === currentPage
                   ? "bg-[#FFD85F] text-black font-bold"
                   : "hover:bg-gray-200"
               }`}
-              disabled={page === "..."}
-              onClick={() => typeof page === "number" && setCurrentPage(page)}
+              onClick={() => setCurrentPage(page)}
             >
               {page}
             </button>
@@ -215,7 +202,8 @@ const CompaniesList = () => {
 
         <button
           className="hover:underline disabled:text-gray-400"
-          disabled={currentPage === 10}
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
         >
           Next &gt;
         </button>

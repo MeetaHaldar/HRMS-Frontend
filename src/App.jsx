@@ -4,7 +4,14 @@ function App() {
       <Router>
         <Routes>
           <Route path="/SignIn" element={<SignIn />} />
-          <Route path="/" element={<SuperAdminLayout />}>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute allowedRoles={["superAdmin"]}>
+                <SuperAdminLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route path="/CompaniesList" element={<CompaniesList />} />
             <Route path="/RegisterCompany" element={<RegisterCompany />} />
             <Route
@@ -14,7 +21,14 @@ function App() {
             <Route path="Subscription" element={<Subscription />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
-          <Route path="/companyAdmin" element={<CompanyAdminLayout />}>
+          <Route
+            path="/companyAdmin"
+            element={
+              <ProtectedRoute allowedRoles={["systemAdmin", "manager"]}>
+                <CompanyAdminLayout />
+              </ProtectedRoute>
+            }
+          >
             {/* Company Routes */}
             <Route path="CompanyDashboard" element={<CompanyDashboard />} />
             <Route path="RegisterEmployee" element={<RegisterEmployee />} />
@@ -69,7 +83,14 @@ function App() {
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           {/* employeeee */}
-          <Route path="/employee" element={<EmployeeLayout />}>
+          <Route
+            path="/employee"
+            element={
+              <ProtectedRoute allowedRoles={["employee"]}>
+                <EmployeeLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route path="dashboard" element={<Dashboard />} />
 
             <Route path="profile" element={<Profile />} />
@@ -91,6 +112,7 @@ function App() {
 export default App;
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
+import ProtectedRoute from "../ProtectedRoute";
 import RegisterCompany from "./Components/SuperAdmin/RegisterCompany";
 import RegisterEmployee from "./Components/Company/RegisterEmployee";
 import SignIn from "./Components/SignIn";
