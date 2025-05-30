@@ -6,6 +6,8 @@ export default function AttendanceOverview() {
   const [currentTime, setCurrentTime] = useState("");
   const [attendanceDate, setAttendanceDate] = useState("2025-05-05");
   const [approvalDate, setApprovalDate] = useState("2025-05-05");
+  const [totalEmployees, setTotalEmployees] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const updateClock = () => {
@@ -23,11 +25,36 @@ export default function AttendanceOverview() {
     const interval = setInterval(updateClock, 1000);
     return () => clearInterval(interval);
   }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setLoading(true);
+
+    fetch(`https://www.attend-pay.com/api/employee`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch employees");
+        return response.json();
+      })
+      .then((data) => {
+        setTotalEmployees(data.employees.length || 0);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching employees:", error);
+
+        setLoading(false);
+      });
+  }, []);
 
   const overviewData = [
     {
       title: "Total Employees",
-      value: 192,
+      value: 0 || totalEmployees,
       link: "/companyAdmin/totalEmployees",
     },
     {

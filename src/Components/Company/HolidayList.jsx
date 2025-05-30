@@ -5,12 +5,9 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import HolidayPopup from "./HolidayPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
-const HolidayList = () => {
-  const [holidays, setHolidays] = useState([
-    { id: 1, name: "New Year's Day", date: "2025-01-01", duration: "1 Day" },
-    { id: 2, name: "Independence Day", date: "2025-07-04", duration: "1 Day" },
-  ]);
 
+const HolidayList = () => {
+  const [holidays, setHolidays] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedHoliday, setSelectedHoliday] = useState(null);
   const [mode, setMode] = useState("add");
@@ -25,10 +22,33 @@ const HolidayList = () => {
   const [holidayToDelete, setHolidayToDelete] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/holidays?page=${currentPage}`)
-      .then((res) => res.json())
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+    const companyId = JSON.parse(user).companyId;
+
+    if (!token || !companyId) {
+      setError("Token or company ID is missing.");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+
+    fetch(
+      `https://www.attend-pay.com/attendence/holidayList?company_id=${companyId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
       .then((data) => {
-        setHolidays(data.holidays || []);
+        setHolidays(data.data || []);
         setTotalPages(data.totalPages || 1);
         setLoading(false);
       })
@@ -57,12 +77,28 @@ const HolidayList = () => {
   };
 
   const handleDeleteConfirmed = () => {
-    if (holidayToDelete) {
-      setHolidays((prev) => prev.filter((h) => h.id !== holidayToDelete.id));
-      // TODO: Backend delete API call here
-      setHolidayToDelete(null);
-      setIsDeleteConfirmOpen(false);
-    }
+    const token = localStorage.getItem("token");
+    if (!token || !holidayToDelete) return;
+
+    fetch(
+      `https://www.attend-pay.com/attendence/holidayDelete?id=${holidayToDelete.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete holiday.");
+        setHolidays((prev) => prev.filter((h) => h.id !== holidayToDelete.id));
+        setIsDeleteConfirmOpen(false);
+        setHolidayToDelete(null);
+      })
+      .catch((err) => {
+        console.error("Delete failed:", err);
+        alert("Failed to delete holiday.");
+      });
   };
 
   const handleSubmit = (formData) => {
@@ -75,6 +111,11 @@ const HolidayList = () => {
       setHolidays((prev) => [...prev, { ...formData, id: newId }]);
     }
     setIsPopupOpen(false);
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
@@ -124,9 +165,11 @@ const HolidayList = () => {
             ) : (
               holidays.map((holiday) => (
                 <tr key={holiday.id} className="hover:bg-gray-100">
-                  <td className="p-2 md:p-3">{holiday.name}</td>
-                  <td className="p-2 md:p-3">{holiday.date}</td>
-                  <td className="p-2 md:p-3">{holiday.duration}</td>
+                  <td className="p-2 md:p-3">{holiday.alias}</td>
+                  <td className="p-2 md:p-3">
+                    {formatDate(holiday.start_date)}
+                  </td>
+                  <td className="p-2 md:p-3">{holiday.duration_day}</td>
                   <td className="p-2 md:p-3 flex space-x-2">
                     <button
                       className="text-gray-500 hover:text-gray-800 cursor-pointer"
@@ -148,14 +191,12 @@ const HolidayList = () => {
         </table>
       </div>
 
-      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
-        totalPages={10} // Replace this with: totalPages if dynamic
+        totalPages={totalPages}
         onPageChange={(page) => setCurrentPage(page)}
       />
 
-      {/* Add / Edit Popup */}
       <HolidayPopup
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
@@ -164,7 +205,6 @@ const HolidayList = () => {
         mode={mode}
       />
 
-      {/* Delete Confirmation Popup */}
       <DeleteConfirmationPopup
         isOpen={isDeleteConfirmOpen}
         onClose={() => setIsDeleteConfirmOpen(false)}
