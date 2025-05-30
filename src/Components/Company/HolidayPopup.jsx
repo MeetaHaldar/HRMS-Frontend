@@ -64,8 +64,6 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           },
         }
       );
-
-      console.log("Holiday added successfully:", response.data);
       if (onSubmit) onSubmit(response.data);
       onClose();
     } catch (error) {
