@@ -21,7 +21,7 @@ const HolidayList = () => {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [holidayToDelete, setHolidayToDelete] = useState(null);
 
-  useEffect(() => {
+  const fetchHolidays = () => {
     const token = localStorage.getItem("token");
     const user = localStorage.getItem("user");
     const companyId = JSON.parse(user).companyId;
@@ -57,6 +57,10 @@ const HolidayList = () => {
         setError("Failed to load holidays.");
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchHolidays();
   }, [currentPage]);
 
   const handleAddClick = () => {
@@ -79,9 +83,10 @@ const HolidayList = () => {
   const handleDeleteConfirmed = () => {
     const token = localStorage.getItem("token");
     if (!token || !holidayToDelete) return;
+    console.log(holidayToDelete);
 
     fetch(
-      `https://www.attend-pay.com/attendence/holidayDelete?id=${holidayToDelete.id}`,
+      `https://www.attend-pay.com/api/auth/company/deleteHoliday?id=${holidayToDelete.id}`,
       {
         method: "DELETE",
         headers: {
@@ -90,26 +95,17 @@ const HolidayList = () => {
       }
     )
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to delete holiday.");
-        setHolidays((prev) => prev.filter((h) => h.id !== holidayToDelete.id));
+        fetchHolidays(); // refresh after deletion
         setIsDeleteConfirmOpen(false);
         setHolidayToDelete(null);
       })
       .catch((err) => {
         console.error("Delete failed:", err);
-        alert("Failed to delete holiday.");
       });
   };
 
-  const handleSubmit = (formData) => {
-    if (formData.id) {
-      setHolidays((prev) =>
-        prev.map((holiday) => (holiday.id === formData.id ? formData : holiday))
-      );
-    } else {
-      const newId = Math.max(0, ...holidays.map((h) => h.id)) + 1;
-      setHolidays((prev) => [...prev, { ...formData, id: newId }]);
-    }
+  const handleSubmit = () => {
+    fetchHolidays(); // re-fetch list after add/edit
     setIsPopupOpen(false);
   };
 

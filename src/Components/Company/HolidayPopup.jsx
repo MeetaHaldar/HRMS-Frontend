@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
@@ -33,9 +34,44 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+
+    const user = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    const companyId = JSON.parse(user).companyId;
+
+    if (!companyId || !token) {
+      alert("Missing authentication or company info.");
+      return;
+    }
+
+    const payload = {
+      alias: formData.name,
+      start_date: formData.date,
+      duration_day: Number(formData.duration),
+      company_id: companyId,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://www.attend-pay.com/api/auth/company/addholiday",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Holiday added successfully:", response.data);
+      if (onSubmit) onSubmit(response.data);
+      onClose();
+    } catch (error) {
+      console.error("Error adding holiday:", error);
+      alert("Failed to add holiday. Please try again.");
+    }
   };
 
   if (!isOpen) return null;
@@ -66,7 +102,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 onfocus:outline-none"
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
             />
           </div>
 
@@ -95,7 +131,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
               value={formData.duration}
               onChange={handleChange}
               required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 "
+              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
             />
           </div>
 
