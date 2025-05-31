@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import AddDesignationPopup from "./AddDesignationPopup";
@@ -6,11 +7,7 @@ import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
 
 const Designation = () => {
-  const [designations, setDesignations] = useState([
-    { id: 1, name: "IT - Developers", department: "IT/ Software" },
-    { id: 2, name: "IT - Designers", department: "IT/ Software" },
-  ]);
-
+  const [designations, setDesignations] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedDesignation, setSelectedDesignation] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -19,34 +16,41 @@ const Designation = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [designationToDelete, setDesignationToDelete] = useState(null);
 
+  const token = localStorage.getItem("token");
+
+  const fetchDesignations = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        "https://www.attend-pay.com/api/auth/company/getallPosition",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const allDesignations = res.data?.data || [];
+      setDesignations(allDesignations);
+      setTotalPages(1);
+    } catch (err) {
+      console.error("Error fetching designations:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(`/api/designations?page=${currentPage}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setDesignations(data.designations);
-        setTotalPages(data.totalPages);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching designations:", error);
-        setLoading(false);
-      });
-  }, [currentPage]);
+    fetchDesignations();
+  }, []);
 
   const handleAddClick = () => {
     setSelectedDesignation(null);
     setShowAddModal(true);
   };
 
-  const handleAddSubmit = (newDesignation) => {
-    const updatedList = selectedDesignation
-      ? designations.map((d) =>
-          d.id === selectedDesignation.id ? newDesignation : d
-        )
-      : [...designations, newDesignation];
-
-    setDesignations(updatedList);
+  const handleAddSubmit = async () => {
     setShowAddModal(false);
+    await fetchDesignations(); // Fetch latest list from backend
   };
 
   const handleDeleteClick = (designation) => {
@@ -76,66 +80,74 @@ const Designation = () => {
       </div>
 
       <div className="flex-grow overflow-x-auto">
-        <table className="w-full border-collapse text-xs md:text-sm">
-          <thead>
-            <tr className="bg-gray-200 text-left text-gray-600">
-              <th className="p-2 md:p-3">Designation Name</th>
-              <th className="p-2 md:p-3">Total Employees</th>
-              <th className="p-2 md:p-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {designations.length === 0 ? (
-              <tr>
-                <td colSpan="3" className="text-center p-4">
-                  <p className="text-gray-500 mt-2 text-xs md:text-sm">
-                    No designations found
-                  </p>
-                </td>
+        {loading ? (
+          <p className="text-gray-500 text-center p-4">Loading...</p>
+        ) : designations.length === 0 ? (
+          <p className="text-gray-500 text-center p-4">
+            No designations found.
+          </p>
+        ) : (
+          <table className="w-full border-collapse text-xs md:text-sm">
+            <thead>
+              <tr className="bg-gray-200 text-left text-gray-600">
+                <th className="p-2 md:p-3">Designation Name</th>
+                <th className="p-2 md:p-3">Department</th>
+                <th className="p-2 md:p-3">Actions</th>
               </tr>
-            ) : (
-              designations.map((designation) => (
-                <tr key={designation.id} className="hover:bg-gray-100">
-                  <td
-                    className="p-2 md:p-3 text-yellow-600 cursor-pointer underline underline-offset-3"
-                    onClick={() => {
-                      setSelectedDesignation(designation);
-                      setShowAddModal(true);
-                    }}
-                  >
-                    {designation.name}
-                  </td>
-                  <td className="p-2 md:p-3">{designation.department}</td>
-                  <td className="p-2 md:p-3 flex space-x-2">
-                    <button
-                      className="text-gray-500 hover:text-gray-950  cursor-pointer"
+            </thead>
+            <tbody>
+              {designations
+                .filter(
+                  (d) =>
+                    d &&
+                    d.position_name &&
+                    d.position_code &&
+                    typeof d === "object"
+                )
+                .map((designation) => (
+                  <tr key={designation.id} className="hover:bg-gray-100">
+                    <td
+                      className="p-2 md:p-3 text-yellow-600 cursor-pointer underline underline-offset-3"
                       onClick={() => {
                         setSelectedDesignation(designation);
                         setShowAddModal(true);
                       }}
                     >
-                      <FiEdit />
-                    </button>
-                    <button
-                      className="text-gray-500 hover:text-gray-950 cursor-pointer"
-                      onClick={() => handleDeleteClick(designation)}
-                    >
-                      <RiDeleteBin6Line />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                      {designation.position_name}
+                    </td>
+                    <td className="p-2 md:p-3">{designation.position_code}</td>
+                    <td className="p-2 md:p-3 flex space-x-2">
+                      <button
+                        className="text-gray-500 hover:text-gray-950  cursor-pointer"
+                        onClick={() => {
+                          setSelectedDesignation(designation);
+                          setShowAddModal(true);
+                        }}
+                      >
+                        <FiEdit />
+                      </button>
+                      <button
+                        className="text-gray-500 hover:text-gray-950 cursor-pointer"
+                        onClick={() => handleDeleteClick(designation)}
+                      >
+                        <RiDeleteBin6Line />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
+      {/* Pagination */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={(page) => setCurrentPage(page)}
       />
 
+      {/* Add/Edit Popup */}
       <AddDesignationPopup
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -143,12 +155,13 @@ const Designation = () => {
         initialData={selectedDesignation}
       />
 
+      {/* Delete Popup */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
         onConfirm={handleConfirmDelete}
         data={designationToDelete}
-        message={`Are you sure you want to delete "${designationToDelete?.name}"?`}
+        message={`Are you sure you want to delete "${designationToDelete?.position_name}"?`}
       />
     </div>
   );

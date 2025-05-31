@@ -1,37 +1,34 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
+const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
   const [formData, setFormData] = useState({
     name: "",
     date: "",
     duration: "",
     id: "",
   });
-
-  const isEdit = Boolean(initialData);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    if (isEdit) {
+    if (mode === "edit" && initialData) {
       setFormData({
-        name: initialData.name || "",
-        date: initialData.date || "",
-        duration: initialData.duration || "",
+        name: initialData.alias || "",
+        date: initialData.start_date
+          ? initialData.start_date.slice(0, 10) // Convert ISO to yyyy-MM-dd
+          : "",
+        duration: initialData.duration_day?.toString() || "1",
         id: initialData.id || "",
       });
     } else {
-      setFormData({
-        name: "",
-        date: "",
-        duration: "",
-        id: "",
-      });
+      setFormData({ name: "", date: "", duration: "", id: "" });
     }
-  }, [initialData]);
+  }, [initialData, mode]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrorMessage(""); // clear any previous error
   };
 
   const handleSubmit = async (e) => {
@@ -39,7 +36,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
 
     const user = localStorage.getItem("user");
     const token = localStorage.getItem("token");
-    const companyId = JSON.parse(user).companyId;
+    const companyId = JSON.parse(user)?.companyId;
 
     if (!companyId || !token) {
       alert("Missing authentication or company info.");
@@ -54,21 +51,41 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     };
 
     try {
-      const response = await axios.post(
-        "https://www.attend-pay.com/api/auth/company/addholiday",
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (onSubmit) onSubmit(response.data);
+      if (mode === "edit") {
+        await axios.put(
+          `https://www.attend-pay.com/api/auth/company/updateHoliday?id=${formData.id}`,
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        await axios.post(
+          "https://www.attend-pay.com/api/auth/company/addholiday",
+          payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      if (onSubmit) onSubmit();
       onClose();
     } catch (error) {
-      console.error("Error adding holiday:", error);
-      alert("Failed to add holiday. Please try again.");
+      console.error("Error saving holiday:", error);
+
+      const message =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        "Failed to save holiday. Please try again.";
+
+      setErrorMessage(message);
     }
   };
 
@@ -79,7 +96,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg text-gray-700 font-semibold">
-            {isEdit ? "Edit Holiday" : "Add New Holiday"}
+            {mode === "edit" ? "Edit Holiday" : "Add New Holiday"}
           </h2>
           <button
             onClick={onClose}
@@ -120,7 +137,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
-              Duration(Days) <span className="text-red-500">*</span>
+              Duration (Days) <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -132,12 +149,17 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
               className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
             />
           </div>
+          {errorMessage && (
+            <div className="text-red-600 text-sm font-medium">
+              {errorMessage}
+            </div>
+          )}
 
           <button
             type="submit"
             className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-xl transition cursor-pointer"
           >
-            {isEdit ? "Save Changes" : "Add Holiday"}
+            {mode === "edit" ? "Save Changes" : "Add Holiday"}
           </button>
         </form>
       </div>

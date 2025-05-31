@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import axios from "axios";
 
 import HolidayPopup from "./HolidayPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
 
-const HolidayList = () => {
+export default function HolidayList() {
   const [holidays, setHolidays] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedHoliday, setSelectedHoliday] = useState(null);
   const [mode, setMode] = useState("add");
+
+  const [popupKey, setPopupKey] = useState(0);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -21,10 +24,10 @@ const HolidayList = () => {
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [holidayToDelete, setHolidayToDelete] = useState(null);
 
-  const fetchHolidays = () => {
+  const fetchHolidays = async () => {
     const token = localStorage.getItem("token");
-    const user = localStorage.getItem("user");
-    const companyId = JSON.parse(user).companyId;
+    const user = JSON.parse(localStorage.getItem("user"));
+    const companyId = user?.companyId;
 
     if (!token || !companyId) {
       setError("Token or company ID is missing.");
@@ -33,30 +36,23 @@ const HolidayList = () => {
     }
 
     setLoading(true);
-
-    fetch(
-      `https://www.attend-pay.com/attendence/holidayList?company_id=${companyId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then((data) => {
-        setHolidays(data.data || []);
-        setTotalPages(data.totalPages || 1);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching holidays:", err);
-        setError("Failed to load holidays.");
-        setLoading(false);
-      });
+    try {
+      const res = await axios.get(
+        `https://www.attend-pay.com/attendence/holidayList?company_id=${companyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setHolidays(res.data.data || []);
+      setTotalPages(res.data.totalPages || 1);
+    } catch (err) {
+      console.error("Error fetching holidays:", err);
+      setError("Failed to load holidays.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -66,12 +62,14 @@ const HolidayList = () => {
   const handleAddClick = () => {
     setMode("add");
     setSelectedHoliday(null);
+    setPopupKey((prev) => prev + 1);
     setIsPopupOpen(true);
   };
 
   const handleEditClick = (holiday) => {
     setMode("edit");
     setSelectedHoliday(holiday);
+    setPopupKey((prev) => prev + 1);
     setIsPopupOpen(true);
   };
 
@@ -80,32 +78,29 @@ const HolidayList = () => {
     setIsDeleteConfirmOpen(true);
   };
 
-  const handleDeleteConfirmed = () => {
+  const handleDeleteConfirmed = async () => {
     const token = localStorage.getItem("token");
     if (!token || !holidayToDelete) return;
-    console.log(holidayToDelete);
 
-    fetch(
-      `https://www.attend-pay.com/api/auth/company/deleteHoliday?id=${holidayToDelete.id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-      .then((res) => {
-        fetchHolidays(); // refresh after deletion
-        setIsDeleteConfirmOpen(false);
-        setHolidayToDelete(null);
-      })
-      .catch((err) => {
-        console.error("Delete failed:", err);
-      });
+    try {
+      await axios.delete(
+        `https://www.attend-pay.com/api/auth/company/deleteHoliday?id=${holidayToDelete.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      fetchHolidays();
+      setIsDeleteConfirmOpen(false);
+      setHolidayToDelete(null);
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
   };
 
   const handleSubmit = () => {
-    fetchHolidays(); // re-fetch list after add/edit
+    fetchHolidays();
     setIsPopupOpen(false);
   };
 
@@ -194,6 +189,7 @@ const HolidayList = () => {
       />
 
       <HolidayPopup
+        key={popupKey}
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
         onSubmit={handleSubmit}
@@ -209,6 +205,4 @@ const HolidayList = () => {
       />
     </div>
   );
-};
-
-export default HolidayList;
+}
