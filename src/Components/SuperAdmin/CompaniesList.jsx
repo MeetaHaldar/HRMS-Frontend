@@ -101,14 +101,10 @@ const CompaniesList = () => {
         <table className="w-full border-collapse text-xs md:text-sm">
           <thead>
             <tr className="bg-gray-200 text-left text-gray-600">
-              <th className="p-2 md:p-3">
-                <input type="checkbox" />
-              </th>
               <th className="p-2 md:p-3">Organisation's Name</th>
-              <th className="p-2 md:p-3">Type</th>
-              <th className="p-2 md:p-3">Contact Info</th>
+              <th className="p-2 md:p-3">Domain</th>
               <th className="p-2 md:p-3">City/Country</th>
-              <th className="p-2 md:p-3">Status</th>
+
               <th className="p-2 md:p-3">Actions</th>
             </tr>
           </thead>
@@ -135,24 +131,13 @@ const CompaniesList = () => {
             ) : (
               companies.map((company, index) => (
                 <tr key={index} className="hover:bg-gray-100">
-                  <td className="p-2 md:p-3">
-                    <input type="checkbox" />
-                  </td>
                   <td className="p-2 md:p-3">{company.name}</td>
-                  <td className="p-2 md:p-3">{company.type}</td>
-                  <td className="p-2 md:p-3">{company.email}</td>
+
+                  <td className="p-2 md:p-3">{company.sub_domain}</td>
                   <td className="p-2 md:p-3">
                     {company.city}, {company.country}
                   </td>
-                  <td
-                    className={`p-2 md:p-3 font-semibold ${
-                      company.status === "Active"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {company.status}
-                  </td>
+
                   <td className="p-2 md:p-3 flex space-x-2">
                     <button
                       className="text-gray-500 hover:text-gray-950"

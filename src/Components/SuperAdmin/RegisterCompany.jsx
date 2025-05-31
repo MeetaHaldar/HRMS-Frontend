@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// Replace with the correct backend URL
 const dev_url = "https://www.attend-pay.com";
 
 const RegisterCompany = () => {
@@ -39,6 +38,7 @@ const RegisterCompany = () => {
     if (!formData.max_employees_limit)
       tempErrors.max_employees_limit = "Max Employees Limit is required";
     if (!formData.admin) tempErrors.admin = "Admin Name is required";
+
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -54,24 +54,29 @@ const RegisterCompany = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.post(`${dev_url}/api/auth/company`, formData, {
+      const res = await axios.post(`${dev_url}/api/auth/company/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
       if (res.status === 200) {
         setSuccessMsg("Company registered successfully.");
-        navigate("/CompaniesList");
+        setTimeout(() => navigate("/CompaniesList"), 1500);
       } else {
         alert("Facing some issues while creating the company");
       }
     } catch (error) {
-      console.error(error);
-      alert("Error occurred while registering the company");
+      console.error("API error:", error);
+      const msg =
+        error.response?.data?.message ||
+        "Error occurred while registering the company";
+      alert(msg);
     }
   };
 
@@ -99,30 +104,28 @@ const RegisterCompany = () => {
           className="grid grid-cols-1 md:grid-cols-2 gap-4"
         >
           {[
-            { name: "name", placeholder: "Name" },
+            { name: "name", placeholder: "Company Name" },
             { name: "sub_domain", placeholder: "Sub Domain" },
             { name: "email", placeholder: "Email ID", type: "email" },
+            { name: "password", placeholder: "Password", type: "password" },
             { name: "address_1", placeholder: "Address" },
-            { name: "country", placeholder: "Country", maxLength: 2 },
+            { name: "country", placeholder: "Country" },
             { name: "city", placeholder: "City" },
-            { name: "payment_type", placeholder: "Payment", type: "number" },
+            { name: "payment_type", placeholder: "Payment Type" },
             {
               name: "max_employees_limit",
               placeholder: "Max Employee Limit",
-              type: "number",
             },
             { name: "admin", placeholder: "Admin Name" },
-            { name: "password", placeholder: "Password", type: "password" },
-          ].map(({ name, placeholder, type = "text", maxLength }) => (
+          ].map(({ name, placeholder, type = "text" }) => (
             <div key={name}>
               <input
-                placeholder={placeholder}
-                className="w-full border-b border-gray-400 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
                 type={type}
                 name={name}
+                placeholder={placeholder}
                 value={formData[name]}
                 onChange={handleChange}
-                maxLength={maxLength}
+                className="w-full border-b border-gray-400 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
               />
               {errors[name] && (
                 <p className="text-red-500 text-sm">{errors[name]}</p>

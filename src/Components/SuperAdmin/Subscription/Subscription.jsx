@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import SubscriptionPopup from "./SubscriptionPopup";
 import { FiPlus } from "react-icons/fi";
@@ -7,6 +8,25 @@ const Subscription = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [initialData, setInitialData] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
+
+  const token = localStorage.getItem("token");
+
+  const fetchSubscriptions = async () => {
+    try {
+      const res = await axios.get("https://www.attend-pay.com/subscription/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setSubscriptions(res.data);
+    } catch (error) {
+      console.error("Error fetching subscriptions", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscriptions();
+  }, []);
 
   const openAddPopup = () => {
     setInitialData(null);
@@ -23,23 +43,35 @@ const Subscription = () => {
       "Are you sure you want to delete this subscription?"
     );
     if (confirmDelete) {
-      setSubscriptions(subscriptions.filter((sub) => sub.id !== id));
+      setSubscriptions((prev) => prev.filter((sub) => sub.id !== id));
     }
   };
 
-  const handleSubmit = (formData) => {
-    if (formData.id) {
-      setSubscriptions((prev) =>
-        prev.map((sub) => (sub.id === formData.id ? formData : sub))
-      );
-    } else {
-      const newSubscription = {
-        ...formData,
-        id: Date.now().toString(),
+  const handleSubmit = async (formData) => {
+    try {
+      const payload = {
+        title: formData.name,
+        description: formData.description,
+        max_employee_no: parseInt(formData.maxEmployeeLimit),
+        discount: parseFloat(formData.limitedPeriodDiscount),
+        total_amount: parseFloat(formData.subscriptionAmount),
       };
-      setSubscriptions((prev) => [...prev, newSubscription]);
+
+      await axios.post(
+        "https://www.attend-pay.com/subscription/addsubscriptiontype",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsPopupOpen(false);
+      fetchSubscriptions(); // Refresh after submission
+    } catch (error) {
+      console.error("Error adding subscription", error);
     }
-    setIsPopupOpen(false);
   };
 
   return (
@@ -69,7 +101,6 @@ const Subscription = () => {
                 key={subscription.id}
                 className="relative p-4 rounded-lg shadow-md bg-white w-full max-w-xs mx-auto"
               >
-                {/* Top-right action buttons */}
                 <div className="absolute top-2 right-2 flex space-x-2">
                   <button
                     onClick={() => openEditPopup(subscription)}
@@ -86,7 +117,7 @@ const Subscription = () => {
                 </div>
 
                 <h3 className="text-gray-600 text-lg text-center mt-6 font-semibold">
-                  {subscription.name}
+                  {subscription.title || subscription.name}
                 </h3>
                 <p className="text-sm text-gray-500 mt-3 text-left">
                   {subscription.description}
@@ -96,31 +127,19 @@ const Subscription = () => {
                   <p className="text-sm">
                     Max Employee Limit:{" "}
                     <span className="text-gray-700">
-                      {subscription.maxEmployeeLimit}
+                      {subscription.max_employee_no}
                     </span>
                   </p>
                   <p className="text-sm mb-4 mt-4">
                     Subscription Amount:{" "}
                     <span className="text-gray-900">
-                      ${subscription.subscriptionAmount}
+                      ${subscription.total_amount}
                     </span>
                   </p>
                   <p className="text-sm mb-4">
                     Discount:{" "}
                     <span className="text-gray-900">
-                      {subscription.limitedPeriodDiscount}%
-                    </span>
-                  </p>
-                  <p className="text-sm mb-4">
-                    Offer Price:{" "}
-                    <span className="text-gray-900">
-                      ${subscription.discountedOfferPrice}
-                    </span>
-                  </p>
-                  <p className="text-sm mb-4">
-                    Duration:{" "}
-                    <span className="font-medium text-gray-900">
-                      {subscription.duration}
+                      {subscription.discount}%
                     </span>
                   </p>
                 </div>
