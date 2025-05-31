@@ -3,6 +3,7 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
+import { useNavigate } from "react-router-dom";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -11,6 +12,7 @@ const EmployeeList = () => {
   const [loading, setLoading] = useState(true);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -57,7 +59,10 @@ const EmployeeList = () => {
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg text-gray-500 font-semibold">Employee List</h2>
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold cursor-pointer">
+        <button
+          onClick={() => navigate("/companyAdmin/RegisterEmployee")}
+          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold cursor-pointer"
+        >
           + New Employee
         </button>
       </div>

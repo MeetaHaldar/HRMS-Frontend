@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    code: "",
-    parentCode: "",
+    dept_name: "",
+    dept_code: "",
   });
 
   const [error, setError] = useState("");
@@ -12,15 +12,13 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   useEffect(() => {
     if (initialData) {
       setFormData({
-        name: initialData.name || "",
-        code: initialData.code || "",
-        parentCode: initialData.parentCode || "",
+        dept_name: initialData.dept_name || "",
+        dept_code: initialData.dept_code || "",
       });
     } else {
       setFormData({
-        name: "",
-        code: "",
-        parentCode: "",
+        dept_name: "",
+        dept_code: "",
       });
     }
   }, [initialData]);
@@ -31,17 +29,39 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.code) {
+    if (!formData.dept_name || !formData.dept_code) {
       setError("Department name and code are required.");
       return;
     }
 
-    onSubmit(formData);
-    setFormData({ name: "", code: "", parentCode: "" });
-    onClose();
+    const payload = {
+      ...formData,
+      is_default: "no",
+    };
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "https://www.attend-pay.com/api/auth/company/createDepartment",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      onSubmit(response.data.data || payload); // update parent
+      setFormData({ dept_name: "", dept_code: "" });
+      onClose();
+    } catch (err) {
+      console.error(err);
+      setError("Failed to create department. Please try again.");
+    }
   };
 
   if (!isOpen) return null;
@@ -55,7 +75,7 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-4xl  cursor-pointer"
+            className="text-gray-600 hover:text-gray-900 text-4xl cursor-pointer"
           >
             &times;
           </button>
@@ -74,8 +94,8 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
               Department Name<span className="text-red-500">*</span>
             </label>
             <input
-              name="name"
-              value={formData.name}
+              name="dept_name"
+              value={formData.dept_name}
               onChange={handleChange}
               required
               className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#FFD85D]"
@@ -84,32 +104,20 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">
-              Code<span className="text-red-500">*</span>
+              Department Code<span className="text-red-500">*</span>
             </label>
             <input
-              name="code"
-              value={formData.code}
+              name="dept_code"
+              value={formData.dept_code}
               onChange={handleChange}
               required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#FFD85D]"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-500 mb-1">
-              Parent Code
-            </label>
-            <input
-              name="parentCode"
-              value={formData.parentCode}
-              onChange={handleChange}
               className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#FFD85D]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full mt-2 bg-gray-200 hover:bg- text-gray-500 font-medium py-2 rounded-xl transition  cursor-pointer"
+            className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-xl transition cursor-pointer"
           >
             {initialData ? "Update Department" : "Add Department"}
           </button>
