@@ -160,7 +160,7 @@ const Subscription = () => {
                   <p className="text-sm">
                     Subscription Amount:{" "}
                     <span className="text-gray-900">
-                      ${subscription.total_amount}
+                      ₹{subscription.total_amount}
                     </span>
                   </p>
                   <p className="text-sm">

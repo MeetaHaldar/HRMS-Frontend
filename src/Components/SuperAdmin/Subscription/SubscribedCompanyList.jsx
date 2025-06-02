@@ -1,19 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const companiesData = [
-  { id: 1, name: "Company 1", status: "Active" },
-  { id: 2, name: "Company 2", status: "Inactive" },
-  { id: 3, name: "Company 3", status: "Active" },
-  { id: 4, name: "Company 4", status: "Inactive" },
-  { id: 5, name: "Company 5", status: "Active" },
-  { id: 6, name: "Company 6", status: "Inactive" },
-  { id: 7, name: "Company 7", status: "Active" },
-];
+import axios from "axios";
 
 const SubscribedCompanyList = () => {
   const navigate = useNavigate();
-  const [companies, setCompanies] = useState(companiesData);
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        const res = await axios.get(
+          "https://www.attend-pay.com/subscription/getsubscribedList",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log("Subscribed Companies:", res.data);
+        setCompanies(res.data || []); // Adjust based on API response structure
+      } catch (err) {
+        console.error("Error fetching subscribed companies:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, [token]);
 
   const handleStatusChange = (id, newStatus) => {
     setCompanies((prev) =>
@@ -23,6 +39,10 @@ const SubscribedCompanyList = () => {
     );
   };
 
+  if (loading) {
+    return <div className="p-4 text-gray-500">Loading companies...</div>;
+  }
+
   return (
     <div className="p-4">
       <h2 className="text-lg md:text-lg text-gray-500 font-semibold mb-4">
@@ -31,7 +51,7 @@ const SubscribedCompanyList = () => {
       <div className="overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-y-2">
           <thead className="bg-gray-200 py-3">
-            <tr className="text-gray-600 bg-gray-200 ">
+            <tr className="text-gray-600 bg-gray-200">
               {[
                 "Company",
                 "Subs. Type",
@@ -41,10 +61,7 @@ const SubscribedCompanyList = () => {
                 "End Date",
                 "Renewal",
               ].map((header, i) => (
-                <th
-                  key={i}
-                  className="py-2 px-4 text-left text-sm font-medium "
-                >
+                <th key={i} className="py-2 px-4 text-left text-sm font-medium">
                   {header}
                 </th>
               ))}
@@ -57,11 +74,13 @@ const SubscribedCompanyList = () => {
                   className="py-2 px-4 underline underline-offset-3 text-gray-500 font-bold cursor-pointer"
                   onClick={() => navigate(`/company/${company.id}`)}
                 >
-                  {company.name}
+                  {company.company_name || company.name}
                 </td>
-                <td className="py-2 px-4">Subs. Type</td>
-                <td className="py-2 px-4">Comp. Admin</td>
-                <td className="py-2 px-4">01/05/2025</td>
+                <td className="py-2 px-4">{company.subscription_type}</td>
+                <td className="py-2 px-4">{company.admin_name}</td>
+                <td className="py-2 px-4">
+                  {new Date(company.start_date).toLocaleDateString("en-CA")}
+                </td>
                 <td className="py-2 px-4">
                   <select
                     value={company.status}
@@ -70,16 +89,20 @@ const SubscribedCompanyList = () => {
                     }
                     className={`font-semibold rounded px-2 py-1 text-sm ${
                       company.status === "Active"
-                        ? "text-Gray-600"
-                        : "text-gray-500"
+                        ? "text-green-600"
+                        : "text-red-500"
                     }`}
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
                 </td>
-                <td className="py-2 px-4">01/08/2025</td>
-                <td className="py-2 px-4">01/08/2025</td>
+                <td className="py-2 px-4">
+                  {new Date(company.end_date).toLocaleDateString("en-CA")}
+                </td>
+                <td className="py-2 px-4">
+                  {new Date(company.end_date).toLocaleDateString("en-CA")}
+                </td>
               </tr>
             ))}
           </tbody>
