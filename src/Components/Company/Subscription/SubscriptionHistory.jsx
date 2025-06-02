@@ -1,27 +1,6 @@
-export default function SubscriptionHistory() {
-  const history = [
-    {
-      name: "Basic Plan",
-      type: "Monthly",
-      amount: "₹10K",
-      startDate: "01/05/2024",
-      endDate: "31/05/2024",
-    },
-    {
-      name: "Pro Plan",
-      type: "Monthly",
-      amount: "₹15K",
-      startDate: "01/06/2024",
-      endDate: "30/06/2024",
-    },
-    {
-      name: "Max Plan",
-      type: "Monthly",
-      amount: "₹20K",
-      startDate: "01/07/2024",
-      endDate: "31/07/2024",
-    },
-  ];
+import React from "react";
+
+const SubscriptionHistory = ({ history }) => {
   return (
     <div>
       <h2 className="text-lg md:text-lg text-gray-500 font-semibold mb-4">
@@ -33,7 +12,6 @@ export default function SubscriptionHistory() {
           <thead>
             <tr className="text-gray-500 text-sm bg-gray-100">
               <th className="px-4 py-2">Subscriptions</th>
-              <th className="px-4 py-2">Subs. Type</th>
               <th className="px-4 py-2">Amount</th>
               <th className="px-4 py-2">Start Date</th>
               <th className="px-4 py-2">End Date</th>
@@ -41,13 +19,16 @@ export default function SubscriptionHistory() {
             </tr>
           </thead>
           <tbody>
-            {history.map((item, i) => (
-              <tr key={i} className=" text-gray-800">
-                <td className="px-4 py-2 underline">{item.name}</td>
-                <td className="px-4 py-2">{item.type}</td>
-                <td className="px-4 py-2">{item.amount}</td>
-                <td className="px-4 py-2">{item.startDate}</td>
-                <td className="px-4 py-2">{item.endDate}</td>
+            {history?.map((item, i) => (
+              <tr key={i} className="text-gray-800">
+                <td className="px-4 py-2 underline">{item.title}</td>
+                <td className="px-4 py-2 ">{item.total_amount}</td>
+                <td className="px-4 py-2">
+                  {new Date(item.start_date).toLocaleDateString("en-GB")}
+                </td>
+                <td className="px-4 py-2">
+                  {new Date(item.end_date).toLocaleDateString("en-GB")}
+                </td>
                 <td className="px-4 py-2 underline underline-offset-2 cursor-pointer">
                   Renew Plan
                 </td>
@@ -58,4 +39,6 @@ export default function SubscriptionHistory() {
       </div>
     </div>
   );
-}
+};
+
+export default SubscriptionHistory;
