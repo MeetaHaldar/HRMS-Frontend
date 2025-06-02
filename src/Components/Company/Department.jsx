@@ -15,10 +15,13 @@ const Department = () => {
   const [loading, setLoading] = useState(true);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [departmentToDelete, setDepartmentToDelete] = useState(null);
+  const [apiError, setApiError] = useState("");
+
+  const token = localStorage.getItem("token");
 
   const fetchDepartments = async () => {
+    setLoading(true);
     try {
-      const token = localStorage.getItem("token"); // Adjust if token is stored elsewhere
       const response = await axios.get(
         "https://www.attend-pay.com/api/auth/company/getallDepartment",
         {
@@ -29,10 +32,10 @@ const Department = () => {
       );
       const data = response.data.data || [];
       setDepartments(data);
-      setTotalPages(1); // Update if you add backend pagination
-      setLoading(false);
+      setTotalPages(1);
     } catch (error) {
-      console.error("Error fetching departments:", error);
+      console.error(error);
+    } finally {
       setLoading(false);
     }
   };
@@ -43,20 +46,60 @@ const Department = () => {
 
   const handleAddClick = () => {
     setSelectedDepartment(null);
+    setApiError("");
     setShowAddModal(true);
   };
 
-  const handleAddSubmit = (newDepartment) => {
-    if (selectedDepartment) {
-      setDepartments((prev) =>
-        prev.map((dept) =>
-          dept.id === newDepartment.id ? newDepartment : dept
-        )
-      );
-    } else {
-      setDepartments((prev) => [...prev, newDepartment]);
+  const handleAddSubmit = async (formData) => {
+    setApiError("");
+    try {
+      if (selectedDepartment) {
+        await axios.put(
+          `https://www.attend-pay.com/api/auth/company/updateDepartment?id=${selectedDepartment.id}`,
+          {
+            dept_name: formData.dept_name,
+            dept_code: formData.dept_code,
+            is_default: 0,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      } else {
+        await axios.post(
+          "https://www.attend-pay.com/api/auth/company/createDepartment",
+          {
+            dept_name: formData.dept_name,
+            dept_code: formData.dept_code,
+            is_default: 0,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+      setShowAddModal(false);
+      setSelectedDepartment(null);
+      fetchDepartments();
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 409) {
+          setApiError(
+            "Department code or name already exists for this company."
+          );
+        } else if (error.response.data && error.response.data.message) {
+          setApiError(error.response.data.message);
+        } else {
+          setApiError("An error occurred. Please try again.");
+        }
+      } else {
+        setApiError("An error occurred. Please try again.");
+      }
     }
-    setShowAddModal(false);
   };
 
   const handleDeleteRequest = (department) => {
@@ -64,15 +107,27 @@ const Department = () => {
     setShowDeletePopup(true);
   };
 
-  const handleDeleteConfirm = () => {
-    setDepartments((prev) =>
-      prev.filter((d) => d.id !== departmentToDelete.id)
-    );
-    setShowDeletePopup(false);
+  const handleDeleteConfirm = async () => {
+    try {
+      await axios.delete(
+        `https://www.attend-pay.com/api/auth/company/deleteDepartment?id=${departmentToDelete.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setShowDeletePopup(false);
+      setDepartmentToDelete(null);
+      fetchDepartments();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleCancelDelete = () => {
     setShowDeletePopup(false);
+    setDepartmentToDelete(null);
   };
 
   return (
@@ -99,13 +154,13 @@ const Department = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="5" className="text-center p-4">
+                <td colSpan="3" className="text-center p-4">
                   Loading...
                 </td>
               </tr>
             ) : departments.length === 0 ? (
               <tr>
-                <td colSpan="5" className="text-center p-4 text-gray-500">
+                <td colSpan="3" className="text-center p-4 text-gray-500">
                   No departments found
                 </td>
               </tr>
@@ -114,12 +169,12 @@ const Department = () => {
                 <tr key={department.id} className="hover:bg-gray-100">
                   <td className="p-3">{department.dept_name}</td>
                   <td className="p-3">{department.dept_code}</td>
-
                   <td className="p-3 flex space-x-2">
                     <button
                       className="text-gray-500 hover:text-gray-950"
                       onClick={() => {
                         setSelectedDepartment(department);
+                        setApiError("");
                         setShowAddModal(true);
                       }}
                     >
@@ -150,6 +205,7 @@ const Department = () => {
         onClose={() => setShowAddModal(false)}
         onSubmit={handleAddSubmit}
         initialData={selectedDepartment}
+        apiError={apiError}
       />
 
       <DeleteConfirmationPopup

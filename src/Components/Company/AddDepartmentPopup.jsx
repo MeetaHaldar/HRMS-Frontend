@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 
-const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
+const AddDepartmentPopup = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  apiError,
+}) => {
   const [formData, setFormData] = useState({
     dept_name: "",
     dept_code: "",
@@ -10,18 +15,28 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        dept_name: initialData.dept_name || "",
-        dept_code: initialData.dept_code || "",
-      });
-    } else {
-      setFormData({
-        dept_name: "",
-        dept_code: "",
-      });
+    if (isOpen) {
+      if (initialData) {
+        setFormData({
+          dept_name: initialData.dept_name || "",
+          dept_code: initialData.dept_code || "",
+        });
+      } else {
+        setFormData({
+          dept_name: "",
+          dept_code: "",
+        });
+      }
+      setError("");
     }
-  }, [initialData]);
+  }, [isOpen, initialData]);
+
+  // Show API error passed from parent
+  useEffect(() => {
+    if (apiError) {
+      setError(apiError);
+    }
+  }, [apiError]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +44,7 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     setError("");
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!formData.dept_name || !formData.dept_code) {
@@ -37,31 +52,7 @@ const AddDepartmentPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
       return;
     }
 
-    const payload = {
-      ...formData,
-      is_default: "no",
-    };
-
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "https://www.attend-pay.com/api/auth/company/createDepartment",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      onSubmit(response.data.data || payload); // update parent
-      setFormData({ dept_name: "", dept_code: "" });
-      onClose();
-    } catch (err) {
-      console.error(err);
-      setError("Failed to create department. Please try again.");
-    }
+    onSubmit(formData);
   };
 
   if (!isOpen) return null;
