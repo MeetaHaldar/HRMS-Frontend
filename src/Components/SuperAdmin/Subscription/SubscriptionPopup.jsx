@@ -1,6 +1,13 @@
+// SubscriptionPopup.jsx
 import React, { useState, useEffect } from "react";
 
-const SubscriptionPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
+const SubscriptionPopup = ({
+  isOpen,
+  onClose,
+  onSubmit,
+  initialData,
+  errorMessage,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -8,27 +15,25 @@ const SubscriptionPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
     subscriptionAmount: "",
     limitedPeriodDiscount: "",
     discountedOfferPrice: "",
-    duration: "monthly", // Default to 'monthly'
+    duration: "",
     id: "",
   });
 
-  const isEdit = Boolean(initialData); // Check if we are editing or adding a new subscription
+  const isEdit = Boolean(initialData);
 
   useEffect(() => {
     if (isEdit) {
-      // Populate the form data if we're editing
       setFormData({
-        name: initialData.name || "",
+        name: initialData.title || "",
         description: initialData.description || "",
-        maxEmployeeLimit: initialData.maxEmployeeLimit || "",
-        subscriptionAmount: initialData.subscriptionAmount || "",
-        limitedPeriodDiscount: initialData.limitedPeriodDiscount || "",
+        maxEmployeeLimit: initialData.max_employee_no || "",
+        subscriptionAmount: initialData.total_amount || "",
+        limitedPeriodDiscount: initialData.discount || "",
         discountedOfferPrice: initialData.discountedOfferPrice || "",
-        duration: initialData.duration || "monthly", // Ensure duration is included
+        duration: initialData.duration || "",
         id: initialData.id || "",
       });
     } else {
-      // Reset form when adding new subscription
       setFormData({
         name: "",
         description: "",
@@ -36,11 +41,26 @@ const SubscriptionPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
         subscriptionAmount: "",
         limitedPeriodDiscount: "",
         discountedOfferPrice: "",
-        duration: "monthly", // Default to 'monthly'
+        duration: "",
         id: "",
       });
     }
-  }, [initialData, isEdit]);
+  }, [initialData, isEdit, errorMessage]);
+  useEffect(() => {
+    if (!isOpen) {
+      // Clear form when popup closes
+      setFormData({
+        name: "",
+        description: "",
+        maxEmployeeLimit: "",
+        subscriptionAmount: "",
+        limitedPeriodDiscount: "",
+        discountedOfferPrice: "",
+        duration: "",
+        id: "",
+      });
+    }
+  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,23 +69,10 @@ const SubscriptionPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData); // Trigger onSubmit with the form data
-    if (!isEdit) {
-      // Reset form if adding a new subscription
-      setFormData({
-        name: "",
-        description: "",
-        maxEmployeeLimit: "",
-        subscriptionAmount: "",
-        limitedPeriodDiscount: "",
-        discountedOfferPrice: "",
-        duration: "monthly", // Default to 'monthly'
-        id: "",
-      });
-    }
+    onSubmit(formData);
   };
 
-  if (!isOpen) return null; // If the popup is not open, return null to avoid rendering
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
@@ -82,111 +89,79 @@ const SubscriptionPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           </button>
         </div>
         <div className="border-b border-gray-200 mb-4" />
+        {errorMessage && (
+          <div className="text-red-600 text-sm mb-2 text-center">
+            {errorMessage}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Description <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Max Employee Limit <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              name="maxEmployeeLimit"
-              min={1}
-              value={formData.maxEmployeeLimit}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Total Amount <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              name="subscriptionAmount"
-              value={formData.subscriptionAmount}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2 "
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Discount % <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              name="limitedPeriodDiscount"
-              value={formData.limitedPeriodDiscount}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Amount After Discount<span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              name="discountedOfferPrice"
-              value={formData.discountedOfferPrice}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
-            />
-          </div>
-
-          {/* Duration (Monthly or Yearly) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Duration/Time Period <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="duration"
-              value={formData.duration}
-              onChange={handleChange}
-              required
-              className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-2"
-            >
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
-            </select>
-          </div>
-
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            placeholder="Title"
+            className="w-full bg-gray-100 rounded-xl px-4 py-2"
+          />
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            required
+            placeholder="Description"
+            className="w-full bg-gray-100 rounded-xl px-4 py-2"
+          />
+          <input
+            type="number"
+            name="maxEmployeeLimit"
+            min={1}
+            value={formData.maxEmployeeLimit}
+            onChange={handleChange}
+            required
+            placeholder="Max Employee Limit"
+            className="w-full bg-gray-100 rounded-xl px-4 py-2"
+          />
+          <input
+            type="number"
+            name="subscriptionAmount"
+            value={formData.subscriptionAmount}
+            onChange={handleChange}
+            required
+            placeholder="Total Amount"
+            className="w-full bg-gray-100 rounded-xl px-4 py-2"
+          />
+          <input
+            type="number"
+            name="limitedPeriodDiscount"
+            value={formData.limitedPeriodDiscount}
+            onChange={handleChange}
+            required
+            placeholder="Discount %"
+            className="w-full bg-gray-100 rounded-xl px-4 py-2"
+          />
+          <input
+            type="number"
+            name="discountedOfferPrice"
+            value={formData.discountedOfferPrice}
+            onChange={handleChange}
+            required
+            placeholder="Amount After Discount"
+            className="w-full bg-gray-100 rounded-xl px-4 py-2"
+          />
+          <select
+            name="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            required
+            className="w-full bg-gray-100 rounded-xl px-4 py-2"
+          >
+            <option value="">Select Duration</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
           <button
             type="submit"
-            className="w-full mt-2 bg-[#FFD85F] text-gray-700 font-medium py-2 rounded-xl transition"
+            className="w-full bg-[#FFD85F] text-gray-700 py-2 rounded-xl"
           >
             {isEdit ? "Save Changes" : "Add Subscription"}
           </button>

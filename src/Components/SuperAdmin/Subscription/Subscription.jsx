@@ -8,15 +8,14 @@ const Subscription = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [initialData, setInitialData] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
   const fetchSubscriptions = async () => {
     try {
       const res = await axios.get("https://www.attend-pay.com/subscription/", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setSubscriptions(res.data);
     } catch (error) {
@@ -30,20 +29,38 @@ const Subscription = () => {
 
   const openAddPopup = () => {
     setInitialData(null);
+    setErrorMessage("");
     setIsPopupOpen(true);
   };
 
   const openEditPopup = (subscriptionData) => {
     setInitialData(subscriptionData);
+    setErrorMessage("");
     setIsPopupOpen(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this subscription?"
     );
     if (confirmDelete) {
-      setSubscriptions((prev) => prev.filter((sub) => sub.id !== id));
+      try {
+        await axios.delete(
+          `https://www.attend-pay.com/subscription/?id=${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        fetchSubscriptions();
+      } catch (error) {
+        const message =
+          error.response?.data?.message || "Error deleting subscription";
+        alert(
+          message === "Company with subscription exists"
+            ? message
+            : "Error deleting subscription"
+        );
+      }
     }
   };
 
@@ -55,22 +72,32 @@ const Subscription = () => {
         max_employee_no: parseInt(formData.maxEmployeeLimit),
         discount: parseFloat(formData.limitedPeriodDiscount),
         total_amount: parseFloat(formData.subscriptionAmount),
+        duration: formData.duration, // 'monthly' or 'yearly'
       };
 
-      await axios.post(
-        "https://www.attend-pay.com/subscription/addsubscriptiontype",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      if (initialData) {
+        // Edit mode
+        await axios.put(
+          `https://www.attend-pay.com/subscription/?id=${initialData.id}`,
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        // Add mode
+        await axios.post(
+          "https://www.attend-pay.com/subscription/addsubscriptiontype",
+          payload,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
 
       setIsPopupOpen(false);
-      fetchSubscriptions(); // Refresh after submission
+      setErrorMessage("");
+      fetchSubscriptions();
     } catch (error) {
-      console.error("Error adding subscription", error);
+      const message =
+        error.response?.data?.message || "Error submitting subscription";
+      setErrorMessage(message);
     }
   };
 
@@ -117,7 +144,7 @@ const Subscription = () => {
                 </div>
 
                 <h3 className="text-gray-600 text-lg text-center mt-6 font-semibold">
-                  {subscription.title || subscription.name}
+                  {subscription.title}
                 </h3>
                 <p className="text-sm text-gray-500 mt-3 text-left">
                   {subscription.description}
@@ -130,16 +157,22 @@ const Subscription = () => {
                       {subscription.max_employee_no}
                     </span>
                   </p>
-                  <p className="text-sm mb-4 mt-4">
+                  <p className="text-sm">
                     Subscription Amount:{" "}
                     <span className="text-gray-900">
                       ${subscription.total_amount}
                     </span>
                   </p>
-                  <p className="text-sm mb-4">
+                  <p className="text-sm">
                     Discount:{" "}
                     <span className="text-gray-900">
                       {subscription.discount}%
+                    </span>
+                  </p>
+                  <p className="text-sm">
+                    Duration:{" "}
+                    <span className="text-gray-900">
+                      {subscription.duration}
                     </span>
                   </p>
                 </div>
@@ -154,6 +187,7 @@ const Subscription = () => {
         onClose={() => setIsPopupOpen(false)}
         onSubmit={handleSubmit}
         initialData={initialData}
+        errorMessage={errorMessage}
       />
     </div>
   );
