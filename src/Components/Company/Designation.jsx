@@ -50,7 +50,7 @@ const Designation = () => {
 
   const handleAddSubmit = async () => {
     setShowAddModal(false);
-    await fetchDesignations(); // Fetch latest list from backend
+    await fetchDesignations(); // Refresh list after add/edit
   };
 
   const handleDeleteClick = (designation) => {
@@ -58,11 +58,26 @@ const Designation = () => {
     setShowDeletePopup(true);
   };
 
-  const handleConfirmDelete = () => {
-    setDesignations((prev) =>
-      prev.filter((d) => d.id !== designationToDelete.id)
-    );
-    setShowDeletePopup(false);
+  const handleConfirmDelete = async () => {
+    if (!designationToDelete?.id) return;
+
+    try {
+      await axios.delete(
+        `https://www.attend-pay.com/api/auth/company/deletePosition`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            id: designationToDelete.id,
+          },
+        }
+      );
+      setShowDeletePopup(false);
+      await fetchDesignations(); // Refresh list after delete
+    } catch (error) {
+      console.error("Failed to delete designation:", error);
+    }
   };
 
   return (
@@ -91,7 +106,7 @@ const Designation = () => {
             <thead>
               <tr className="bg-gray-200 text-left text-gray-600">
                 <th className="p-2 md:p-3">Designation Name</th>
-                <th className="p-2 md:p-3">Department</th>
+                <th className="p-2 md:p-3">Designation Code</th>
                 <th className="p-2 md:p-3">Actions</th>
               </tr>
             </thead>
