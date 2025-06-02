@@ -1,19 +1,20 @@
 import React, { useState, forwardRef } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const QuickActions = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const navigate = useNavigate();
 
   const stats = [
-    { title: "+ New Employee" },
-    { title: "+ Payroll Entry" },
-    { title: "Manage Holidays" },
-    { title: "Settings" },
+    { title: "+ New Employee", route: "/companyAdmin/RegisterEmployee" },
+    { title: "+ Payroll Entry", route: "/companyAdmin/viewSalaryTemplate" },
+    { title: "Manage Holidays", route: "/companyAdmin/HolidayList" },
+    { title: "Settings", route: "/companyAdmin/companyProfile" },
   ];
 
-  // Custom Date Picker Button
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <button
       type="button"
@@ -58,11 +59,10 @@ const QuickActions = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="relative bg-white border border-gray-200 shadow-sm rounded-xl px-5 py-4 min-w-[170px] flex-1 flex flex-col items-center justify-center text-center"
+            onClick={() => navigate(stat.route)}
+            className="relative bg-white border border-gray-200 shadow-sm rounded-xl px-5 py-4 min-w-[170px] flex-1 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md transition"
           >
-            {/* External icon at top-right */}
-            <ExternalLink className="absolute top-2 right-2 w-4 h-4 text-gray-400 cursor-pointer" />
-            {/* Title centered */}
+            <ExternalLink className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
             <div className="text-sm text-gray-500 font-bold">{stat.title}</div>
           </div>
         ))}
