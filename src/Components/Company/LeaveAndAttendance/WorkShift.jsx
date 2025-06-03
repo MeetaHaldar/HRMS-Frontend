@@ -15,7 +15,6 @@ const WorkShift = () => {
   const token = localStorage.getItem("token");
   const company_id = JSON.parse(localStorage.getItem("user"))?.companyId;
 
-  // Convert full time to HH:MM
   const formatTime = (timeStr) => {
     if (!timeStr) return "";
     const [hh, mm] = timeStr.split(":");
@@ -25,7 +24,7 @@ const WorkShift = () => {
   const fetchSavedShift = async () => {
     try {
       const res = await axios.get(
-        `https://www.attend-pay.com/api/auth/company/companyProfile?id=${company_id}`,
+        `https://www.attend-pay.com/api/auth/company/getTimeInterval?company_id=${company_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -105,9 +104,10 @@ const WorkShift = () => {
         }
       );
 
-      setSavedData(formData);
       setSuccess(true);
       setError("");
+      // Fetch updated data from backend
+      await fetchSavedShift();
     } catch (err) {
       const message =
         err?.response?.data?.message ||
