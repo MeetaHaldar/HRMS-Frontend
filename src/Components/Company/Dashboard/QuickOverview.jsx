@@ -1,13 +1,20 @@
 import React, { useState, forwardRef } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import DatePicker from "react-datepicker";
+import { useNavigate } from "react-router-dom";
+
 import "react-datepicker/dist/react-datepicker.css";
 
 const QuickOverview = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const navigate = useNavigate();
 
   const stats = [
-    { title: "Total Employees", value: "182" },
+    {
+      title: "Total Employees",
+      value: "182",
+      route: "/companyAdmin/employeeList",
+    },
     { title: "Present Employees", value: "167" },
     { title: "Payroll This Month", value: "₹25M" },
     { title: "Month's Late C/Ins", value: "12" },
@@ -60,6 +67,7 @@ const QuickOverview = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
+            onClick={() => navigate(stat.route)}
             className="relative bg-white border border-gray-200 shadow-sm rounded-xl px-5 py-4 min-w-[170px] flex-1 flex flex-col items-center justify-center text-center"
           >
             {/* ExternalLink icon in top-right */}

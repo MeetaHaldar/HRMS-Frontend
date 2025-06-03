@@ -55,7 +55,7 @@ export default function AttendanceOverview() {
     {
       title: "Total Employees",
       value: 0 || totalEmployees,
-      link: "/companyAdmin/totalEmployees",
+      link: "/companyAdmin/employeeList",
     },
     {
       title: "C/in Employees",
