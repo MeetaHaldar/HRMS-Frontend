@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import axios from "axios";
 import DeleteConfirmationPopup from "../../SuperAdmin/DeleteConfirmationPopup";
 
 const LeaveType = () => {
@@ -10,9 +11,21 @@ const LeaveType = () => {
   const [leaves, setLeaves] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState(null);
+  const [deleteId, setDeleteId] = useState(null);
   const [showNotification, setShowNotification] = useState(false);
+  const [notificationType, setNotificationType] = useState("success");
+  const [notificationMessage, setNotificationMessage] = useState("");
+
+  const token = localStorage.getItem("token");
+
+  const showTempNotification = (type, message) => {
+    setNotificationType(type);
+    setNotificationMessage(message);
+    setShowNotification(true);
+    setTimeout(() => setShowNotification(false), 2500);
+  };
 
   const resetForm = () => {
     setLeaveName("");
@@ -20,21 +33,105 @@ const LeaveType = () => {
     setDays("");
     setIsEditing(false);
     setEditingIndex(null);
+    setEditingId(null);
   };
 
-  const handleAddOrUpdateLeave = () => {
-    if (leaveName.trim() && leaveType && days) {
-      const newLeave = { leaveName, leaveType, days };
-      if (isEditing) {
+  const fetchLeaveTypes = async () => {
+    try {
+      const response = await axios.get(
+        "https://www.attend-pay.com/api/auth/company/getallLeaveCategory",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const list = response.data?.data || [];
+      const mappedLeaves = list.map((item) => ({
+        id: item.id,
+        leaveName: item.category_name,
+        leaveType: item.is_paid ? "Paid" : "Unpaid",
+        days: item.days || "", // fallback in case `days` not present
+      }));
+      setLeaves(mappedLeaves);
+    } catch (error) {
+      console.error("Failed to fetch leave types:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeaveTypes();
+  }, []);
+
+  const handleAddOrUpdateLeave = async () => {
+    if (!leaveName.trim() || !leaveType || !days) {
+      showTempNotification("error", "All fields are required.");
+      return;
+    }
+
+    const leavePayload = {
+      category_name: leaveName,
+      is_paid: leaveType === "Paid" ? 1 : 0,
+      days: Number(days),
+    };
+
+    if (isEditing) {
+      try {
+        const response = await axios.put(
+          `https://www.attend-pay.com/api/auth/company/updateLeaveCategory?id=${editingId}`,
+          leavePayload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
         const updatedLeaves = [...leaves];
-        updatedLeaves[editingIndex] = newLeave;
+        updatedLeaves[editingIndex] = {
+          id: editingId,
+          leaveName,
+          leaveType,
+          days,
+        };
         setLeaves(updatedLeaves);
-      } else {
-        setLeaves([...leaves, newLeave]);
+        showTempNotification("success", "Leave type updated successfully.");
+        resetForm();
+      } catch (error) {
+        console.error("Error updating leave type:", error);
+        if (error.response?.status === 409 && error.response?.data?.msg) {
+          showTempNotification("error", error.response.data.msg);
+        } else {
+          showTempNotification("error", "Failed to update leave type.");
+        }
       }
-      resetForm();
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 2000);
+    } else {
+      try {
+        const response = await axios.post(
+          "https://www.attend-pay.com/api/auth/company/addLeaveCategory",
+          leavePayload,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const newId = response.data?.data?.id;
+        const msg = response.data?.message || "Leave type added!";
+        setLeaves([
+          ...leaves,
+          {
+            id: newId,
+            leaveName,
+            leaveType,
+            days,
+          },
+        ]);
+        showTempNotification("success", msg);
+        resetForm();
+      } catch (error) {
+        console.error("Error adding leave type:", error);
+        if (error.response?.status === 409 && error.response?.data?.msg) {
+          showTempNotification("error", error.response.data.msg);
+        } else {
+          showTempNotification("error", "Failed to add leave type.");
+        }
+      }
     }
   };
 
@@ -45,26 +142,36 @@ const LeaveType = () => {
     setDays(leaveToEdit.days);
     setIsEditing(true);
     setEditingIndex(index);
+    setEditingId(leaveToEdit.id);
   };
 
-  const handleDeleteClick = (index) => {
-    setDeleteIndex(index);
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
     setShowDeletePopup(true);
   };
 
-  const confirmDelete = (index) => {
-    const updatedLeaves = leaves.filter((_, i) => i !== index);
-    setLeaves(updatedLeaves);
-    if (isEditing && editingIndex === index) {
-      resetForm();
+  const confirmDelete = async (id) => {
+    try {
+      await axios.delete(
+        `https://www.attend-pay.com/api/auth/company/deleteLeaveCategory?id=${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setLeaves(leaves.filter((item) => item.id !== id));
+      showTempNotification("success", "Leave type deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting leave type:", error);
+      showTempNotification("error", "Failed to delete leave type.");
+    } finally {
+      setShowDeletePopup(false);
+      setDeleteId(null);
     }
-    setShowDeletePopup(false);
-    setDeleteIndex(null);
   };
 
   const cancelDelete = () => {
     setShowDeletePopup(false);
-    setDeleteIndex(null);
+    setDeleteId(null);
   };
 
   const isFormValid = leaveName.trim() && leaveType && days;
@@ -126,8 +233,12 @@ const LeaveType = () => {
         </div>
 
         {showNotification && (
-          <p className="mt-4 text-sm text-green-600 font-medium">
-            Leave type {isEditing ? "updated" : "added"} successfully!
+          <p
+            className={`mt-4 text-sm font-medium ${
+              notificationType === "success" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {notificationMessage}
           </p>
         )}
       </div>
@@ -149,7 +260,7 @@ const LeaveType = () => {
               </thead>
               <tbody>
                 {leaves.map((leave, index) => (
-                  <tr key={index}>
+                  <tr key={leave.id}>
                     <td className="px-4 py-2">{leave.leaveName}</td>
                     <td className="px-4 py-2">{leave.leaveType}</td>
                     <td className="px-4 py-2">{leave.days}</td>
@@ -161,7 +272,7 @@ const LeaveType = () => {
                         <FaEdit />
                       </button>
                       <button
-                        onClick={() => handleDeleteClick(index)}
+                        onClick={() => handleDeleteClick(leave.id)}
                         className="text-gray-500 hover:text-gray-800 cursor-pointer w-1/2"
                       >
                         <RiDeleteBin6Line />
@@ -178,8 +289,8 @@ const LeaveType = () => {
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={cancelDelete}
-        onConfirm={confirmDelete}
-        data={deleteIndex}
+        onConfirm={() => confirmDelete(deleteId)}
+        data={deleteId}
         message="Are you sure you want to delete this leave type?"
       />
     </>
