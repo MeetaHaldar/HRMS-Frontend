@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { IoIosInformationCircleOutline } from "react-icons/io";
+import axios from "axios";
 
 const Tooltip = ({ text }) => (
   <div className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 w-64 text-sm text-white bg-gray-700 p-2 rounded-md shadow-lg z-50">
@@ -9,7 +10,6 @@ const Tooltip = ({ text }) => (
 );
 
 const EditableField = ({
-  label,
   value,
   onChange,
   editable,
@@ -24,7 +24,7 @@ const EditableField = ({
     disabled={!editable}
     required={required}
     placeholder={placeholder}
-    className={`border border-gray-400 mt-3 px-3 py-2 rounded-md w-full italic placeholder:italic`}
+    className="border border-gray-400 mt-3 px-3 py-2 rounded-md w-full italic placeholder:italic"
   />
 );
 
@@ -34,45 +34,116 @@ export default function TaxDetailsForm() {
     tds: false,
     frequency: false,
   });
+  const [success, setSuccess] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const company_id = JSON.parse(localStorage.getItem("user")).companyId;
 
   const [form, setForm] = useState({
     pan: "",
     tan: "",
-    aoCode: ["", "", "", ""],
-    frequency: "Monthly",
-    type: "Non-Employee",
-    name: "",
-    fatherName: "",
-    designation: "",
+    tds_circle_code: ["", "", "", ""],
+    deductor_type: "",
+    deductor_emp_id: "",
+    deductor_father_name: "",
   });
+
+  useEffect(() => {
+    const fetchTaxDetails = async () => {
+      try {
+        const { data } = await axios.get(
+          `https://www.attend-pay.com/salary/gettaxdetail?company_id=${company_id}`,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+
+        if (data && data.data) {
+          const d = data.data;
+          setForm({
+            pan: d.pan || "",
+            tan: d.tan || "",
+            tds_circle_code: d.tds_circle_code
+              ? [
+                  d.tds_circle_code.slice(0, 3),
+                  d.tds_circle_code.slice(3, 5),
+                  d.tds_circle_code.slice(5, 8),
+                  d.tds_circle_code.slice(8, 10),
+                ]
+              : ["", "", "", ""],
+            deductor_type: d.deductor_type || "",
+            deductor_emp_id: d.deductor_emp_id || "",
+            deductor_father_name: d.deductor_father_name || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching tax details:", error);
+      }
+    };
+
+    fetchTaxDetails();
+  }, [company_id, token]);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAoCodeChange = (index, value) => {
-    const newAo = [...form.aoCode];
-    newAo[index] = value;
-    setForm((prev) => ({ ...prev, aoCode: newAo }));
+  const handleTdsCircleChange = (index, value) => {
+    const newTds = [...form.tds_circle_code];
+    newTds[index] = value;
+    setForm((prev) => ({ ...prev, tds_circle_code: newTds }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        company_id: company_id,
+        pan: form.pan,
+        tan: form.tan,
+        tds_circle_code: form.tds_circle_code.join(""),
+        tax_payment_frequency: "Monthly",
+        deductor_type: form.deductor_type,
+        deductor_emp_id: form.deductor_emp_id,
+        deductor_father_name: form.deductor_father_name,
+      };
+
+      await axios.post("https://www.attend-pay.com/salary/addTax", payload, {
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      setSuccess(true);
+      setEditMode(false);
+
+      // Auto hide success message after 3 seconds
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (error) {
+      console.error("Failed to save tax details:", error);
+    }
   };
 
   return (
     <div className="max-w-4xl mx-auto p-2 space-y-6 font-sans">
-      {/* Edit icon */}
       <div className="text-right">
         <button onClick={() => setEditMode(true)} className="cursor-pointer">
           <FiEdit />
         </button>
       </div>
+      {success && (
+        <div className="bg-green-100 text-green-700 px-4 py-2 rounded mb-4 text-sm">
+          Tax details saved successfully!
+        </div>
+      )}
 
-      {/* Section Title: Organization Tax Details */}
       <div className="text-left text-xl font-semibold text-gray-600">
         Organization Tax Details
       </div>
 
-      {/* PAN and TAN row */}
-      <div className="grid grid-cols-2 gap-6 relative">
-        <div className="relative">
+      <div className="grid grid-cols-2 gap-6">
+        <div>
           <label className="text-gray-700 mb-3">
             PAN<span className="text-red-500">*</span>
           </label>
@@ -84,19 +155,20 @@ export default function TaxDetailsForm() {
             placeholder="e.g. AAAAA1234A"
           />
         </div>
-
-        <div className="relative">
-          <label className="text-gray-700 mb-3">TAN</label>
+        <div>
+          <label className="text-gray-700 mb-3">
+            TAN<span className="text-red-500">*</span>
+          </label>
           <EditableField
             value={form.tan}
             onChange={(e) => handleChange("tan", e.target.value)}
             editable={editMode}
-            placeholder="e.g. MUMA00000B"
+            required
+            placeholder="e.g. DELX01234A"
           />
         </div>
       </div>
 
-      {/* AO Code and Frequency */}
       <div className="grid grid-cols-2 gap-6">
         <div>
           <div className="flex items-center gap-2">
@@ -106,20 +178,18 @@ export default function TaxDetailsForm() {
               onMouseEnter={() => setShowTooltip((p) => ({ ...p, tds: true }))}
               onMouseLeave={() => setShowTooltip((p) => ({ ...p, tds: false }))}
             >
-              <span className="cursor-pointer">
-                <IoIosInformationCircleOutline />
-              </span>
+              <IoIosInformationCircleOutline className="cursor-pointer" />
               {showTooltip.tds && (
-                <Tooltip text="This number can be obtained from Income tax office or you can login into your Income tax account and navigate to  My Profile section to find this number." />
+                <Tooltip text="This number can be obtained from Income tax office or through your Income tax profile." />
               )}
             </div>
           </div>
           <div className="grid grid-cols-4 gap-2 mt-1">
-            {form.aoCode.map((code, index) => (
+            {form.tds_circle_code.map((code, index) => (
               <input
                 key={index}
                 value={code}
-                onChange={(e) => handleAoCodeChange(index, e.target.value)}
+                onChange={(e) => handleTdsCircleChange(index, e.target.value)}
                 disabled={!editMode}
                 placeholder={["AAA", "AA", "000", "00"][index]}
                 className="border border-gray-300 px-3 py-2 rounded-md text-center italic placeholder:italic"
@@ -140,11 +210,9 @@ export default function TaxDetailsForm() {
                 setShowTooltip((p) => ({ ...p, frequency: false }))
               }
             >
-              <span className="cursor-pointer">
-                <IoIosInformationCircleOutline />
-              </span>
+              <IoIosInformationCircleOutline className="cursor-pointer" />
               {showTooltip.frequency && (
-                <Tooltip text="Tax Deducted at Source (TDS) for each month should be paid to the Income Tax Department on or before the 7th of the following month. Only for the month of March, TDS should be deposited on or before the 30th of April" />
+                <Tooltip text="TDS should be paid by 7th of each month. For March, by 30th April." />
               )}
             </div>
           </div>
@@ -157,47 +225,44 @@ export default function TaxDetailsForm() {
         </div>
       </div>
 
-      {/* Section Title: Tax Deductor Details */}
       <div className="text-left text-xl font-semibold text-gray-600 mt-8">
         Tax Deductor Details
       </div>
 
-      {/* Deductor Type */}
       <div className="text-gray-700 mb-2">Deductor's Type</div>
       <div className="flex gap-6">
         <label className="flex items-center gap-2 text-gray-700">
           <input
             type="radio"
-            name="type"
-            checked={form.type === "Employee"}
+            name="deductor_type"
+            checked={form.deductor_type === "Employee"}
             disabled={!editMode}
-            onChange={() => handleChange("type", "Employee")}
-            className="appearance-none h-4 w-4 border checked:bg-[#FFD85F] checked:border-3 checked:border-black rounded-full focus:outline-none"
+            onChange={() => handleChange("deductor_type", "Employee")}
+            className="appearance-none h-4 w-4 border checked:bg-[#FFD85F] checked:border-3 checked:border-black rounded-full"
           />
           Employee
         </label>
-        <label className="flex items-center gap-2 text-gray-700 ">
+        <label className="flex items-center gap-2 text-gray-700">
           <input
             type="radio"
-            name="type"
-            checked={form.type === "Non-Employee"}
+            name="deductor_type"
+            checked={form.deductor_type === "Non-Employee"}
             disabled={!editMode}
-            onChange={() => handleChange("type", "Non-Employee")}
-            className="appearance-none h-4 w-4 border checked:bg-[#FFD85F] checked:border-3 checked:border-black rounded-full focus:outline-none"
+            onChange={() => handleChange("deductor_type", "Non-Employee")}
+            className="appearance-none h-4 w-4 border checked:bg-[#FFD85F] checked:border-3 checked:border-black rounded-full"
           />
-          Non-Employee
+          Non Employee
         </label>
       </div>
 
-      {/* Deductor fields */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6 mt-4">
         <div>
           <label className="text-gray-700 mb-3">
-            Deductor’s Name<span className="text-red-500">*</span>
+            Deductor’s Employee ID<span className="text-red-500">*</span>
           </label>
           <EditableField
-            value={form.name}
-            onChange={(e) => handleChange("name", e.target.value)}
+            value={form.deductor_emp_id}
+            onChange={(e) => handleChange("deductor_emp_id", e.target.value)}
             editable={editMode}
             required
           />
@@ -207,38 +272,26 @@ export default function TaxDetailsForm() {
             Deductor’s Father’s Name<span className="text-red-500">*</span>
           </label>
           <EditableField
-            value={form.fatherName}
-            onChange={(e) => handleChange("fatherName", e.target.value)}
+            value={form.deductor_father_name}
+            onChange={(e) =>
+              handleChange("deductor_father_name", e.target.value)
+            }
             editable={editMode}
             required
           />
         </div>
-        {form.type === "Non-Employee" && (
-          <div className="col-span-2 w-1/2">
-            <label className="text-gray-700 mb-3">
-              Deductor’s Designation<span className="text-red-500 mb-3">*</span>
-            </label>
-            <EditableField
-              value={form.designation}
-              onChange={(e) => handleChange("designation", e.target.value)}
-              editable={editMode}
-              required
-            />
-          </div>
-        )}
       </div>
 
-      {/* Save / Cancel Buttons */}
       {editMode && (
         <div className="flex gap-4 mt-6">
           <button
-            className="bg-[#FFD85F] text-gray-800 hover:bg-yellow-500 w-1/4 py-2 rounded-full font-semibold shadow-md cursor-pointer"
-            onClick={() => setEditMode(false)}
+            className="bg-[#FFD85F] text-gray-800 hover:bg-yellow-500 w-1/4 py-2 rounded-full font-semibold shadow-md"
+            onClick={handleSubmit}
           >
             Save
           </button>
           <button
-            className="border w-1/4 py-2 rounded-full font-semibold cursor-pointer"
+            className="border w-1/4 py-2 rounded-full font-semibold"
             onClick={() => setEditMode(false)}
           >
             Cancel
