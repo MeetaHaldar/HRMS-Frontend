@@ -12,12 +12,18 @@ import {
 } from "react-icons/fa";
 import { FaPeopleGroup, FaArrowTrendUp } from "react-icons/fa6";
 import { PiBuildingOfficeLight, PiSunglasses } from "react-icons/pi";
+import { TbTax } from "react-icons/tb";
+import { FcLeave } from "react-icons/fc";
+import { RiMoneyDollarBoxLine } from "react-icons/ri";
+import { GrTemplate } from "react-icons/gr";
+import { MdSpaceDashboard } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
 
 const menuItems = [
   {
     label: "Dashboard",
     to: "/companyAdmin/CompanyDashboard",
-    icon: <FaPeopleGroup />,
+    icon: <MdSpaceDashboard />,
   },
   {
     label: "Employees",
@@ -28,7 +34,7 @@ const menuItems = [
   {
     label: "Leave & Attendance",
     to: "LeaveAttendanceOverview",
-    icon: <FaFolderPlus />,
+    icon: <FcLeave />,
   },
 
   {
@@ -47,7 +53,7 @@ const settingsMenu = [
   {
     label: "Organisation Profile",
     to: "/companyAdmin/companyProfile",
-    icon: <FaQuestionCircle />,
+    icon: <CgProfile />,
   },
   {
     label: "Departments",
@@ -67,17 +73,17 @@ const settingsMenu = [
   {
     label: "Salary Components",
     to: "/companyAdmin/salaryComponent",
-    icon: <FaPhoneVolume />,
+    icon: <RiMoneyDollarBoxLine />,
   },
   {
     label: "Salary Templates",
     to: "/companyAdmin/salaryTemplate",
-    icon: <FaPhoneVolume />,
+    icon: <GrTemplate />,
   },
   {
     label: "Taxes",
     to: "/companyAdmin/TaxDetails",
-    icon: <FaPhoneVolume />,
+    icon: <TbTax />,
   },
   {
     label: "Pay Schedule",
@@ -86,7 +92,7 @@ const settingsMenu = [
   },
   {
     label: "Leave & Attendance",
-    icon: <FaPhoneVolume />,
+    icon: <FcLeave />,
     isExpandable: true,
     subItems: [
       { label: "Leave Type", to: "/companyAdmin/leaveType" },
