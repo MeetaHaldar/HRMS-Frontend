@@ -16,7 +16,6 @@ const countryOptions = Country.getAllCountries().map((country) => ({
 
 const CompanyProfile = () => {
   const [editTop, setEditTop] = useState(false);
-  const [editCompany, setEditCompany] = useState(false);
   const [logo, setLogo] = useState(null);
   const [stateOptions, setStateOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
@@ -109,26 +108,15 @@ const CompanyProfile = () => {
     }
   };
 
-  const handleSaveTop = async () => {
-    await updateCompanyData();
-    setEditTop(false);
-  };
-
   const handleSaveCompany = async () => {
     await updateCompanyData();
-    setEditCompany(false);
-  };
-
-  const handleSaveAdmin = async () => {
-    await updateCompanyData();
-    setEditAdmin(false);
+    setEditTop(false);
   };
 
   if (!companyData) return null;
 
   return (
     <div className="p-6 max-w-6xl mx-auto text-gray-700 font-medium text-sm">
-      {/* Logo + Name/Tagline Section */}
       <div className="relative mb-6 border-b pb-6 border-gray-300">
         <button
           onClick={() => setEditTop(!editTop)}
@@ -170,14 +158,6 @@ const CompanyProfile = () => {
                   onChange={handleChange}
                   className="text-lg font-semibold text-center w-full border border-gray-300 rounded py-1"
                 />
-
-                <button
-                  onClick={handleSaveTop}
-                  className="bg-black text-white px-3 py-1 text-xs rounded mt-2"
-                >
-                  <Save size={12} className="inline-block mr-1" />
-                  Save
-                </button>
               </div>
             ) : (
               <>
@@ -197,12 +177,7 @@ const CompanyProfile = () => {
           <h2 className="text-lg text-gray-500 font-semibold text-center mb-6">
             {companyData.name} Info.
           </h2>
-          <button
-            onClick={() => setEditCompany(!editCompany)}
-            className="absolute top-4 right-4 text-gray-500 hover:text-black cursor-pointer"
-          >
-            <FiEdit />
-          </button>
+
           {Object.entries(companyData)
             .filter(
               ([key]) =>
@@ -240,7 +215,7 @@ const CompanyProfile = () => {
             .map(([key, value]) => (
               <div key={key} className="flex items-start gap-x-4 py-1">
                 <span className="w-40 text-gray-500">{formatLabel(key)}:</span>
-                {editCompany ? (
+                {editTop ? (
                   key === "country" ? (
                     <Select
                       options={countryOptions}
@@ -294,7 +269,7 @@ const CompanyProfile = () => {
                 )}
               </div>
             ))}
-          {editCompany && (
+          {editTop && (
             <button
               onClick={handleSaveCompany}
               className="bg-black text-white px-3 py-1 text-xs rounded mt-2"
