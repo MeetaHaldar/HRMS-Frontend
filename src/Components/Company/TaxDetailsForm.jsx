@@ -35,9 +35,10 @@ export default function TaxDetailsForm() {
     frequency: false,
   });
   const [success, setSuccess] = useState(false);
+  const [employees, setEmployees] = useState([]);
 
   const token = localStorage.getItem("token");
-  const company_id = JSON.parse(localStorage.getItem("user")).companyId;
+  const company_id = JSON.parse(localStorage.getItem("user"))?.companyId;
 
   const [form, setForm] = useState({
     pan: "",
@@ -46,6 +47,7 @@ export default function TaxDetailsForm() {
     deductor_type: "",
     deductor_emp_id: "",
     deductor_father_name: "",
+    deductor_first_name: "", // For showing selected name
   });
 
   useEffect(() => {
@@ -53,16 +55,13 @@ export default function TaxDetailsForm() {
       try {
         const { data } = await axios.get(
           `https://www.attend-pay.com/salary/gettaxdetail?company_id=${company_id}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
+          { headers: { Authorization: token } }
         );
 
         if (data && data.data) {
           const d = data.data;
-          setForm({
+          setForm((prev) => ({
+            ...prev,
             pan: d.pan || "",
             tan: d.tan || "",
             tds_circle_code: d.tds_circle_code
@@ -76,20 +75,44 @@ export default function TaxDetailsForm() {
             deductor_type: d.deductor_type || "",
             deductor_emp_id: d.deductor_emp_id || "",
             deductor_father_name: d.deductor_father_name || "",
-          });
+            deductor_first_name: d.deductor_first_name || "",
+          }));
         }
       } catch (error) {
         console.error("Error fetching tax details:", error);
       }
     };
 
+    const fetchEmployees = async () => {
+      try {
+        const { data } = await axios.get(
+          "https://www.attend-pay.com/api/employee/",
+          {
+            headers: { Authorization: token },
+          }
+        );
+        setEmployees(data.employees || []);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+      }
+    };
+
     fetchTaxDetails();
+    fetchEmployees();
   }, [company_id, token]);
 
   const handleChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    if (field === "deductor_emp_id") {
+      const selectedEmp = employees.find((emp) => emp.id === value);
+      setForm((prev) => ({
+        ...prev,
+        deductor_emp_id: value,
+        deductor_first_name: selectedEmp?.first_name || "",
+      }));
+    } else {
+      setForm((prev) => ({ ...prev, [field]: value }));
+    }
   };
-
   const handleTdsCircleChange = (index, value) => {
     const newTds = [...form.tds_circle_code];
     newTds[index] = value;
@@ -99,7 +122,7 @@ export default function TaxDetailsForm() {
   const handleSubmit = async () => {
     try {
       const payload = {
-        company_id: company_id,
+        company_id,
         pan: form.pan,
         tan: form.tan,
         tds_circle_code: form.tds_circle_code.join(""),
@@ -110,18 +133,23 @@ export default function TaxDetailsForm() {
       };
 
       await axios.post("https://www.attend-pay.com/salary/addTax", payload, {
-        headers: {
-          Authorization: token,
-        },
+        headers: { Authorization: token },
       });
 
       setSuccess(true);
       setEditMode(false);
-
-      // Auto hide success message after 3 seconds
       setTimeout(() => setSuccess(false), 3000);
     } catch (error) {
       console.error("Failed to save tax details:", error);
+    }
+  };
+
+  const getSelectedEmployeeName = () => {
+    if (form.deductor_type === "Employee") {
+      const emp = employees.find((e) => e.id === form.deductor_emp_id);
+      return emp?.first_name || form.deductor_first_name || "";
+    } else {
+      return form.deductor_first_name || "";
     }
   };
 
@@ -258,14 +286,28 @@ export default function TaxDetailsForm() {
       <div className="grid grid-cols-2 gap-6 mt-4">
         <div>
           <label className="text-gray-700 mb-3">
-            Deductor’s Employee ID<span className="text-red-500">*</span>
+            Deductor’s Employee Name<span className="text-red-500">*</span>
           </label>
-          <EditableField
-            value={form.deductor_emp_id}
-            onChange={(e) => handleChange("deductor_emp_id", e.target.value)}
-            editable={editMode}
-            required
-          />
+          {editMode ? (
+            <select
+              value={form.deductor_emp_id}
+              onChange={(e) => handleChange("deductor_emp_id", e.target.value)}
+              className="border border-gray-400 mt-3 px-3 py-2 rounded-md w-full italic"
+            >
+              <option value="">Select Employee</option>
+              {employees.map((emp) => (
+                <option key={emp.id} value={emp.id}>
+                  {emp.first_name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <EditableField
+              value={getSelectedEmployeeName()}
+              onChange={() => {}}
+              editable={false}
+            />
+          )}
         </div>
         <div>
           <label className="text-gray-700 mb-3">
