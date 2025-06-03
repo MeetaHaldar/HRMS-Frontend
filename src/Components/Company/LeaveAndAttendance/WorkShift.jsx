@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const WorkShift = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,54 @@ const WorkShift = () => {
   const [savedData, setSavedData] = useState(formData);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const company_id = JSON.parse(localStorage.getItem("user"))?.companyId;
+
+  // Convert full time to HH:MM
+  const formatTime = (timeStr) => {
+    if (!timeStr) return "";
+    const [hh, mm] = timeStr.split(":");
+    return `${hh}:${mm}`;
+  };
+
+  const fetchSavedShift = async () => {
+    try {
+      const res = await axios.get(
+        `https://www.attend-pay.com/api/auth/company/companyProfile?id=${company_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = res.data?.data;
+      if (
+        data?.checkin &&
+        data?.checkout &&
+        data?.in_above_margin !== undefined
+      ) {
+        const loadedData = {
+          checkIn: formatTime(data.checkin),
+          checkOut: formatTime(data.checkout),
+          graceTime: data.in_above_margin.toString(),
+        };
+        setFormData(loadedData);
+        setSavedData(loadedData);
+      }
+    } catch (err) {
+      setError("Failed to load saved shift data.");
+    }
+  };
+
+  useEffect(() => {
+    if (!token || !company_id) {
+      setError("Missing token or company ID.");
+      return;
+    }
+    fetchSavedShift();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,7 +76,7 @@ const WorkShift = () => {
     return startH < endH || (startH === endH && startM < endM);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.checkIn || !formData.checkOut) {
       setError("Both check-in and check-out times are required.");
       return;
@@ -38,30 +87,52 @@ const WorkShift = () => {
       return;
     }
 
-    setSavedData(formData); // Save current state
-    setSuccess(true);
-    setError("");
-    console.log("Saved Data:", formData);
+    const payload = {
+      checkin: `${formData.checkIn}:00.000000`,
+      checkout: `${formData.checkOut}:00.000000`,
+      company_id,
+      in_above_margin: parseInt(formData.graceTime, 10),
+    };
+
+    try {
+      await axios.post(
+        "https://www.attend-pay.com/api/auth/company/addtimeInterval",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSavedData(formData);
+      setSuccess(true);
+      setError("");
+    } catch (err) {
+      const message =
+        err?.response?.data?.message ||
+        "Failed to save shift. Please try again.";
+      setError(message);
+      setSuccess(false);
+    }
   };
 
   const handleCancel = () => {
-    setFormData(savedData); // Revert to last saved state
+    setFormData(savedData);
     setError("");
     setSuccess(false);
   };
 
   useEffect(() => {
     if (success) {
-      const timer = setTimeout(() => {
-        setSuccess(false);
-      }, 3000);
+      const timer = setTimeout(() => setSuccess(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [success]);
 
   return (
-    <div className="p-6 rounded-md  max-w-md">
-      <h2 className="text-lg md:text-lg text-gray-500 font-semibold mb-6">
+    <div className="p-6 rounded-md max-w-md">
+      <h2 className="text-lg text-gray-500 font-semibold mb-6">
         Define Work Shift Time
       </h2>
 
