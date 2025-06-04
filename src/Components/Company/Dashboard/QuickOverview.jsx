@@ -1,23 +1,74 @@
-import React, { useState, forwardRef } from "react";
+import React, { useEffect, useState, forwardRef } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import DatePicker from "react-datepicker";
 import { useNavigate } from "react-router-dom";
-
+import axios from "axios";
+import dayjs from "dayjs";
 import "react-datepicker/dist/react-datepicker.css";
 
 const QuickOverview = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [totalEmployees, setTotalEmployees] = useState(0);
+  const [checkinEmployees, setCheckinEmployees] = useState(0);
+  const [onLeave, setOnLeave] = useState(0);
+
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const fetchOverviewData = async (date) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const formattedDate = dayjs(date).format("YYYY-MM-DD");
+      const formattedMonth = dayjs(date).format("YYYY-MM");
+
+      const empRes = await axios.get(
+        `https://www.attend-pay.com/api/employee`,
+        { headers }
+      );
+      setTotalEmployees(empRes.data.employees.length || 0);
+
+      const checkinRes = await axios.get(
+        `https://www.attend-pay.com/attendence/checkinEmp?date=${formattedDate}`,
+        { headers }
+      );
+      setCheckinEmployees(checkinRes.data.data?.length || 0);
+      const leaveRes = await axios.get(
+        `https://www.attend-pay.com/attendence/leavemp?date=${formattedDate}`,
+        { headers }
+      );
+      setOnLeave(leaveRes.data.data?.length || 0);
+    } catch (err) {
+      console.error("Error fetching overview data:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchOverviewData(selectedDate);
+  }, [selectedDate]);
 
   const stats = [
     {
       title: "Total Employees",
-      value: "182",
+      value: totalEmployees,
       route: "/companyAdmin/employeeList",
     },
-    { title: "Present Employees", value: "167" },
-    { title: "Payroll This Month", value: "₹25M" },
-    { title: "Month's Late C/Ins", value: "12" },
+    {
+      title: "Present Employees",
+      value: checkinEmployees,
+      route: "/companyAdmin/checkinEmployees",
+    },
+    {
+      title: "Payroll This Month",
+      value: "₹25M",
+    },
+    {
+      title: "On Leave Employees",
+      value: onLeave,
+      route: "/companyAdmin/onLeaveEmployees",
+    },
   ];
 
   // Custom Date Picker Button
@@ -44,17 +95,7 @@ const QuickOverview = () => {
           <DatePicker
             selected={selectedDate}
             onChange={(date) => setSelectedDate(date)}
-            dateFormat="MMMM yyyy"
-            showMonthYearPicker
-            popperPlacement="bottom-end"
-            popperModifiers={[
-              {
-                name: "offset",
-                options: {
-                  offset: [0, 6],
-                },
-              },
-            ]}
+            dateFormat="yyyy-MM-dd"
             customInput={<CustomDateInput />}
             calendarClassName="z-50"
             popperClassName="z-50"
@@ -67,11 +108,12 @@ const QuickOverview = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            onClick={() => navigate(stat.route)}
-            className="relative bg-white border border-gray-200 shadow-sm rounded-xl px-5 py-4 min-w-[170px] flex-1 flex flex-col items-center justify-center text-center"
+            onClick={() => stat.route && navigate(stat.route)}
+            className="relative bg-white border border-gray-200 shadow-sm rounded-xl px-5 py-4 min-w-[170px] flex-1 flex flex-col items-center justify-center text-center cursor-pointer"
           >
-            {/* ExternalLink icon in top-right */}
-            <ExternalLink className="absolute top-2 right-2 w-4 h-4 text-gray-400 cursor-pointer" />
+            {stat.route && (
+              <ExternalLink className="absolute top-2 right-2 w-4 h-4 text-gray-400" />
+            )}
             <div className="text-sm text-gray-500">{stat.title}</div>
             <div className="mt-1 text-lg font-semibold text-gray-800">
               {stat.value}
