@@ -102,6 +102,8 @@ function App() {
             <Route path="leave-history" element={<LeaveHistory />} />
             <Route path="WFH" element={<WFH />} />
             <Route path="calender" element={<AttendanceCalendar />} />
+            <Route path="changePassword" element={<UpdatePassword />} />
+
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
         </Routes>
@@ -159,3 +161,4 @@ import CheckinEmployeesTable from "./Components/Company/AttendanceOverview/Check
 import CompanyDashboard from "./Components/Company/Dashboard/CompanyDashboard";
 import PayScheduleForm from "./Components/Company/PayScheduleForm";
 import WfhEmployeesTable from "./Components/Company/AttendanceOverview/WfhEmployeesTable";
+import UpdatePassword from "./Components/Employee/UpdatePassword";

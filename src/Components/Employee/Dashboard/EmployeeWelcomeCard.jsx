@@ -56,8 +56,8 @@ const EmployeeWelcomeCard = () => {
 
         <div className="flex flex-wrap md:flex-nowrap text-xs md:text-sm text-gray-600 mb-1">
           <div className="w-full md:w-1/3 mb-1 md:mb-0">
-            <span className="font-normal">Employee ID: </span>
-            <span className="font-semibold">24DJKBDFVX8C</span>
+            <span className="font-normal">Employee ID/Code: </span>
+            <span className="font-semibold">{employee.emp_code}</span>
           </div>
           <div className="w-full md:w-1/3 mb-1 md:mb-0">
             <span className="font-normal">Joining Date: </span>
@@ -67,7 +67,7 @@ const EmployeeWelcomeCard = () => {
           </div>
           <div className="w-full md:w-1/3">
             <span className="font-normal">Contact No.: </span>
-            <span className="font-semibold">{employee.email}</span>
+            <span className="font-semibold">{employee.mobile}</span>
           </div>
         </div>
 

@@ -4,6 +4,7 @@ import { CgProfile } from "react-icons/cg";
 import { GiThreeLeaves } from "react-icons/gi";
 import { MdOutlineWorkOutline } from "react-icons/md";
 import { WiSunset } from "react-icons/wi";
+import { RiLockPasswordLine } from "react-icons/ri";
 
 const employeeMenu = [
   {
@@ -15,6 +16,11 @@ const employeeMenu = [
   { label: "Holiday List", to: "/employee/holidays", icon: <WiSunset /> },
   { label: "Leaves", to: "/employee/leaves", icon: <GiThreeLeaves /> },
   { label: "WFH", to: "/employee/WFH", icon: <MdOutlineWorkOutline /> },
+  {
+    label: "Update Password",
+    to: "/employee/changePassword",
+    icon: <RiLockPasswordLine />,
+  },
 ];
 
 const EmployeeSidebar = ({ children }) => {
