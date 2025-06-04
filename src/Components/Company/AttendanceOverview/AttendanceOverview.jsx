@@ -70,7 +70,7 @@ export default function AttendanceOverview() {
     {
       title: "On WFH",
       value: 15,
-      link: "/companyAdmin/yetToCheckinEmployees",
+      link: "/companyAdmin/wfhEmployees",
     },
     { title: "On Leave", value: 12, link: "/companyAdmin/onLeaveEmployees" },
   ];

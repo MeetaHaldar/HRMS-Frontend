@@ -79,6 +79,7 @@ function App() {
               path="checkinEmployees"
               element={<CheckinEmployeesTable />}
             />
+            <Route path="wfhEmployees" element={<WfhEmployeesTable />} />
             <Route path="paySchedule" element={<PayScheduleForm />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
@@ -157,3 +158,4 @@ import LeaveRequestsTable from "./Components/Company/AttendanceOverview/LeaveReq
 import CheckinEmployeesTable from "./Components/Company/AttendanceOverview/CheckinEmployeesTable";
 import CompanyDashboard from "./Components/Company/Dashboard/CompanyDashboard";
 import PayScheduleForm from "./Components/Company/PayScheduleForm";
+import WfhEmployeesTable from "./Components/Company/AttendanceOverview/WfhEmployeesTable";
