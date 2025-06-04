@@ -1,12 +1,20 @@
-import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { MdSpaceDashboard } from "react-icons/md";
+import { CgProfile } from "react-icons/cg";
+import { GiThreeLeaves } from "react-icons/gi";
+import { MdOutlineWorkOutline } from "react-icons/md";
+import { WiSunset } from "react-icons/wi";
 
 const employeeMenu = [
-  { label: "Dashboard", to: "/employee/dashboard", icon: "" },
-  { label: "Profile", to: "/employee/profile", icon: "" },
-  { label: "Holiday List", to: "/employee/holidays", icon: "" },
-  { label: "Leaves", to: "/employee/leaves", icon: "" },
-  { label: "WFH", to: "/employee/WFH", icon: "" },
+  {
+    label: "Dashboard",
+    to: "/employee/dashboard",
+    icon: <MdSpaceDashboard />,
+  },
+  { label: "Profile", to: "/employee/profile", icon: <CgProfile /> },
+  { label: "Holiday List", to: "/employee/holidays", icon: <WiSunset /> },
+  { label: "Leaves", to: "/employee/leaves", icon: <GiThreeLeaves /> },
+  { label: "WFH", to: "/employee/WFH", icon: <MdOutlineWorkOutline /> },
 ];
 
 const EmployeeSidebar = ({ children }) => {
@@ -29,7 +37,7 @@ const EmployeeSidebar = ({ children }) => {
                 key={index}
                 to={item.to}
                 className={`flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start transition ${
-                  isActive ? "bg-[##FFD85F]" : "text-gray-600 hover:bg-gray-100"
+                  isActive ? "bg-[#FFD85F]" : "text-gray-600 hover:bg-gray-100"
                 }`}
                 style={isActive ? { backgroundColor: "#FFD85F" } : {}}
               >
