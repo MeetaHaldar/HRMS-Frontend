@@ -49,7 +49,7 @@ const LeaveType = () => {
         id: item.id,
         leaveName: item.category_name,
         leaveType: item.is_paid ? "Paid" : "Unpaid",
-        days: item.days || "", // fallback in case `days` not present
+        days: item.days || "",
       }));
       setLeaves(mappedLeaves);
     } catch (error) {
