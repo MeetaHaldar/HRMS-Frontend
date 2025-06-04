@@ -2,12 +2,16 @@ import React, { useEffect, useState, forwardRef } from "react";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
+import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function OnLeaveEmployeesTable() {
   const [currentTime, setCurrentTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [employees, setEmployees] = useState([]);
   const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -23,24 +27,47 @@ export default function OnLeaveEmployeesTable() {
     return () => clearInterval(interval);
   }, []);
 
-  const formatDate = (date) =>
-    date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  const formatDateForAPI = (date) => date.toISOString().split("T")[0];
 
-  const employees = Array(10).fill({
-    code: "Employee Code",
-    name: "Employee Name",
-    email: "xyz@mail.com",
-    phone: "+91-987654321",
-    days: "3 Days",
-    department: "Department",
-    status: "on Leave",
-    from: "1/5/25",
-    to: "4/5/25",
-  });
+  const fetchEmployeesOnLeave = async (date) => {
+    try {
+      const response = await axios.get(
+        `https://www.attend-pay.com/attendence/leavemp?date=${formatDateForAPI(
+          date
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (Array.isArray(response.data.data)) {
+        const formatted = response.data.data.map((emp) => ({
+          code: emp.emp_code || "-",
+          name: emp.first_name + " " + emp.last_name || "-",
+          email: emp.email || "-",
+          phone: emp.mobile || "-",
+          days: emp.calculated_days ? `${emp.no_of_days} Days` : "-",
+          department: emp.department_name || "-",
+          status: "On Leave",
+          from:
+            new Date(emp.leave_from_date).toLocaleDateString("en-GB") || "-",
+          to: new Date(emp.leave_to_date).toLocaleDateString("en-GB") || "-",
+        }));
+        setEmployees(formatted);
+      } else {
+        setEmployees([]);
+      }
+    } catch (error) {
+      console.error("Error fetching leave employees:", error);
+      setEmployees([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployeesOnLeave(selectedDate);
+  }, [selectedDate]);
+
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <div
       className="flex items-center gap-2 cursor-pointer border rounded px-2 py-1"
@@ -51,6 +78,7 @@ export default function OnLeaveEmployeesTable() {
       <ChevronDown size={16} className="text-gray-500" />
     </div>
   ));
+
   return (
     <div className="p-2 text-gray-800 w-full">
       {/* Header */}
@@ -86,7 +114,7 @@ export default function OnLeaveEmployeesTable() {
               <th className="px-2 py-2">Employee Code</th>
               <th className="px-2 py-2">Employee Name</th>
               <th className="px-2 py-2">Contact Info.</th>
-              <th className="px-2 py-2">No.of Days</th>
+              <th className="px-2 py-2">No. of Days</th>
               <th className="px-2 py-2">Department</th>
               <th className="px-2 py-2">Status</th>
               <th className="px-2 py-2">From</th>
@@ -94,23 +122,31 @@ export default function OnLeaveEmployeesTable() {
             </tr>
           </thead>
           <tbody>
-            {employees.map((emp, index) => (
-              <tr key={index}>
-                <td className="px-3 py-3">{emp.code}</td>
-                <td className="px-3 py-3">{emp.name}</td>
-                <td className="px-3 py-3">
-                  <div>{emp.email}</div>
-                  <div>{emp.phone}</div>
+            {employees.length > 0 ? (
+              employees.map((emp, index) => (
+                <tr key={index}>
+                  <td className="px-3 py-3">{emp.code}</td>
+                  <td className="px-3 py-3">{emp.name}</td>
+                  <td className="px-3 py-3">
+                    <div>{emp.email}</div>
+                    <div>{emp.phone}</div>
+                  </td>
+                  <td className="px-3 py-3">{emp.days}</td>
+                  <td className="px-3 py-3">{emp.department}</td>
+                  <td className="px-3 py-3 text-green-600 font-medium">
+                    {emp.status}
+                  </td>
+                  <td className="px-3 py-3">{emp.from}</td>
+                  <td className="px-3 py-3">{emp.to}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center py-4 text-gray-400">
+                  No employees on leave for selected date.
                 </td>
-                <td className="px-3 py-3">{emp.days}</td>
-                <td className="px-3 py-3">{emp.department}</td>
-                <td className="px-3 py-3 text-green-600 font-medium">
-                  {emp.status}
-                </td>
-                <td className="px-3 py-3">{emp.from}</td>
-                <td className="px-3 py-3">{emp.to}</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

@@ -86,11 +86,6 @@ const settingsMenu = [
     icon: <TbTax />,
   },
   {
-    label: "Pay Schedule",
-    to: "/companyAdmin/paySchedule",
-    icon: <FaPhoneVolume />,
-  },
-  {
     label: "Leave & Attendance",
     icon: <FcLeave />,
     isExpandable: true,

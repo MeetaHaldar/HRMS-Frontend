@@ -2,13 +2,47 @@ import React, { useState, useEffect, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import DatePicker from "react-datepicker";
+import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
+
 export default function CheckinEmployeesTable() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("token");
+
+  // Format date as YYYY-MM-DD
+  const formatDateForAPI = (date) => {
+    return date.toISOString().split("T")[0];
+  };
+
+  // Fetch employee check-in data
+  const fetchCheckinData = async (date) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `https://www.attend-pay.com/attendence/checkinEmp?date=${formatDateForAPI(
+          date
+        )}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setEmployees(response.data.data || []);
+    } catch (error) {
+      console.error("Error fetching check-in data:", error);
+      setEmployees([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    // Set current time every second
     const interval = setInterval(() => {
       const now = new Date();
       const timeString = now.toLocaleTimeString("en-US", {
@@ -22,29 +56,13 @@ export default function CheckinEmployeesTable() {
     return () => clearInterval(interval);
   }, []);
 
-  const formatDate = (date) =>
-    date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  useEffect(() => {
+    if (token) {
+      fetchCheckinData(selectedDate);
+    }
+  }, [selectedDate]);
 
-  const handleDateChange = (e) => {
-    setSelectedDate(new Date(e.target.value));
-  };
-
-  const employees = Array(10).fill({
-    code: "Employee Code",
-    name: "Employee Name",
-    email: "xyz@mail.com",
-    phone: "+91-987654321",
-    joinDate: "22/01/2025",
-    department: "Department",
-    position: "Position",
-    checkIn: "09:40 am",
-    checkOut: "--:--",
-  });
-  // Custom input component for the date picker
+  // Custom input component for date picker
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <div
       className="flex items-center gap-2 cursor-pointer px-2 py-1"
@@ -55,6 +73,7 @@ export default function CheckinEmployeesTable() {
       <ChevronDown size={16} className="text-gray-500" />
     </div>
   ));
+
   return (
     <div className="text-gray-800 w-full">
       {/* Header */}
@@ -98,21 +117,37 @@ export default function CheckinEmployeesTable() {
             </tr>
           </thead>
           <tbody>
-            {employees.map((emp, index) => (
-              <tr key={index}>
-                <td className="px-4 py-3">{emp.code}</td>
-                <td className="px-4 py-3">{emp.name}</td>
-                <td className="px-4 py-3">
-                  <div>{emp.email}</div>
-                  <div>{emp.phone}</div>
+            {loading ? (
+              <tr>
+                <td colSpan="8" className="text-center py-4 text-gray-500">
+                  Loading...
                 </td>
-                <td className="px-4 py-3">{emp.joinDate}</td>
-                <td className="px-4 py-3">{emp.department}</td>
-                <td className="px-4 py-3">{emp.position}</td>
-                <td className="px-4 py-3">{emp.checkIn}</td>
-                <td className="px-4 py-3">{emp.checkOut}</td>
               </tr>
-            ))}
+            ) : employees.length === 0 ? (
+              <tr>
+                <td colSpan="8" className="text-center py-4 text-gray-500">
+                  No records found for selected date
+                </td>
+              </tr>
+            ) : (
+              employees.map((emp, index) => (
+                <tr key={index}>
+                  <td className="px-4 py-3">{emp.emp_code || "-"}</td>
+                  <td className="px-4 py-3">{emp.first_name || "-"}</td>
+                  <td className="px-4 py-3">
+                    <div>{emp.email || "-"}</div>
+                    <div>{emp.mobile || "-"}</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {emp.hire_date?.split("T")[0] || "-"}
+                  </td>
+                  <td className="px-4 py-3">{emp.department_name || "-"}</td>
+                  <td className="px-4 py-3">{emp.position_name || "-"}</td>
+                  <td className="px-4 py-3">{emp.punch_time || "--:--"}</td>
+                  <td className="px-4 py-3">{emp.check_out || "--:--"}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
