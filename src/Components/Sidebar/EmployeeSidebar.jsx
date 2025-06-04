@@ -26,11 +26,9 @@ const employeeMenu = [
 
 const EmployeeSidebar = ({ children }) => {
   const location = useLocation();
-  const navigate = useNavigate();
-
+  
   const handleLogout = () => {
-    localStorage.clear(); // Clear all stored items (or selectively remove only token/id)
-    navigate("/login");
+    localStorage.clear();
   };
 
   return (

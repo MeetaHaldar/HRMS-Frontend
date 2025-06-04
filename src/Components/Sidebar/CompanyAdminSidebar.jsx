@@ -1,16 +1,13 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoSettingsOutline } from "react-icons/io5";
 import {
   FaFolderPlus,
-  FaClipboardCheck,
-  FaQuestionCircle,
   FaBookOpen,
-  FaPhoneVolume,
   FaIdBadge,
   FaChevronDown,
 } from "react-icons/fa";
-import { FaPeopleGroup, FaArrowTrendUp } from "react-icons/fa6";
+import { FaArrowTrendUp, FaPeopleGroup } from "react-icons/fa6";
 import { PiBuildingOfficeLight, PiSunglasses } from "react-icons/pi";
 import { TbTax } from "react-icons/tb";
 import { FcLeave } from "react-icons/fc";
@@ -18,6 +15,7 @@ import { RiMoneyDollarBoxLine } from "react-icons/ri";
 import { GrTemplate } from "react-icons/gr";
 import { MdSpaceDashboard } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
+import { FiLogOut } from "react-icons/fi";
 
 const menuItems = [
   {
@@ -36,7 +34,6 @@ const menuItems = [
     to: "LeaveAttendanceOverview",
     icon: <FcLeave />,
   },
-
   {
     label: "Subscription",
     icon: <FaBookOpen />,
@@ -103,6 +100,12 @@ const CompanyAdminSidebar = ({ children }) => {
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
   const [isLeaveAttendanceOpen, setIsLeaveAttendanceOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/signIn");
+  };
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -199,6 +202,19 @@ const CompanyAdminSidebar = ({ children }) => {
               </Link>
             );
           })}
+
+          {/* Logout Button */}
+          <div className="w-full px-2 pt-6">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start text-gray-600 hover:bg-gray-100 transition"
+            >
+              <span className="text-xl">
+                <FiLogOut />
+              </span>
+              {!isSettingsMenuActive && <span className="text-sm">Logout</span>}
+            </button>
+          </div>
         </nav>
       </div>
 
