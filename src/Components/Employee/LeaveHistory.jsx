@@ -7,6 +7,7 @@ const LeaveHistory = ({ selectedMonth, token }) => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const employeeId = JSON.parse(localStorage.getItem("user"))?.employeeId;
   const fetchLeaveHistory = async () => {
     if (!selectedMonth) return;
 
@@ -14,7 +15,7 @@ const LeaveHistory = ({ selectedMonth, token }) => {
       setLoading(true);
 
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/history?month_year=${selectedMonth}`,
+        `https://www.attend-pay.com/attendence/history?month_year=${selectedMonth}&employee_id =${employeeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
