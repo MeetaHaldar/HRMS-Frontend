@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import ApplyWFHPopup from "./ApplyWFHPopup";
 
 const WFH = () => {
-  const [wfhData, setWFHData] = useState({
-    granted: 0,
-    taken: 0,
-    balance: 0,
-    pending: 0,
-  });
-
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
@@ -17,102 +11,181 @@ const WFH = () => {
     )}`;
   });
 
+  const [apiData, setApiData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchWFHData = async () => {
-      try {
-        const response = await fetch(`/api/wfh?month=${selectedMonth}`);
-        const data = await response.json();
-        setWFHData({
-          granted: data.granted || 0,
-          taken: data.taken || 0,
-          balance: data.balance || 0,
-          pending: data.pending || 0,
-        });
-      } catch (error) {
-        console.error("Error fetching WFH data:", error);
-      }
-    };
+  const token = localStorage.getItem("token");
+  const employeeId = JSON.parse(localStorage.getItem("user"))?.emp_id;
 
+  const fetchWFHData = async () => {
+    if (!token || !employeeId) return;
+
+    try {
+      setLoading(true);
+      const res = await axios.get(
+        `https://www.attend-pay.com/api/employee/wfhdetails?month_year=${selectedMonth}&employee_id=${employeeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setApiData(res.data);
+    } catch (error) {
+      console.error("Error fetching WFH data:", error);
+      setApiData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchWFHData();
   }, [selectedMonth]);
 
   const handleApplyWFH = async (formData) => {
     try {
-      const response = await fetch("/api/wfh/apply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) throw new Error("Failed to apply for WFH");
-
-      // Optionally refresh data
-      const updatedData = await fetch(`/api/wfh?month=${selectedMonth}`).then(
-        (res) => res.json()
+      await axios.post(
+        "https://www.attend-pay.com/attendence/applywfh",
+        {
+          start_date: formData.startDate,
+          end_date: formData.endDate,
+          emp_id: employeeId,
+          reason: formData.reason,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      setWFHData({
-        granted: updatedData.granted || 0,
-        taken: updatedData.taken || 0,
-        balance: updatedData.balance || 0,
-        pending: updatedData.pending || 0,
-      });
 
-      console.log("WFH applied successfully!");
+      setIsPopupOpen(false);
+      fetchWFHData(); // Refresh list after submission
     } catch (error) {
       console.error("Error applying for WFH:", error);
     }
   };
 
+  const formatDate = (isoDate) => {
+    if (!isoDate) return "--";
+    return new Date(isoDate).toISOString().split("T")[0];
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Approved":
+        return "text-green-500";
+      case "Rejected":
+        return "text-red-500";
+      case "Pending":
+      default:
+        return "text-yellow-500";
+    }
+  };
+
   const statCard = (title, value) => (
-    <div className="bg-[#f3f3f3] px-6 py-4 rounded-xl relative shadow-sm flex flex-col justify-between">
+    <div className="bg-[#f3f3f3] px-6 py-4 rounded-xl shadow-sm text-center">
       <p className="text-gray-500 font-semibold text-lg">{title}</p>
-      <p className="text-gray-600 font-medium text-xl">
-        {String(value).padStart(2, "0")}
-      </p>
+      <p className="text-gray-700 font-bold text-xl">{value}</p>
     </div>
   );
 
   return (
-    <>
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-gray-500">
-            Work From Home:
-          </h2>
-          <button
-            onClick={() => setIsPopupOpen(true)}
-            className="bg-[#FFD85F] text-gray-800 font-semibold px-5 py-2 rounded-full shadow hover:bg-yellow-300 transition"
-          >
-            Apply WFH
-          </button>
-        </div>
-
-        <div className="flex items-center text-gray-600 font-medium mb-4">
+    <div className="p-4 md:p-6 w-full">
+      {/* Header */}
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
+        <h2 className="text-xl font-semibold text-gray-600">Work From Home</h2>
+        <div className="flex flex-wrap gap-3">
           <input
             type="month"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="appearance-none bg-transparent border-none text-gray-600 font-medium focus:outline-none cursor-pointer"
+            className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none cursor-pointer"
           />
+          <button
+            onClick={() => setIsPopupOpen(true)}
+            className="bg-[#FFD85F] text-gray-800 font-semibold px-5 py-2 rounded-full shadow hover:bg-yellow-300 transition cursor-pointer"
+          >
+            Apply WFH
+          </button>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center text-gray-600">
-          {statCard("WFH Granted", wfhData.granted)}
-          {statCard("WFH Taken", wfhData.taken)}
-          {statCard("WFH Balance", wfhData.balance)}
-          {statCard("Pending WFH", wfhData.pending)}
-        </div>
-
-        {/* Popup */}
-        <ApplyWFHPopup
-          isOpen={isPopupOpen}
-          onClose={() => setIsPopupOpen(false)}
-          onSubmit={handleApplyWFH}
-        />
       </div>
-    </>
+
+      {/* Stats */}
+      {apiData && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+          {statCard("Total Granted", apiData.total_granted)}
+          {statCard("Total Taken", apiData.total_taken)}
+          {statCard("Pending", apiData.pending)}
+          {statCard("Remaining", apiData.remaining)}
+        </div>
+      )}
+
+      {/* WFH History Table */}
+      <h3 className="text-lg font-semibold text-gray-600 mb-4">WFH History</h3>
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse rounded-md text-sm">
+          <thead className="bg-gray-100 text-gray-600">
+            <tr>
+              <th className="p-3 text-left">Start Date</th>
+              <th className="p-3 text-left">End Date</th>
+              <th className="p-3 text-left">Reason</th>
+              <th className="p-3 text-left">Status</th>
+              <th className="p-3 text-left">Requested Date</th>
+              <th className="p-3 text-left">Approved By</th>
+              <th className="p-3 text-left">Approved On</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="7" className="p-4 text-center text-gray-400">
+                  Loading...
+                </td>
+              </tr>
+            ) : !apiData || !apiData.wfh_history?.length ? (
+              <tr>
+                <td colSpan="7" className="p-4 text-center text-gray-400">
+                  No WFH records found
+                </td>
+              </tr>
+            ) : (
+              apiData.wfh_history.map((record, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="p-3">{formatDate(record.start_date)}</td>
+                  <td className="p-3">{formatDate(record.end_date)}</td>
+                  <td className="p-3" title={record.reason}>
+                    {record.reason || "--"}
+                  </td>
+                  <td
+                    className={`p-3 font-medium ${getStatusColor(
+                      record.status
+                    )}`}
+                  >
+                    {record.status || "--"}
+                  </td>
+                  <td className="p-3">{formatDate(record.requested_date)}</td>
+                  <td className="p-3">{record.approved_by || "--"}</td>
+                  <td className="p-3">
+                    {record.approved_date
+                      ? formatDate(record.approved_date)
+                      : "--"}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <ApplyWFHPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        onSubmit={handleApplyWFH}
+      />
+    </div>
   );
 };
 

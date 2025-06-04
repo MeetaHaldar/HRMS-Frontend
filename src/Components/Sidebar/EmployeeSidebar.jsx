@@ -6,7 +6,7 @@ const employeeMenu = [
   { label: "Profile", to: "/employee/profile", icon: "" },
   { label: "Holiday List", to: "/employee/holidays", icon: "" },
   { label: "Leaves", to: "/employee/leaves", icon: "" },
-  { label: "WFH", to: "/employee/WFHhistory", icon: "" },
+  { label: "WFH", to: "/employee/WFH", icon: "" },
 ];
 
 const EmployeeSidebar = ({ children }) => {

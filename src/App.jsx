@@ -100,7 +100,7 @@ function App() {
             <Route path="holidays" element={<Holidays />} />
             <Route path="leaves" element={<Leaves />} />
             <Route path="leave-history" element={<LeaveHistory />} />
-            <Route path="WFHhistory" element={<WFHhistory />} />
+            <Route path="WFH" element={<WFH />} />
             <Route path="calender" element={<AttendanceCalendar />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
@@ -121,7 +121,7 @@ import CompaniesList from "./Components/SuperAdmin/CompaniesList";
 import HolidayList from "./Components/Company/HolidayList";
 import Leaves from "./Components/Employee/Leaves";
 import LeaveHistory from "./Components/Employee/LeaveHistory";
-import WFHhistory from "./Components/Employee/WFHhistory";
+import WFH from "./Components/Employee/WFH";
 import Department from "./Components/Company/Department";
 import Profile from "./Components/Employee/Profile";
 import Holidays from "./Components/Employee/Holidays";
