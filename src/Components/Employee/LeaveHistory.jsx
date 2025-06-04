@@ -1,47 +1,66 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Pagination from "../Pagination";
-const LeaveHistory = () => {
+
+const LeaveHistory = ({ selectedMonth, token }) => {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const fetchLeaveHistory = async () => {
+    if (!selectedMonth) return;
+
+    try {
+      setLoading(true);
+
+      const response = await axios.get(
+        `https://www.attend-pay.com/attendence/history?month_year=${selectedMonth}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (
+        response.data.leave_history &&
+        Array.isArray(response.data.leave_history)
+      ) {
+        const formattedLeaves = response.data.leave_history.map((leave) => ({
+          startDate: leave.start_time?.split("T")[0] || "-",
+          endDate: leave.end_time?.split("T")[0] || "-",
+          leaveType: leave.category_name || "-",
+          reason: leave.apply_reason || "-",
+          status:
+            leave.revoke_type === "P"
+              ? "Pending"
+              : leave.revoke_type === "R"
+              ? "Rejected"
+              : leave.revoke_type === "A"
+              ? "Approved"
+              : "-",
+
+          requestedDate: leave.apply_time?.split("T")[0] || "-",
+          approval: leave.approver || "-",
+          approvalDateTime: leave.audit_time
+            ? new Date(leave.audit_time).toLocaleString()
+            : "-",
+        }));
+        console.log("Formatted Leaves:", formattedLeaves);
+        setLeaves(formattedLeaves);
+      } else {
+        setLeaves([]);
+      }
+    } catch (error) {
+      console.error("Error fetching leave history:", error);
+      setLeaves([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Simulated API delay with dummy data
-    setTimeout(() => {
-      setLeaves([
-        {
-          startDate: "2025-03-01",
-          endDate: "2025-03-03",
-          reason:
-            "Family function lorem3 ipsum dolor sit amet, consectetur adipiscing elit.",
-          status: "Approved",
-          requestedDate: "2025-02-25",
-          approval: "Manager A",
-          approvalDateTime: "2025-02-26 10:30 AM",
-        },
-        {
-          startDate: "2025-03-10",
-          endDate: "2025-03-12",
-          reason: "Medical leave",
-          status: "Pending",
-          requestedDate: "2025-03-05",
-          approval: "Manager B",
-          approvalDateTime: "-",
-        },
-        {
-          startDate: "2025-02-15",
-          endDate: "2025-02-16",
-          reason: "Personal work",
-          status: "Rejected",
-          requestedDate: "2025-02-10",
-          approval: "Manager A",
-          approvalDateTime: "2025-02-12 09:15 AM",
-        },
-      ]);
-      setLoading(false);
-    }, 500); // simulate network delay
-  }, []);
+    fetchLeaveHistory();
+  }, [selectedMonth]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -67,6 +86,7 @@ const LeaveHistory = () => {
             <tr className="bg-gray-200 text-left text-gray-500">
               <th className="p-2 md:p-3">Start Date</th>
               <th className="p-2 md:p-3">End Date</th>
+              <th className="p-2 md:p-3">Leave Type</th>
               <th className="p-2 md:p-3">Reason</th>
               <th className="p-2 md:p-3">Status</th>
               <th className="p-2 md:p-3">Requested On</th>
@@ -85,7 +105,7 @@ const LeaveHistory = () => {
               <tr>
                 <td colSpan="7" className="text-center p-4">
                   <p className="text-gray-500 mt-2 text-xs md:text-sm">
-                    No leave records found
+                    No leave records found for {selectedMonth}
                   </p>
                 </td>
               </tr>
@@ -94,13 +114,14 @@ const LeaveHistory = () => {
                 <tr key={index} className="hover:bg-gray-100">
                   <td className="p-2 md:p-3">{leave.startDate}</td>
                   <td className="p-2 md:p-3">{leave.endDate}</td>
+                  <td className="p-2 md:p-3">{leave.leaveType}</td>
+
                   <td
                     className="p-2 md:p-3 max-w-[150px] truncate"
                     title={leave.reason}
                   >
                     {leave.reason}
                   </td>
-
                   <td
                     className={`p-2 md:p-3 font-semibold ${getStatusColor(
                       leave.status
@@ -117,9 +138,10 @@ const LeaveHistory = () => {
           </tbody>
         </table>
       </div>
+
       <Pagination
         currentPage={currentPage}
-        totalPages={10} // Replace this with: totalPages if dynamic
+        totalPages={totalPages}
         onPageChange={(page) => setCurrentPage(page)}
       />
     </div>

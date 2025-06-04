@@ -6,6 +6,7 @@ import axios from "axios";
 
 const Leaves = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const token = localStorage.getItem("token");
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
@@ -21,7 +22,6 @@ const Leaves = () => {
   useEffect(() => {
     const fetchLeaveCategories = async () => {
       try {
-        const token = localStorage.getItem("token");
         const response = await axios.get(
           "https://www.attend-pay.com/api/auth/company/getallLeaveCategory",
           {
@@ -98,7 +98,7 @@ const Leaves = () => {
         />
       </div>
 
-      <LeaveHistory selectedMonth={selectedMonth} />
+      <LeaveHistory selectedMonth={selectedMonth} token={token} />
     </>
   );
 };
