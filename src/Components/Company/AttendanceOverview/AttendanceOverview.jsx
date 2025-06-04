@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import dayjs from "dayjs"; // Install with: npm install dayjs
 
 export default function AttendanceOverview() {
   const [currentTime, setCurrentTime] = useState("");
-  const [attendanceDate, setAttendanceDate] = useState("2025-05-05");
-  const [approvalDate, setApprovalDate] = useState("2025-05-05");
+  const [attendanceDate, setAttendanceDate] = useState(
+    dayjs().format("YYYY-MM-DD")
+  );
+  const [approvalDate, setApprovalDate] = useState(
+    dayjs().format("YYYY-MM-DD")
+  );
+
   const [totalEmployees, setTotalEmployees] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [checkinEmployees, setCheckinEmployees] = useState(0);
+  const [yetToCheckin, setYetToCheckin] = useState(0);
+  const [onWfh, setOnWfh] = useState(0);
+  const [onLeave, setOnLeave] = useState(0);
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const updateClock = () => {
@@ -25,54 +37,80 @@ export default function AttendanceOverview() {
     const interval = setInterval(updateClock, 1000);
     return () => clearInterval(interval);
   }, []);
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    setLoading(true);
+    const fetchCounts = async () => {
+      try {
+        const headers = {
+          Authorization: `Bearer ${token}`,
+        };
 
-    fetch(`https://www.attend-pay.com/api/employee`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("Failed to fetch employees");
-        return response.json();
-      })
-      .then((data) => {
-        setTotalEmployees(data.employees.length || 0);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching employees:", error);
+        const empRes = await axios.get(
+          `https://www.attend-pay.com/api/employee`,
+          { headers }
+        );
+        setTotalEmployees(empRes.data.employees.length || 0);
 
-        setLoading(false);
-      });
-  }, []);
+        const checkinRes = await axios.get(
+          `https://www.attend-pay.com/attendence/checkinEmp?date=${attendanceDate}`,
+          { headers }
+        );
+        setCheckinEmployees(checkinRes.data.data?.length || 0);
+
+        const yetToCheckinRes = await axios.get(
+          `https://www.attend-pay.com/attendence/yettocheckin?date=${attendanceDate}`,
+          { headers }
+        );
+        setYetToCheckin(yetToCheckinRes.data.data?.length || 0);
+
+        const wfhRes = await axios.get(
+          `https://www.attend-pay.com/attendence/wfhemp?date=${attendanceDate}`,
+          { headers }
+        );
+        setOnWfh(wfhRes.data.data?.length || 0);
+
+        const leaveRes = await axios.get(
+          `https://www.attend-pay.com/attendence/leavemp?date=${attendanceDate}`,
+          { headers }
+        );
+        setOnLeave(leaveRes.data.data?.length || 0);
+      } catch (err) {
+        console.error("Error fetching overview data:", err);
+      }
+    };
+
+    if (attendanceDate) {
+      fetchCounts();
+    }
+  }, [attendanceDate, token]);
+
+  const handleDateChange = (e) => {
+    const selected = dayjs(e.target.value).format("YYYY-MM-DD");
+    setAttendanceDate(selected);
+  };
 
   const overviewData = [
     {
       title: "Total Employees",
-      value: 0 || totalEmployees,
+      value: totalEmployees,
       link: "/companyAdmin/employeeList",
     },
     {
       title: "C/in Employees",
-      value: 165,
+      value: checkinEmployees,
       link: "/companyAdmin/checkinEmployees",
     },
     {
       title: "Yet to C/in",
-      value: 15,
+      value: yetToCheckin,
       link: "/companyAdmin/yetToCheckinEmployees",
     },
+    { title: "On WFH", value: onWfh, link: "/companyAdmin/wfhEmployees" },
     {
-      title: "On WFH",
-      value: 15,
-      link: "/companyAdmin/wfhEmployees",
+      title: "On Leave",
+      value: onLeave,
+      link: "/companyAdmin/onLeaveEmployees",
     },
-    { title: "On Leave", value: 12, link: "/companyAdmin/onLeaveEmployees" },
   ];
 
   const approvalData = [
@@ -86,7 +124,6 @@ export default function AttendanceOverview() {
 
   return (
     <div className="p-6 text-gray-800 w-full">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
           Attendance & Leaves Overview:
@@ -107,9 +144,10 @@ export default function AttendanceOverview() {
           type="date"
           className="text-sm border border-gray-300 rounded px-2 py-1"
           value={attendanceDate}
-          onChange={(e) => setAttendanceDate(e.target.value)}
+          onChange={handleDateChange}
         />
       </div>
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {overviewData.map((item, index) => (
           <div
@@ -142,6 +180,7 @@ export default function AttendanceOverview() {
           onChange={(e) => setApprovalDate(e.target.value)}
         />
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {approvalData.map((item, index) => (
           <div
