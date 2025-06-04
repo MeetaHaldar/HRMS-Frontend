@@ -67,6 +67,11 @@ export default function AttendanceOverview() {
       value: 15,
       link: "/companyAdmin/yetToCheckinEmployees",
     },
+    {
+      title: "On WFH",
+      value: 15,
+      link: "/companyAdmin/yetToCheckinEmployees",
+    },
     { title: "On Leave", value: 12, link: "/companyAdmin/onLeaveEmployees" },
   ];
 
@@ -105,7 +110,7 @@ export default function AttendanceOverview() {
           onChange={(e) => setAttendanceDate(e.target.value)}
         />
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         {overviewData.map((item, index) => (
           <div
             key={index}

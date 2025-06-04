@@ -2,13 +2,16 @@ import React, { useEffect, useState, forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import DatePicker from "react-datepicker";
+import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 
 export default function YetToCheckinEmployeesTable() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [employees, setEmployees] = useState([]);
 
+  // ⏰ Update Clock
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -23,26 +26,37 @@ export default function YetToCheckinEmployeesTable() {
     return () => clearInterval(interval);
   }, []);
 
-  const formatDate = (date) =>
-    date.toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  // 📅 Format date as yyyy-mm-dd
+  const formatDateForAPI = (date) => {
+    return date.toISOString().split("T")[0]; // yyyy-mm-dd
+  };
 
-  const employees = Array(10).fill({
-    code: "Employee Code",
-    name: "Employee Name",
-    email: "xyz@mail.com",
-    phone: "+91-987654321",
-    joinDate: "22/01/2025",
-    department: "Department",
-    position: "Position",
-    checkIn: "--:--",
-    checkOut: "--:--",
-  });
+  // 📡 Fetch employees who are yet to check in
+  const fetchEmployees = async (date) => {
+    try {
+      const token = localStorage.getItem("token");
+      const formattedDate = formatDateForAPI(date);
+      const response = await axios.get(
+        `https://www.attend-pay.com/attendence/yettocheckin?date=${formattedDate}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setEmployees(response.data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch yet-to-check-in employees:", error);
+      setEmployees([]);
+    }
+  };
 
-  // Custom input component for the date picker
+  // 🟢 Fetch on mount and date change
+  useEffect(() => {
+    fetchEmployees(selectedDate);
+  }, [selectedDate]);
+
+  // 📅 Custom date input
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <div
       className="flex items-center gap-2 cursor-pointer border rounded px-2 py-1"
@@ -97,21 +111,33 @@ export default function YetToCheckinEmployeesTable() {
             </tr>
           </thead>
           <tbody>
-            {employees.map((emp, index) => (
-              <tr key={index}>
-                <td className="px-4 py-3">{emp.code}</td>
-                <td className="px-4 py-3">{emp.name}</td>
-                <td className="px-4 py-3">
-                  <div>{emp.email}</div>
-                  <div>{emp.phone}</div>
+            {employees.length === 0 ? (
+              <tr>
+                <td colSpan="8" className="text-center py-4 text-gray-500">
+                  No data available
                 </td>
-                <td className="px-4 py-3">{emp.joinDate}</td>
-                <td className="px-4 py-3">{emp.department}</td>
-                <td className="px-4 py-3">{emp.position}</td>
-                <td className="px-4 py-3">{emp.checkIn}</td>
-                <td className="px-4 py-3">{emp.checkOut}</td>
               </tr>
-            ))}
+            ) : (
+              employees.map((emp, index) => (
+                <tr key={index}>
+                  <td className="px-4 py-3">{emp.emp_code}</td>
+                  <td className="px-4 py-3">
+                    {emp.first_name} {emp.last_name}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div>{emp.email}</div>
+                    <div>{emp.mobile}</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {new Date(emp.joining_date).toLocaleDateString("en-GB")}
+                  </td>
+                  <td className="px-4 py-3">{emp.department_name}</td>
+                  <td className="px-4 py-3">{emp.position_name}</td>
+                  <td className="px-4 py-3">--:--</td>
+                  <td className="px-4 py-3">--:--</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
