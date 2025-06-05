@@ -23,7 +23,7 @@ const EmployeeWelcomeCard = () => {
             },
           }
         );
-        setEmployee(res.data.employee[0]);
+        setEmployee(res.data.employee);
       } catch (error) {
         console.error("Failed to fetch employee data:", error);
       }
