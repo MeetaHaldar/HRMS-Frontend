@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
 import { useNavigate } from "react-router-dom";
@@ -10,8 +9,6 @@ const EmployeeList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,20 +38,6 @@ const EmployeeList = () => {
       });
   }, [currentPage]);
 
-  const handleDeleteRequest = (employee) => {
-    setEmployeeToDelete(employee);
-    setShowDeletePopup(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    setEmployees((prev) => prev.filter((e) => e.id !== employeeToDelete.id));
-    setShowDeletePopup(false);
-  };
-
-  const handleCancelDelete = () => {
-    setShowDeletePopup(false);
-  };
-
   return (
     <div className="p-2 md:p-6 w-full flex flex-col min-h-full">
       <div className="flex justify-between items-center mb-4">
@@ -77,7 +60,7 @@ const EmployeeList = () => {
               <th className="p-3">Pos ID</th>
               <th className="p-3">Status</th>
               <th className="p-3">Active/InActive</th>
-              <th className="p-3">Actions</th>
+              <th className="p-3">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -110,12 +93,6 @@ const EmployeeList = () => {
                     <button className="text-gray-500 hover:text-gray-900">
                       <FiEdit />
                     </button>
-                    <button
-                      className="text-gray-500 hover:text-gray-900"
-                      onClick={() => handleDeleteRequest(employee)}
-                    >
-                      <RiDeleteBin6Line />
-                    </button>
                   </td>
                 </tr>
               ))
@@ -128,14 +105,6 @@ const EmployeeList = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={(page) => setCurrentPage(page)}
-      />
-
-      <DeleteConfirmationPopup
-        isOpen={showDeletePopup}
-        onClose={handleCancelDelete}
-        onConfirm={handleDeleteConfirm}
-        data={employeeToDelete}
-        message={`Are you sure you want to delete the employee: ${employeeToDelete?.first_name}?`}
       />
     </div>
   );
