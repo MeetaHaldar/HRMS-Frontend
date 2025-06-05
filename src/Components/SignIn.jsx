@@ -49,7 +49,7 @@ const SignIn = () => {
 
       if (roles.includes("superAdmin")) {
         window.location.href = "/";
-      } else if (roles.includes("systemAdmin") || roles.includes("manager")) {
+      } else if (roles.includes("systemAdmin")) {
         window.location.href = "/companyAdmin/CompanyDashboard";
       } else if (roles.includes("employee")) {
         window.location.href = "/employee/dashboard";

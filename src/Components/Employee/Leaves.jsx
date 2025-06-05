@@ -17,6 +17,7 @@ const Leaves = () => {
 
   const [leaveCategories, setLeaveCategories] = useState([]);
   const [notification, setNotification] = useState("");
+  const [reloadHistory, setReloadHistory] = useState(false);
 
   // Fetch leave categories on mount
   useEffect(() => {
@@ -52,6 +53,7 @@ const Leaves = () => {
       );
 
       setNotification(response.data.message || "Leave applied successfully!");
+      setReloadHistory((prev) => !prev); // Toggle to trigger reload
 
       setTimeout(() => setNotification(""), 5000);
     } catch (error) {
@@ -98,7 +100,11 @@ const Leaves = () => {
         />
       </div>
 
-      <LeaveHistory selectedMonth={selectedMonth} token={token} />
+      <LeaveHistory
+        selectedMonth={selectedMonth}
+        token={token}
+        reloadTrigger={reloadHistory}
+      />
     </>
   );
 };

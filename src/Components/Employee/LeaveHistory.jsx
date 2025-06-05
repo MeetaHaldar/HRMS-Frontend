@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Pagination from "../Pagination";
 
-const LeaveHistory = ({ selectedMonth, token }) => {
+const LeaveHistory = ({ selectedMonth, token, reloadTrigger }) => {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const employeeId = JSON.parse(localStorage.getItem("user"))?.employeeId;
+  const employeeId = JSON.parse(localStorage.getItem("user"))?.emp_id;
   const fetchLeaveHistory = async () => {
     if (!selectedMonth) return;
 
@@ -15,7 +15,7 @@ const LeaveHistory = ({ selectedMonth, token }) => {
       setLoading(true);
 
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/history?month_year=${selectedMonth}&employee_id =${employeeId}`,
+        `https://www.attend-pay.com/attendence/history?month_year=${selectedMonth}&employee_id=${employeeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ const LeaveHistory = ({ selectedMonth, token }) => {
             ? new Date(leave.audit_time).toLocaleString()
             : "-",
         }));
-        console.log("Formatted Leaves:", formattedLeaves);
+
         setLeaves(formattedLeaves);
       } else {
         setLeaves([]);
@@ -61,7 +61,7 @@ const LeaveHistory = ({ selectedMonth, token }) => {
 
   useEffect(() => {
     fetchLeaveHistory();
-  }, [selectedMonth]);
+  }, [reloadTrigger, selectedMonth]);
 
   const getStatusColor = (status) => {
     switch (status) {

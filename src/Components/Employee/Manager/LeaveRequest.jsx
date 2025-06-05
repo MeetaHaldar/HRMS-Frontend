@@ -1,106 +1,123 @@
-import React, { useEffect, useState } from "react";
-import { FiExternalLink } from "react-icons/fi";
-import ApplyLeavePopup from "../ApplyLeavePopup";
-
-const initialRequests = [
-  { id: 1, name: "Sammy", startDate: "2025-04-20", endDate: "2025-04-24", reason: "Family Function", requestedDate: "2025-04-15", status: "pending" },
-  { id: 2, name: "Sammy", startDate: "2025-04-20", endDate: "2025-04-24", reason: "Family Function", requestedDate: "2025-04-15", status: "pending" },
-];
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function LeaveRequest() {
-  const [requests, setRequests] = useState(initialRequests);
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  });
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [requests, setRequests] = useState([]);
+
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchLeaveData = async () => {
       try {
-        const response = await fetch(`/api/leaves?month=${selectedMonth}`);
-        const data = await response.json();
-        setRequests(data.requests || []);
+        const response = await axios.get(
+          "https://www.attend-pay.com/attendence/getleavereq",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const data = response.data.leaveRequests || [];
+        const mapped = data.map((r) => ({
+          id: r.abstractexception_ptr_id,
+          name: r.first_name + " " + r.last_name || "N/A",
+          startDate: r.start_time?.split("T")[0],
+          endDate: r.end_time?.split("T")[0],
+          reason: r.apply_reason || "—",
+          requestedDate: r.created_at?.split("T")[0],
+          status: r.revoke_type, // "P", "A", or "R"
+        }));
+        setRequests(mapped);
       } catch (error) {
         console.error("Error fetching leave requests:", error);
       }
     };
 
     fetchLeaveData();
-  }, [selectedMonth]);
+  }, [token]);
+
+  const updateLeaveStatus = async (leave_id, approval_status) => {
+    try {
+      await axios.put(
+        "https://www.attend-pay.com/attendence/changeLeaveStatus",
+        { leave_id, approval_status },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (error) {
+      console.error(`Failed to update status for leave ID ${leave_id}:`, error);
+    }
+  };
 
   const handleBulkSelect = (e) => {
     const checked = e.target.checked;
-    const updated = requests.map(r => r.status === "pending" ? { ...r, selected: checked } : r);
+    const updated = requests.map((r) =>
+      r.status === "P" ? { ...r, selected: checked } : r
+    );
     setRequests(updated);
   };
 
-  const handleSelect = (id) => {
-    setRequests(prev => prev.map(r => r.id === id ? { ...r, selected: !r.selected } : r));
+  const handleDecision = async (id, newStatus) => {
+    await updateLeaveStatus(id, newStatus);
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === id ? { ...r, status: newStatus, selected: false } : r
+      )
+    );
   };
 
-  const handleDecision = (id, status) => {
-    setRequests(prev => {
-      const updated = prev.map(r =>
-        r.id === id ? { ...r, status, selected: false } : r
-      );
-      const sorted = [
-        ...updated.filter(r => r.status === "pending"),
-        ...updated.filter(r => r.status !== "pending")
-      ];
-      return sorted;
-    });
-  };
+  const handleBulkAction = async (newStatus) => {
+    const toUpdate = requests.filter((r) => r.selected && r.status === "P");
 
-  const handleBulkAction = (status) => {
-    setRequests(prev => {
-      let updated = prev.map(r =>
-        r.selected && r.status === "pending" ? { ...r, status, selected: false } : r
-      );
-      const sorted = [
-        ...updated.filter(r => r.status === "pending"),
-        ...updated.filter(r => r.status !== "pending")
-      ];
-      return sorted;
-    });
+    for (let r of toUpdate) {
+      await updateLeaveStatus(r.id, newStatus);
+    }
+
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.selected && r.status === "P"
+          ? { ...r, status: newStatus, selected: false }
+          : r
+      )
+    );
   };
 
   const handleMonthChange = (e) => {
     setSelectedMonth(e.target.value);
   };
 
-  const anySelected = requests.some(r => r.selected);
-  const allSelectable = requests.some(r => r.status === "pending");
-  const allSelected = allSelectable && requests.filter(r => r.status === "pending").every(r => r.selected);
+  const anySelected = requests.some((r) => r.selected);
+  const allSelectable = requests.some((r) => r.status === "P");
+  const allSelected =
+    allSelectable &&
+    requests.filter((r) => r.status === "P").every((r) => r.selected);
+
+  const statusTextMap = {
+    P: "Pending",
+    A: "Approved",
+    R: "Rejected",
+  };
 
   return (
     <div className="p-4">
       <div className="flex justify-between mb-2 items-center">
         <h2 className="text-lg font-medium">Leave Requests for Approval:</h2>
-        <div className="relative">
-          <input
-            type="month"
-            value={selectedMonth}
-            onChange={handleMonthChange}
-            className="appearance-none bg-transparent border-none text-gray-600 font-medium focus:outline-none cursor-pointer"
-          />
-        </div>
       </div>
 
       <div
         className={`mb-3 space-x-3 transition-all duration-300 ease-in-out ${
-          anySelected ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+          anySelected
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 -translate-y-2 pointer-events-none"
         }`}
       >
         <button
-          className="px-3 py-1 bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2  text-xs md:text-sm rounded-full font-semibold cursor-pointer"
-          onClick={() => handleBulkAction("accepted")}
+          className="px-3 py-1 bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 text-xs md:text-sm rounded-full font-semibold cursor-pointer"
+          onClick={() => handleBulkAction("A")}
         >
           Accept All
         </button>
         <button
           className="px-3 py-1 rounded-full text-sm font-medium shadow-sm hover:bg-gray-100"
-          onClick={() => handleBulkAction("declined")}
+          onClick={() => handleBulkAction("R")}
         >
           Reject All
         </button>
@@ -121,16 +138,15 @@ export default function LeaveRequest() {
             <th className="p-2">Start Date</th>
             <th className="p-2">End Date</th>
             <th className="p-2">Reason</th>
-            <th className="p-2">Requested Date</th>
             <th className="p-2">Status</th>
-            <th className="p-2">Actions</th>
+            <th className="p-2">Action</th>
           </tr>
         </thead>
         <tbody>
           {requests.map((r) => (
             <tr key={r.id} className="text-left">
               <td className="p-2 align-middle">
-                {r.status === "pending" && (
+                {r.status === "P" && (
                   <input
                     type="checkbox"
                     checked={r.selected || false}
@@ -142,24 +158,32 @@ export default function LeaveRequest() {
               <td className="p-2 align-middle">{r.startDate}</td>
               <td className="p-2 align-middle">{r.endDate}</td>
               <td className="p-2 align-middle">{r.reason}</td>
-              <td className="p-2 align-middle">{r.requestedDate}</td>
-              <td className="p-2 align-middle capitalize">{r.status}</td>
+              <td
+                className={`p-2 align-middle font-semibold ${
+                  r.status === "A" ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {statusTextMap[r.status]}
+              </td>
+
               <td className="p-2 align-middle">
-                {r.status === "pending" ? (
-                  <>
-                    <button
-                      className="mr-2 text-black rounded"
-                      onClick={() => handleDecision(r.id, "accepted")}
-                    >
-                      ✔️
-                    </button>
-                    <button
-                      className="text-black rounded"
-                      onClick={() => handleDecision(r.id, "declined")}
-                    >
-                      ❌
-                    </button>
-                  </>
+                {r.status === "P" ? (
+                  <select
+                    defaultValue=""
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === "A" || val === "R") {
+                        handleDecision(r.id, val);
+                      }
+                    }}
+                    className="text-sm px-2 py-1 border rounded"
+                  >
+                    <option value="" disabled>
+                      Choose
+                    </option>
+                    <option value="A">Approve</option>
+                    <option value="R">Reject</option>
+                  </select>
                 ) : (
                   <span className="text-gray-400">Action Taken</span>
                 )}
@@ -168,13 +192,6 @@ export default function LeaveRequest() {
           ))}
         </tbody>
       </table>
-
-      {/* Popup for Apply Leave */}
-      <ApplyLeavePopup
-        isOpen={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}
-        onSubmit={() => {}}
-      />
     </div>
   );
 }

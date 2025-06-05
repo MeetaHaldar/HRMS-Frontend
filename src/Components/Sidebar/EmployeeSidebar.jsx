@@ -6,8 +6,9 @@ import { MdOutlineWorkOutline } from "react-icons/md";
 import { WiSunset } from "react-icons/wi";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
+import { PiPlant } from "react-icons/pi";
 
-const employeeMenu = [
+const baseMenu = [
   {
     label: "Dashboard",
     to: "/employee/dashboard",
@@ -16,6 +17,12 @@ const employeeMenu = [
   { label: "Profile", to: "/employee/profile", icon: <CgProfile /> },
   { label: "Holiday List", to: "/employee/holidays", icon: <WiSunset /> },
   { label: "Leaves", to: "/employee/leaves", icon: <GiThreeLeaves /> },
+  {
+    label: "Leave Requests",
+    to: "/employee/leaveRequest",
+    icon: <PiPlant />,
+    requiresManager: true, // Only for manager
+  },
   { label: "WFH", to: "/employee/WFH", icon: <MdOutlineWorkOutline /> },
   {
     label: "Update Password",
@@ -26,7 +33,24 @@ const employeeMenu = [
 
 const EmployeeSidebar = ({ children }) => {
   const location = useLocation();
-  
+
+  let role = "";
+  try {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      const parsedUser = JSON.parse(userData);
+      role = parsedUser.role || "";
+    } else {
+      console.warn("No user data found in localStorage");
+    }
+  } catch (error) {
+    console.error("Error parsing user from localStorage:", error);
+  }
+  const employeeMenu =
+    role && role.includes("manager")
+      ? baseMenu
+      : baseMenu.filter((item) => !item.requiresManager);
+
   const handleLogout = () => {
     localStorage.clear();
   };

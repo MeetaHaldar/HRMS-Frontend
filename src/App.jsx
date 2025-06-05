@@ -24,7 +24,7 @@ function App() {
           <Route
             path="/companyAdmin"
             element={
-              <ProtectedRoute allowedRoles={["systemAdmin", "manager"]}>
+              <ProtectedRoute allowedRoles={["systemAdmin"]}>
                 <CompanyAdminLayout />
               </ProtectedRoute>
             }
@@ -95,7 +95,15 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
 
             <Route path="profile" element={<Profile />} />
-            <Route path="leaveRequest" element={<LeaaveRequest />} />
+            {/* // for manager  */}
+            <Route
+              path="leaveRequest"
+              element={
+                <ProtectedRoute allowedRoles={["manager"]}>
+                  <LeaaveRequest />
+                </ProtectedRoute>
+              }
+            />
 
             <Route path="holidays" element={<Holidays />} />
             <Route path="leaves" element={<Leaves />} />
