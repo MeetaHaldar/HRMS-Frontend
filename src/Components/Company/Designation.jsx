@@ -5,7 +5,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import AddDesignationPopup from "./AddDesignationPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
-
+import dev_url from "../../config";
 const Designation = () => {
   const [designations, setDesignations] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -21,14 +21,11 @@ const Designation = () => {
   const fetchDesignations = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        "https://atd.infosware-test.in/api/auth/company/getallPosition",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await axios.get(`${dev_url}api/auth/company/getallPosition`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const allDesignations = res.data?.data || [];
       setDesignations(allDesignations);
       setTotalPages(1);
@@ -50,7 +47,7 @@ const Designation = () => {
 
   const handleAddSubmit = async () => {
     setShowAddModal(false);
-    await fetchDesignations(); // Refresh list after add/edit
+    await fetchDesignations();
   };
 
   const handleDeleteClick = (designation) => {
@@ -62,17 +59,14 @@ const Designation = () => {
     if (!designationToDelete?.id) return;
 
     try {
-      await axios.delete(
-        `https://atd.infosware-test.in/api/auth/company/deletePosition`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            id: designationToDelete.id,
-          },
-        }
-      );
+      await axios.delete(`${dev_url}api/auth/company/deletePosition`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          id: designationToDelete.id,
+        },
+      });
       setShowDeletePopup(false);
       await fetchDesignations(); // Refresh list after delete
     } catch (error) {

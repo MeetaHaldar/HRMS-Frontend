@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
+import dev_url from "../../../config";
 const SubscriptionPlans = () => {
   const [planType, setPlanType] = useState("Monthly");
   const [showAll, setShowAll] = useState(false);
@@ -13,12 +13,9 @@ const SubscriptionPlans = () => {
     const fetchPlans = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(
-          "https://atd.infosware-test.in/subscription/",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await axios.get(`${dev_url}subscription/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setAllPlans(res.data || []);
       } catch (error) {
         console.error("Error fetching subscription plans:", error);
@@ -31,7 +28,6 @@ const SubscriptionPlans = () => {
     fetchPlans();
   }, [token]);
 
-  // Normalize subscription_type to consistent "monthly" or "annually"
   const normalizeType = (type) => {
     if (!type) return "";
     const lowerType = type.toLowerCase();
@@ -41,7 +37,6 @@ const SubscriptionPlans = () => {
     return lowerType;
   };
 
-  // Filter plans based on selected type unless showAll is true
   const filteredPlans = showAll
     ? allPlans
     : allPlans.filter(
@@ -142,7 +137,6 @@ const SubscriptionPlans = () => {
         </div>
       )}
 
-      {/* Show "Browse/View All Plans" only when not showing all */}
       {!showAll && !loading && (
         <div className="text-center mt-6">
           <button

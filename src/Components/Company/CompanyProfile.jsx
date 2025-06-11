@@ -6,7 +6,7 @@ import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
 import { Country, State, City } from "country-state-city";
 import axios from "axios";
-
+import dev_url from "../../config";
 countries.registerLocale(enLocale);
 
 const countryOptions = Country.getAllCountries().map((country) => ({
@@ -30,7 +30,7 @@ const CompanyProfile = () => {
     const fetchCompanyData = async () => {
       try {
         const response = await axios.get(
-          `https://atd.infosware-test.in/api/auth/company/companyProfile?id=${companyId}`,
+          `${dev_url}api/auth/company/companyProfile?id=${companyId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const CompanyProfile = () => {
   const updateCompanyData = async () => {
     try {
       await axios.put(
-        `https://atd.infosware-test.in/api/auth/company/companyProfile?id=${companyId}`,
+        `${dev_url}api/auth/company/companyProfile?id=${companyId}`,
         companyData,
         {
           headers: {

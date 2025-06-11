@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Mail,
@@ -11,7 +11,7 @@ import {
   Users2,
 } from "lucide-react";
 import { BiSolidUserDetail } from "react-icons/bi";
-
+import dev_url from "../../config";
 const Profile = () => {
   const [employee, setEmployee] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
@@ -22,14 +22,11 @@ const Profile = () => {
       try {
         if (!id || !token) return;
 
-        const res = await axios.get(
-          `https://atd.infosware-test.in/api/employee/id/?id=${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await axios.get(`${dev_url}api/employee/id/?id=${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setEmployee(res.data.employee);
       } catch (error) {
         console.error("Failed to fetch employee data:", error);

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
 import { useNavigate } from "react-router-dom";
-
+import dev_url from "../../config";
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,7 +14,7 @@ const EmployeeList = () => {
     const token = localStorage.getItem("token");
     setLoading(true);
 
-    fetch(`https://atd.infosware-test.in/api/employee/?page=${currentPage}`, {
+    fetch(`${dev_url}api/employee/?page=${currentPage}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -1,8 +1,7 @@
-// components/LeaveStats.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import StatCard from "./StatCard";
-
+import dev_url from "../../config";
 const LeaveStats = () => {
   const [leaveData, setLeaveData] = useState({
     granted: 0,
@@ -15,14 +14,11 @@ const LeaveStats = () => {
     const fetchLeaveData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          "https://atd.infosware-test.in/attendence/dashboard",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${dev_url}attendence/dashboard`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const data = response.data;
         setLeaveData({

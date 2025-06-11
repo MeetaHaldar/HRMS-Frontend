@@ -1,4 +1,3 @@
-import React from "react";
 import EmployeeWelcomeCard from "./EmployeeWelcomeCard";
 import QuickOverview from "./QuickOverview";
 import AttendanceChart from "./AttendanceChart";

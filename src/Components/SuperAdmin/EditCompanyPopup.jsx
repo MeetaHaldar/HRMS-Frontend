@@ -1,5 +1,4 @@
-// EditCompanyPopup.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const EditCompanyPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({

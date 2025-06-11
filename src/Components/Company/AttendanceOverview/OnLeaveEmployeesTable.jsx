@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
-
+import dev_url from "../../../config";
 export default function OnLeaveEmployeesTable() {
   const [currentTime, setCurrentTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -32,9 +32,7 @@ export default function OnLeaveEmployeesTable() {
   const fetchEmployeesOnLeave = async (date) => {
     try {
       const response = await axios.get(
-        `https://atd.infosware-test.in/attendence/leavemp?date=${formatDateForAPI(
-          date
-        )}`,
+        `${dev_url}attendence/leavemp?date=${formatDateForAPI(date)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

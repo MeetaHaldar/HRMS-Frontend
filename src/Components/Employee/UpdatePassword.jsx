@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-
+import dev_url from "../../config";
 const UpdatePassword = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -31,7 +31,7 @@ const UpdatePassword = () => {
 
     try {
       const response = await axios.put(
-        "https://atd.infosware-test.in/api/auth/changepassword",
+        `${dev_url}api/auth/changepassword`,
         {
           oldpass: oldPassword,
           newpass: newPassword,

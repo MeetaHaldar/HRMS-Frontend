@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 
 const ApplyWFHPopup = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({

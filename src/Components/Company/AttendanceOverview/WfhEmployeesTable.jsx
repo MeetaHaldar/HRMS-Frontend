@@ -4,7 +4,7 @@ import { ArrowLeft, ChevronDown } from "lucide-react";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
-
+import dev_url from "../../../config";
 export default function WfhEmployeesTable() {
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -18,7 +18,7 @@ export default function WfhEmployeesTable() {
       const token = localStorage.getItem("token");
       const formattedDate = formatDateForAPI(date);
       const response = await axios.get(
-        `https://atd.infosware-test.in/attendence/wfhemp?date=${formattedDate}`,
+        `${dev_url}attendence/wfhemp?date=${formattedDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

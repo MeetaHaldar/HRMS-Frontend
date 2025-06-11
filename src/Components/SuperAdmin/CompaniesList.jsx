@@ -5,7 +5,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import EditCompanyPopup from "./EditCompanyPopup";
 import DeleteConfirmationPopup from "./DeleteConfirmationPopup";
 import axios from "axios";
-
+import dev_url from "../../config";
 const CompaniesList = () => {
   const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
@@ -23,14 +23,11 @@ const CompaniesList = () => {
     const fetchCompanies = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          `https://atd.infosware-test.in/api/auth/company/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${dev_url}api/auth/company/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = response.data;
 
         setCompanies(data || []);

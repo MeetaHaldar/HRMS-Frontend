@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import SubscriptionHistory from "./SubscriptionHistory";
 import { useNavigate } from "react-router-dom";
-
+import dev_url from "../../../config";
 const MySubscription = () => {
   const [history, setHistory] = useState([]);
   const [currentPlan, setCurrentPlan] = useState(null);
@@ -15,7 +15,7 @@ const MySubscription = () => {
     const fetchSubscriptionHistory = async () => {
       try {
         const res = await axios.get(
-          `https://atd.infosware-test.in/subscription/history?id=${companyId}`,
+          `${dev_url}subscription/history?id=${companyId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

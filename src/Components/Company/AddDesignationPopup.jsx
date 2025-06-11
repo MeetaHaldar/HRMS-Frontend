@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
+import dev_url from "../../config";
 const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [formData, setFormData] = useState({
     position_name: "",
@@ -47,7 +47,7 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
       if (initialData?.id) {
         // Edit case - updatePosition
         response = await axios.put(
-          `https://atd.infosware-test.in/api/auth/company/updatePosition?id=${initialData.id}`,
+          `${dev_url}api/auth/company/updatePosition?id=${initialData.id}`,
           {
             position_name: formData.position_name,
             position_code: formData.position_code,
@@ -60,9 +60,8 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           }
         );
       } else {
-        // Create case - createPosition
         response = await axios.post(
-          "https://atd.infosware-test.in/api/auth/company/createPosition",
+          `${dev_url}api/auth/company/createPosition`,
           {
             position_name: formData.position_name,
             position_code: formData.position_code,

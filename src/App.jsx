@@ -66,7 +66,6 @@ function App() {
               path="LeaveAttendanceOverview"
               element={<AttendanceOverview />}
             />
-            <Route path="totalEmployees" element={<TotalEmployeesTable />} />
             <Route path="attendanceOverview" element={<AttendanceOverview />} />
             <Route
               path="yetToCheckinEmployees"
@@ -165,7 +164,6 @@ import WFHManager from "./Components/Company/LeaveAndAttendance/WFHManager";
 import RegularizationSettings from "./Components/Company/LeaveAndAttendance/RegularizationSettings";
 import LeaveType from "./Components/Company/LeaveAndAttendance/LeaveType";
 import AttendanceOverview from "./Components/Company/AttendanceOverview/AttendanceOverview";
-import TotalEmployeesTable from "./Components/Company/AttendanceOverview/TotalEmployeesTable";
 import YetToCheckinEmployeesTable from "./Components/Company/AttendanceOverview/YetToCheckinEmployeesTable";
 import OnLeaveEmployeesTable from "./Components/Company/AttendanceOverview/OnLeaveEmployeesTable";
 import LeaveRequestsTable from "./Components/Company/AttendanceOverview/LeaveRequestsTable";

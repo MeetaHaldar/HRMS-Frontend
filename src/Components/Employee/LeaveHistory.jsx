@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Pagination from "../Pagination";
-
+import dev_url from "../../config";
 const LeaveHistory = ({ selectedMonth, token, reloadTrigger }) => {
   const [leaves, setLeaves] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ const LeaveHistory = ({ selectedMonth, token, reloadTrigger }) => {
       setLoading(true);
 
       const response = await axios.get(
-        `https://atd.infosware-test.in/attendence/history?month_year=${selectedMonth}&employee_id=${employeeId}`,
+        `${dev_url}attendence/history?month_year=${selectedMonth}&employee_id=${employeeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

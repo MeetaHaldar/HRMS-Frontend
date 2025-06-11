@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
+import dev_url from "../../config";
 const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     category_id: "",
@@ -25,7 +25,7 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "https://atd.infosware-test.in/api/auth/company/getallLeaveCategory",
+          `${dev_url}api/auth/company/getallLeaveCategory`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

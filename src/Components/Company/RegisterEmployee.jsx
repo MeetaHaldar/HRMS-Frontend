@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
-
+import dev_url from "../../config";
 const RegisterEmployee = () => {
   const [formData, setFormData] = useState({
     emp_code: "",
@@ -66,13 +66,9 @@ const RegisterEmployee = () => {
 
     const token = localStorage.getItem("token");
     try {
-      await axios.post(
-        "https://atd.infosware-test.in/api/employee/",
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.post(`${dev_url}api/employee/`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       alert("Employee Registered Successfully");
     } catch (error) {
       alert("Error while registering employee");

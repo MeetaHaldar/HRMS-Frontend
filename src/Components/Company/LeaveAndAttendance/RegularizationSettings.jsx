@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
+import dev_url from "../../../config";
 const RegularizationSettings = () => {
   const [inputValue, setInputValue] = useState("");
   const [savedValue, setSavedValue] = useState("");
@@ -13,7 +13,7 @@ const RegularizationSettings = () => {
   const fetchAllowLate = async () => {
     try {
       const res = await axios.get(
-        `https://atd.infosware-test.in/api/auth/company/getTimeInterval?company_id=${company_id}`,
+        `${dev_url}api/auth/company/getTimeInterval?company_id=${company_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ const RegularizationSettings = () => {
   const handleSave = async () => {
     try {
       await axios.put(
-        "https://atd.infosware-test.in/api/auth/company/updateLateAllowance",
+        `${dev_url}api/auth/company/updateLateAllowance`,
         {
           company_id,
           allow_late: parseInt(inputValue, 10),

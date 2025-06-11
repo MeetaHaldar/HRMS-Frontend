@@ -4,14 +4,14 @@ import { ArrowLeft, ChevronDown } from "lucide-react";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
-
+import dev_url from "../../../config";
 export default function YetToCheckinEmployeesTable() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [employees, setEmployees] = useState([]);
 
-  // ⏰ Update Clock
+  // Update Clock
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -26,18 +26,18 @@ export default function YetToCheckinEmployeesTable() {
     return () => clearInterval(interval);
   }, []);
 
-  // 📅 Format date as yyyy-mm-dd
+  // Format date as yyyy-mm-dd
   const formatDateForAPI = (date) => {
     return date.toISOString().split("T")[0]; // yyyy-mm-dd
   };
 
-  // 📡 Fetch employees who are yet to check in
+  // Fetch employees who are yet to check in
   const fetchEmployees = async (date) => {
     try {
       const token = localStorage.getItem("token");
       const formattedDate = formatDateForAPI(date);
       const response = await axios.get(
-        `https://atd.infosware-test.in/attendence/yettocheckin?date=${formattedDate}`,
+        `${dev_url}attendence/yettocheckin?date=${formattedDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

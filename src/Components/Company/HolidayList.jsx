@@ -6,7 +6,7 @@ import axios from "axios";
 import HolidayPopup from "./HolidayPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
-
+import dev_url from "../../config";
 export default function HolidayList() {
   const [holidays, setHolidays] = useState([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function HolidayList() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://atd.infosware-test.in/attendence/holidayList?company_id=${companyId}`,
+        `${dev_url}attendence/holidayList?company_id=${companyId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ export default function HolidayList() {
 
     try {
       await axios.delete(
-        `https://atd.infosware-test.in/api/auth/company/deleteHoliday?id=${holidayToDelete.id}`,
+        `${dev_url}api/auth/company/deleteHoliday?id=${holidayToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

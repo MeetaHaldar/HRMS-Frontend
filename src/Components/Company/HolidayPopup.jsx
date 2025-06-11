@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-
+import dev_url from "../../config";
 const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -53,7 +53,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
     try {
       if (mode === "edit") {
         await axios.put(
-          `https://atd.infosware-test.in/api/auth/company/updateHoliday?id=${formData.id}`,
+          `${dev_url}api/auth/company/updateHoliday?id=${formData.id}`,
           payload,
           {
             headers: {
@@ -63,16 +63,12 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
           }
         );
       } else {
-        await axios.post(
-          "https://atd.infosware-test.in/api/auth/company/addholiday",
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await axios.post(`${dev_url}api/auth/company/addholiday`, payload, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
 
       if (onSubmit) onSubmit();

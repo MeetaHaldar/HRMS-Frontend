@@ -1,11 +1,11 @@
-import React, { useEffect, useState, forwardRef } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import DatePicker from "react-datepicker";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import dayjs from "dayjs";
 import "react-datepicker/dist/react-datepicker.css";
-
+import dev_url from "../../../config";
 const QuickOverview = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [totalEmployees, setTotalEmployees] = useState(0);
@@ -24,19 +24,16 @@ const QuickOverview = () => {
       const formattedDate = dayjs(date).format("YYYY-MM-DD");
       const formattedMonth = dayjs(date).format("YYYY-MM");
 
-      const empRes = await axios.get(
-        `https://atd.infosware-test.in/api/employee`,
-        { headers }
-      );
+      const empRes = await axios.get(`${dev_url}api/employee`, { headers });
       setTotalEmployees(empRes.data.employees.length || 0);
 
       const checkinRes = await axios.get(
-        `https://atd.infosware-test.in/attendence/checkinEmp?date=${formattedDate}`,
+        `${dev_url}attendence/checkinEmp?date=${formattedDate}`,
         { headers }
       );
       setCheckinEmployees(checkinRes.data.data?.length || 0);
       const leaveRes = await axios.get(
-        `https://atd.infosware-test.in/attendence/leavemp?date=${formattedDate}`,
+        `${dev_url}attendence/leavemp?date=${formattedDate}`,
         { headers }
       );
       setOnLeave(leaveRes.data.data?.length || 0);

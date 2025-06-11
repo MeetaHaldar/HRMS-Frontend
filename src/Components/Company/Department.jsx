@@ -5,7 +5,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import AddDepartmentPopup from "./AddDepartmentPopup";
 import DeleteConfirmationPopup from "../SuperAdmin/DeleteConfirmationPopup";
 import Pagination from "../Pagination";
-
+import dev_url from "../../config";
 const Department = () => {
   const [departments, setDepartments] = useState([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -23,7 +23,7 @@ const Department = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "https://atd.infosware-test.in/api/auth/company/getallDepartment",
+        `${dev_url}api/auth/company/getallDepartment`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const Department = () => {
     try {
       if (selectedDepartment) {
         await axios.put(
-          `https://atd.infosware-test.in/api/auth/company/updateDepartment?id=${selectedDepartment.id}`,
+          `${dev_url}api/auth/company/updateDepartment?id=${selectedDepartment.id}`,
           {
             dept_name: formData.dept_name,
             dept_code: formData.dept_code,
@@ -69,7 +69,7 @@ const Department = () => {
         );
       } else {
         await axios.post(
-          "https://atd.infosware-test.in/api/auth/company/createDepartment",
+          `${dev_url}api/auth/company/createDepartment`,
           {
             dept_name: formData.dept_name,
             dept_code: formData.dept_code,
@@ -110,7 +110,7 @@ const Department = () => {
   const handleDeleteConfirm = async () => {
     try {
       await axios.delete(
-        `https://atd.infosware-test.in/api/auth/company/deleteDepartment?id=${departmentToDelete.id}`,
+        `${dev_url}api/auth/company/deleteDepartment?id=${departmentToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

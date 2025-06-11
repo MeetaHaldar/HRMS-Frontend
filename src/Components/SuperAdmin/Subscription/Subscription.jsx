@@ -3,7 +3,7 @@ import axios from "axios";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import SubscriptionPopup from "./SubscriptionPopup";
 import { FiPlus } from "react-icons/fi";
-
+import dev_url from "../../../config";
 const Subscription = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [initialData, setInitialData] = useState(null);
@@ -14,12 +14,9 @@ const Subscription = () => {
 
   const fetchSubscriptions = async () => {
     try {
-      const res = await axios.get(
-        "https://atd.infosware-test.in/subscription/",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await axios.get(`${dev_url}subscription/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setSubscriptions(res.data);
     } catch (error) {
       console.error("Error fetching subscriptions", error);

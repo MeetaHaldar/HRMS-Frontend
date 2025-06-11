@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-
+import dev_url from "../../../config";
 const WorkShift = () => {
   const [formData, setFormData] = useState({
     checkIn: "",
@@ -24,7 +24,7 @@ const WorkShift = () => {
   const fetchSavedShift = async () => {
     try {
       const res = await axios.get(
-        `https://atd.infosware-test.in/api/auth/company/getTimeInterval?company_id=${company_id}`,
+        `${dev_url}api/auth/company/getTimeInterval?company_id=${company_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -94,15 +94,11 @@ const WorkShift = () => {
     };
 
     try {
-      await axios.post(
-        "https://atd.infosware-test.in/api/auth/company/addtimeInterval",
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.post(`${dev_url}api/auth/company/addtimeInterval`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setSuccess(true);
       setError("");

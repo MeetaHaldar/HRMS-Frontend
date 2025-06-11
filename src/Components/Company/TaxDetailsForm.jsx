@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import axios from "axios";
-
+import dev_url from "../../config";
 const Tooltip = ({ text }) => (
   <div className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 w-64 text-sm text-white bg-gray-700 p-2 rounded-md shadow-lg z-50">
     {text}
@@ -54,7 +54,7 @@ export default function TaxDetailsForm() {
     const fetchTaxDetails = async () => {
       try {
         const { data } = await axios.get(
-          `https://atd.infosware-test.in/salary/gettaxdetail?company_id=${company_id}`,
+          `${dev_url}salary/gettaxdetail?company_id=${company_id}`,
           { headers: { Authorization: token } }
         );
 
@@ -85,12 +85,9 @@ export default function TaxDetailsForm() {
 
     const fetchEmployees = async () => {
       try {
-        const { data } = await axios.get(
-          "https://atd.infosware-test.in/api/employee/",
-          {
-            headers: { Authorization: token },
-          }
-        );
+        const { data } = await axios.get(`${dev_url}api/employee/`, {
+          headers: { Authorization: token },
+        });
         setEmployees(data.employees || []);
       } catch (error) {
         console.error("Error fetching employees:", error);
@@ -132,7 +129,7 @@ export default function TaxDetailsForm() {
         deductor_father_name: form.deductor_father_name,
       };
 
-      await axios.post("https://atd.infosware-test.in/salary/addTax", payload, {
+      await axios.post(`${dev_url}salary/addTax`, payload, {
         headers: { Authorization: token },
       });
 

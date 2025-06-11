@@ -39,7 +39,7 @@ export default function AttendanceChart() {
 
           <Legend
             wrapperStyle={{
-              color: "#4B5563", // Tailwind's text-gray-600 equivalent
+              color: "#4B5563", 
               fontSize: "14px",
               fontWeight: "500",
             }}

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import axios from "axios";
 import DeleteConfirmationPopup from "../../SuperAdmin/DeleteConfirmationPopup";
-
+import dev_url from "../../../config";
 const LeaveType = () => {
   const [leaveName, setLeaveName] = useState("");
   const [leaveType, setLeaveType] = useState("");
@@ -39,7 +39,7 @@ const LeaveType = () => {
   const fetchLeaveTypes = async () => {
     try {
       const response = await axios.get(
-        "https://atd.infosware-test.in/api/auth/company/getallLeaveCategory",
+        `${dev_url}api/auth/company/getallLeaveCategory`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -76,7 +76,7 @@ const LeaveType = () => {
     if (isEditing) {
       try {
         const response = await axios.put(
-          `https://atd.infosware-test.in/api/auth/company/updateLeaveCategory?id=${editingId}`,
+          `${dev_url}api/auth/company/updateLeaveCategory?id=${editingId}`,
           leavePayload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -104,7 +104,7 @@ const LeaveType = () => {
     } else {
       try {
         const response = await axios.post(
-          "https://atd.infosware-test.in/api/auth/company/addLeaveCategory",
+          `${dev_url}api/auth/company/addLeaveCategory`,
           leavePayload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -153,7 +153,7 @@ const LeaveType = () => {
   const confirmDelete = async (id) => {
     try {
       await axios.delete(
-        `https://atd.infosware-test.in/api/auth/company/deleteLeaveCategory?id=${id}`,
+        `${dev_url}api/auth/company/deleteLeaveCategory?id=${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

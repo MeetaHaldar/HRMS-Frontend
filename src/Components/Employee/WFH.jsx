@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import ApplyWFHPopup from "./ApplyWFHPopup";
-
+import dev_url from "../../config";
 const WFH = () => {
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
@@ -24,7 +24,7 @@ const WFH = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `https://atd.infosware-test.in/api/employee/wfhdetails?month_year=${selectedMonth}&employee_id=${employeeId}`,
+        `${dev_url}api/employee/wfhdetails?month_year=${selectedMonth}&employee_id=${employeeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const WFH = () => {
   const handleApplyWFH = async (formData) => {
     try {
       await axios.post(
-        "https://atd.infosware-test.in/attendence/applywfh",
+        `${dev_url}attendence/applywfh`,
         {
           start_date: formData.startDate,
           end_date: formData.endDate,
@@ -62,7 +62,7 @@ const WFH = () => {
       );
 
       setIsPopupOpen(false);
-      fetchWFHData(); // Refresh list after submission
+      fetchWFHData();
     } catch (error) {
       console.error("Error applying for WFH:", error);
     }

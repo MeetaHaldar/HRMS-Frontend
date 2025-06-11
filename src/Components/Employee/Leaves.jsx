@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ApplyLeavePopup from "./ApplyLeavePopup";
 import LeaveHistory from "./LeaveHistory";
 import LeaveStats from "./LeaveStats";
 import axios from "axios";
-
+import dev_url from "../../config";
 const Leaves = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const token = localStorage.getItem("token");
@@ -24,7 +24,7 @@ const Leaves = () => {
     const fetchLeaveCategories = async () => {
       try {
         const response = await axios.get(
-          "https://atd.infosware-test.in/api/auth/company/getallLeaveCategory",
+          `${dev_url}api/auth/company/getallLeaveCategory`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -42,7 +42,7 @@ const Leaves = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        "https://atd.infosware-test.in/attendence/applyleave",
+        `${dev_url}attendence/applyleave`,
         formData,
         {
           headers: {

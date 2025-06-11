@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import dev_url from "../../../config";
 const SubscribedCompanyList = () => {
   const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
@@ -12,7 +12,7 @@ const SubscribedCompanyList = () => {
     const fetchCompanies = async () => {
       try {
         const res = await axios.get(
-          "https://atd.infosware-test.in/subscription/getsubscribedList",
+          `${dev_url}subscription/getsubscribedList`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -20,7 +20,7 @@ const SubscribedCompanyList = () => {
           }
         );
 
-        setCompanies(res.data || []); // Adjust based on API response structure
+        setCompanies(res.data || []);
       } catch (err) {
         console.error("Error fetching subscribed companies:", err);
       } finally {

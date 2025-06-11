@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import dayjs from "dayjs"; // Install with: npm install dayjs
+import dayjs from "dayjs";
+import dev_url from "../../../config";
 
 export default function AttendanceOverview() {
   const [currentTime, setCurrentTime] = useState("");
@@ -45,32 +46,29 @@ export default function AttendanceOverview() {
           Authorization: `Bearer ${token}`,
         };
 
-        const empRes = await axios.get(
-          `https://atd.infosware-test.in/api/employee`,
-          { headers }
-        );
+        const empRes = await axios.get(`${dev_url}api/employee`, { headers });
         setTotalEmployees(empRes.data.employees.length || 0);
 
         const checkinRes = await axios.get(
-          `https://atd.infosware-test.in/attendence/checkinEmp?date=${attendanceDate}`,
+          `${dev_url}attendence/checkinEmp?date=${attendanceDate}`,
           { headers }
         );
         setCheckinEmployees(checkinRes.data.data?.length || 0);
 
         const yetToCheckinRes = await axios.get(
-          `https://atd.infosware-test.in/attendence/yettocheckin?date=${attendanceDate}`,
+          `${dev_url}attendence/yettocheckin?date=${attendanceDate}`,
           { headers }
         );
         setYetToCheckin(yetToCheckinRes.data.data?.length || 0);
 
         const wfhRes = await axios.get(
-          `https://atd.infosware-test.in/attendence/wfhemp?date=${attendanceDate}`,
+          `${dev_url}attendence/wfhemp?date=${attendanceDate}`,
           { headers }
         );
         setOnWfh(wfhRes.data.data?.length || 0);
 
         const leaveRes = await axios.get(
-          `https://atd.infosware-test.in/attendence/leavemp?date=${attendanceDate}`,
+          `${dev_url}attendence/leavemp?date=${attendanceDate}`,
           { headers }
         );
         setOnLeave(leaveRes.data.data?.length || 0);

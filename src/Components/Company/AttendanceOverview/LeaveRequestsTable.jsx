@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
-
+import dev_url from "../../../config";
 export default function LeaveRequestsTable() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState("");
@@ -41,15 +41,12 @@ export default function LeaveRequestsTable() {
     const token = localStorage.getItem("token"); // Get token from localStorage
 
     try {
-      const response = await axios.get(
-        `https://atd.infosware-test.in/attendence/history`,
-        {
-          params: { month_year: formatMonthYear(date) },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${dev_url}attendence/history`, {
+        params: { month_year: formatMonthYear(date) },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       // Assuming response.data contains the array of leave requests
       setLeaveRequests(response.data.leave_history);
     } catch (err) {

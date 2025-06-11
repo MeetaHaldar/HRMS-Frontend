@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-
+import dev_url from "../../../config";
 const WFHManager = () => {
   const [allowedDays, setAllowedDays] = useState("");
   const [savedAllowedDays, setSavedAllowedDays] = useState("");
@@ -16,7 +16,7 @@ const WFHManager = () => {
     try {
       setError("");
       const response = await axios.get(
-        `https://atd.infosware-test.in/api/auth/company/getwfhsetting?company_id=${company_id}`,
+        `${dev_url}api/auth/company/getwfhsetting?company_id=${company_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ const WFHManager = () => {
   const handleSave = async () => {
     try {
       await axios.post(
-        "https://atd.infosware-test.in/api/auth/company/setwfhsetting",
+        `${dev_url}api/auth/company/setwfhsetting`,
         {
           company_id,
           allowed_days_per_month: parseInt(allowedDays),

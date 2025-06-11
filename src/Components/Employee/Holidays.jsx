@@ -1,7 +1,6 @@
-// src/components/Holidays.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-
+import dev_url from "../../config";
 const Holidays = () => {
   const [holidays, setHolidays] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +19,7 @@ const Holidays = () => {
         }
 
         const response = await axios.get(
-          `https://atd.infosware-test.in/attendence/holidayList?company_id=${user.companyId}`,
+          `${dev_url}attendence/holidayList?company_id=${user.companyId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

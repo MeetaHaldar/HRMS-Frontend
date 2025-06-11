@@ -4,7 +4,7 @@ import { ArrowLeft, ChevronDown } from "lucide-react";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
-
+import dev_url from "../../../config";
 export default function CheckinEmployeesTable() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState("");
@@ -23,9 +23,7 @@ export default function CheckinEmployeesTable() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://atd.infosware-test.in/attendence/checkinEmp?date=${formatDateForAPI(
-          date
-        )}`,
+        `${dev_url}attendence/checkinEmp?date=${formatDateForAPI(date)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
