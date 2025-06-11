@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
-
-const dev_url = "https://atd.infosware-test.in";
+import dev_url from "../config";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({

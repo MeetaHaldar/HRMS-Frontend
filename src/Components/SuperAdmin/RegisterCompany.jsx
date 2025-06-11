@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-const dev_url = "https://www.attend-pay.com";
+import dev_url from "../../config";
 
 const RegisterCompany = () => {
   const navigate = useNavigate();
@@ -14,8 +13,8 @@ const RegisterCompany = () => {
     address_1: "",
     country: "",
     city: "",
-    payment_type: "",
-    max_employees_limit: "",
+    payment_type: 0,
+    max_employees_limit: 0,
     admin: "",
   });
 
@@ -58,7 +57,7 @@ const RegisterCompany = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.post(`${dev_url}/api/auth/company/`, formData, {
+      const res = await axios.post(`${dev_url}api/auth/company/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -111,10 +110,15 @@ const RegisterCompany = () => {
             { name: "address_1", placeholder: "Address" },
             { name: "country", placeholder: "Country" },
             { name: "city", placeholder: "City" },
-            { name: "payment_type", placeholder: "Payment Type" },
+            {
+              name: "payment_type",
+              placeholder: "Payment Type",
+              type: "number",
+            },
             {
               name: "max_employees_limit",
               placeholder: "Max Employee Limit",
+              type: "number",
             },
             { name: "admin", placeholder: "Admin Name" },
           ].map(({ name, placeholder, type = "text" }) => (

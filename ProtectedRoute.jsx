@@ -16,7 +16,7 @@ export default function ProtectedRoute({ allowedRoles, children }) {
       return <Navigate to="/signIn" />;
     }
 
-    const userRoles = decoded.role[0] || [];
+    const userRoles = decoded.role || [];
     const hasAccess = allowedRoles.some((role) => userRoles.includes(role));
 
     return hasAccess ? children : <Navigate to="/signIn" />;
