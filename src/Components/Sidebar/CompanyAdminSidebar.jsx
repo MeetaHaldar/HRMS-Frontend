@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoSettingsOutline } from "react-icons/io5";
+import { RiLockPasswordLine } from "react-icons/ri";
 import {
   FaFolderPlus,
   FaBookOpen,
@@ -92,6 +93,11 @@ const settingsMenu = [
       { label: "Attendance", to: "/companyAdmin/workShift" },
       { label: "Regularization", to: "/companyAdmin/regularizationSettings" },
     ],
+  },
+  {
+    label: "Change Password",
+    to: "/companyAdmin/changePassword",
+    icon: <RiLockPasswordLine />,
   },
 ];
 

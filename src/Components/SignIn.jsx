@@ -48,7 +48,7 @@ const SignIn = () => {
       const roles = user.role;
 
       if (roles.includes("superAdmin")) {
-        window.location.href = "/";
+        window.location.href = "/CompaniesList";
       } else if (roles.includes("systemAdmin")) {
         window.location.href = "/companyAdmin/CompanyDashboard";
       } else if (roles.includes("employee")) {

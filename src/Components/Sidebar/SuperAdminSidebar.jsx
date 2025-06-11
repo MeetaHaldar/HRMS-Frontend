@@ -5,9 +5,9 @@ import { FaBuilding } from "react-icons/fa";
 import { BsCardChecklist } from "react-icons/bs";
 import { FiLogOut } from "react-icons/fi";
 import { RiLockPasswordLine } from "react-icons/ri";
+import { MdChecklist } from "react-icons/md";
 
 const superAdminMenu = [
-  { label: "Dashboard", to: "/adminDashboard", icon: <MdSpaceDashboard /> },
   {
     label: "Company List",
     to: "/CompaniesList",
@@ -21,7 +21,7 @@ const superAdminMenu = [
       {
         label: "Subscription List",
         to: "/Subscription",
-        icon: <BsCardChecklist />,
+        icon: <MdChecklist />,
       },
       {
         label: "Subscribed Companies",
@@ -109,13 +109,14 @@ const SuperAdminSidebar = ({ children }) => {
                             <Link
                               key={childIndex}
                               to={child.to}
-                              className={`block px-3 py-1 rounded-md text-sm lg:text-base transition-colors ${
+                              className={`flex items-center gap-2 px-3 py-1 rounded-md text-sm lg:text-base transition-colors ${
                                 isChildActive
                                   ? "bg-yellow-300 text-black"
                                   : "text-gray-600 hover:bg-gray-100"
                               }`}
                             >
-                              {child.label}
+                              <span className="text-lg">{child.icon}</span>
+                              <span>{child.label}</span>
                             </Link>
                           );
                         })}

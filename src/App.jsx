@@ -83,6 +83,8 @@ function App() {
             />
             <Route path="wfhEmployees" element={<WfhEmployeesTable />} />
             <Route path="paySchedule" element={<PayScheduleForm />} />
+            <Route path="changePassword" element={<UpdatePassword />} />
+
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           {/* employeeee */}
