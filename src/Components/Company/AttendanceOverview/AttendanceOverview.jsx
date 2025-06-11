@@ -46,31 +46,31 @@ export default function AttendanceOverview() {
         };
 
         const empRes = await axios.get(
-          `https://www.attend-pay.com/api/employee`,
+          `https://atd.infosware-test.in/api/employee`,
           { headers }
         );
         setTotalEmployees(empRes.data.employees.length || 0);
 
         const checkinRes = await axios.get(
-          `https://www.attend-pay.com/attendence/checkinEmp?date=${attendanceDate}`,
+          `https://atd.infosware-test.in/attendence/checkinEmp?date=${attendanceDate}`,
           { headers }
         );
         setCheckinEmployees(checkinRes.data.data?.length || 0);
 
         const yetToCheckinRes = await axios.get(
-          `https://www.attend-pay.com/attendence/yettocheckin?date=${attendanceDate}`,
+          `https://atd.infosware-test.in/attendence/yettocheckin?date=${attendanceDate}`,
           { headers }
         );
         setYetToCheckin(yetToCheckinRes.data.data?.length || 0);
 
         const wfhRes = await axios.get(
-          `https://www.attend-pay.com/attendence/wfhemp?date=${attendanceDate}`,
+          `https://atd.infosware-test.in/attendence/wfhemp?date=${attendanceDate}`,
           { headers }
         );
         setOnWfh(wfhRes.data.data?.length || 0);
 
         const leaveRes = await axios.get(
-          `https://www.attend-pay.com/attendence/leavemp?date=${attendanceDate}`,
+          `https://atd.infosware-test.in/attendence/leavemp?date=${attendanceDate}`,
           { headers }
         );
         setOnLeave(leaveRes.data.data?.length || 0);

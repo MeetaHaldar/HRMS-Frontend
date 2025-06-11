@@ -22,7 +22,7 @@ const Designation = () => {
     setLoading(true);
     try {
       const res = await axios.get(
-        "https://www.attend-pay.com/api/auth/company/getallPosition",
+        "https://atd.infosware-test.in/api/auth/company/getallPosition",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -63,7 +63,7 @@ const Designation = () => {
 
     try {
       await axios.delete(
-        `https://www.attend-pay.com/api/auth/company/deletePosition`,
+        `https://atd.infosware-test.in/api/auth/company/deletePosition`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

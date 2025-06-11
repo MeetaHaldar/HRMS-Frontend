@@ -53,7 +53,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
     try {
       if (mode === "edit") {
         await axios.put(
-          `https://www.attend-pay.com/api/auth/company/updateHoliday?id=${formData.id}`,
+          `https://atd.infosware-test.in/api/auth/company/updateHoliday?id=${formData.id}`,
           payload,
           {
             headers: {
@@ -64,7 +64,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
         );
       } else {
         await axios.post(
-          "https://www.attend-pay.com/api/auth/company/addholiday",
+          "https://atd.infosware-test.in/api/auth/company/addholiday",
           payload,
           {
             headers: {

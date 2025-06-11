@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const dev_url = "https://www.attend-pay.com";
+const dev_url = "https://atd.infosware-test.in";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({

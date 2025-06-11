@@ -14,9 +14,12 @@ const Subscription = () => {
 
   const fetchSubscriptions = async () => {
     try {
-      const res = await axios.get("https://www.attend-pay.com/subscription/", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        "https://atd.infosware-test.in/subscription/",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setSubscriptions(res.data);
     } catch (error) {
       console.error("Error fetching subscriptions", error);
@@ -46,7 +49,7 @@ const Subscription = () => {
     if (confirmDelete) {
       try {
         await axios.delete(
-          `https://www.attend-pay.com/subscription/?id=${id}`,
+          `https://atd.infosware-test.in/subscription/?id=${id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -78,14 +81,14 @@ const Subscription = () => {
       if (initialData) {
         // Edit mode
         await axios.put(
-          `https://www.attend-pay.com/subscription/?id=${initialData.id}`,
+          `https://atd.infosware-test.in/subscription/?id=${initialData.id}`,
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         // Add mode
         await axios.post(
-          "https://www.attend-pay.com/subscription/addsubscriptiontype",
+          "https://atd.infosware-test.in/subscription/addsubscriptiontype",
           payload,
           { headers: { Authorization: `Bearer ${token}` } }
         );

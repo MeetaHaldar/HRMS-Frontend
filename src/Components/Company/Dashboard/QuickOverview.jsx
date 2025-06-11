@@ -25,18 +25,18 @@ const QuickOverview = () => {
       const formattedMonth = dayjs(date).format("YYYY-MM");
 
       const empRes = await axios.get(
-        `https://www.attend-pay.com/api/employee`,
+        `https://atd.infosware-test.in/api/employee`,
         { headers }
       );
       setTotalEmployees(empRes.data.employees.length || 0);
 
       const checkinRes = await axios.get(
-        `https://www.attend-pay.com/attendence/checkinEmp?date=${formattedDate}`,
+        `https://atd.infosware-test.in/attendence/checkinEmp?date=${formattedDate}`,
         { headers }
       );
       setCheckinEmployees(checkinRes.data.data?.length || 0);
       const leaveRes = await axios.get(
-        `https://www.attend-pay.com/attendence/leavemp?date=${formattedDate}`,
+        `https://atd.infosware-test.in/attendence/leavemp?date=${formattedDate}`,
         { headers }
       );
       setOnLeave(leaveRes.data.data?.length || 0);

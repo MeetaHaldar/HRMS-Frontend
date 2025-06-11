@@ -38,7 +38,7 @@ export default function HolidayList() {
     setLoading(true);
     try {
       const res = await axios.get(
-        `https://www.attend-pay.com/attendence/holidayList?company_id=${companyId}`,
+        `https://atd.infosware-test.in/attendence/holidayList?company_id=${companyId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ export default function HolidayList() {
 
     try {
       await axios.delete(
-        `https://www.attend-pay.com/api/auth/company/deleteHoliday?id=${holidayToDelete.id}`,
+        `https://atd.infosware-test.in/api/auth/company/deleteHoliday?id=${holidayToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

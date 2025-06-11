@@ -54,7 +54,7 @@ export default function TaxDetailsForm() {
     const fetchTaxDetails = async () => {
       try {
         const { data } = await axios.get(
-          `https://www.attend-pay.com/salary/gettaxdetail?company_id=${company_id}`,
+          `https://atd.infosware-test.in/salary/gettaxdetail?company_id=${company_id}`,
           { headers: { Authorization: token } }
         );
 
@@ -86,7 +86,7 @@ export default function TaxDetailsForm() {
     const fetchEmployees = async () => {
       try {
         const { data } = await axios.get(
-          "https://www.attend-pay.com/api/employee/",
+          "https://atd.infosware-test.in/api/employee/",
           {
             headers: { Authorization: token },
           }
@@ -132,7 +132,7 @@ export default function TaxDetailsForm() {
         deductor_father_name: form.deductor_father_name,
       };
 
-      await axios.post("https://www.attend-pay.com/salary/addTax", payload, {
+      await axios.post("https://atd.infosware-test.in/salary/addTax", payload, {
         headers: { Authorization: token },
       });
 

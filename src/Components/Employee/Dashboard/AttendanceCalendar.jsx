@@ -26,7 +26,7 @@ const AttendanceCalendar = () => {
     const formattedDate = moment(date).format("YYYY-MM");
     try {
       const response = await axios.get(
-        `https://www.attend-pay.com/api/employee/empBiometric?date=${formattedDate}`,
+        `https://atd.infosware-test.in/api/employee/empBiometric?date=${formattedDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

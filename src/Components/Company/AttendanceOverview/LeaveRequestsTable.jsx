@@ -42,7 +42,7 @@ export default function LeaveRequestsTable() {
 
     try {
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/history`,
+        `https://atd.infosware-test.in/attendence/history`,
         {
           params: { month_year: formatMonthYear(date) },
           headers: {

@@ -20,7 +20,7 @@ const Holidays = () => {
         }
 
         const response = await axios.get(
-          `https://www.attend-pay.com/attendence/holidayList?company_id=${user.companyId}`,
+          `https://atd.infosware-test.in/attendence/holidayList?company_id=${user.companyId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

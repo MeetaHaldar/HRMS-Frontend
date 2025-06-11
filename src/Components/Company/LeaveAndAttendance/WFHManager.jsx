@@ -16,7 +16,7 @@ const WFHManager = () => {
     try {
       setError("");
       const response = await axios.get(
-        `https://www.attend-pay.com/api/auth/company/getwfhsetting?company_id=${company_id}`,
+        `https://atd.infosware-test.in/api/auth/company/getwfhsetting?company_id=${company_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ const WFHManager = () => {
   const handleSave = async () => {
     try {
       await axios.post(
-        "https://www.attend-pay.com/api/auth/company/setwfhsetting",
+        "https://atd.infosware-test.in/api/auth/company/setwfhsetting",
         {
           company_id,
           allowed_days_per_month: parseInt(allowedDays),

@@ -15,7 +15,7 @@ const MySubscription = () => {
     const fetchSubscriptionHistory = async () => {
       try {
         const res = await axios.get(
-          `https://www.attend-pay.com/subscription/history?id=${companyId}`,
+          `https://atd.infosware-test.in/subscription/history?id=${companyId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

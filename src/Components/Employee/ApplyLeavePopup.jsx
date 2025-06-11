@@ -25,7 +25,7 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "https://www.attend-pay.com/api/auth/company/getallLeaveCategory",
+          "https://atd.infosware-test.in/api/auth/company/getallLeaveCategory",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

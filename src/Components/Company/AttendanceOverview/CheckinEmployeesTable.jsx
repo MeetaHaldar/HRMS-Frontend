@@ -23,7 +23,7 @@ export default function CheckinEmployeesTable() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/checkinEmp?date=${formatDateForAPI(
+        `https://atd.infosware-test.in/attendence/checkinEmp?date=${formatDateForAPI(
           date
         )}`,
         {

@@ -47,7 +47,7 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
       if (initialData?.id) {
         // Edit case - updatePosition
         response = await axios.put(
-          `https://www.attend-pay.com/api/auth/company/updatePosition?id=${initialData.id}`,
+          `https://atd.infosware-test.in/api/auth/company/updatePosition?id=${initialData.id}`,
           {
             position_name: formData.position_name,
             position_code: formData.position_code,
@@ -62,7 +62,7 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
       } else {
         // Create case - createPosition
         response = await axios.post(
-          "https://www.attend-pay.com/api/auth/company/createPosition",
+          "https://atd.infosware-test.in/api/auth/company/createPosition",
           {
             position_name: formData.position_name,
             position_code: formData.position_code,

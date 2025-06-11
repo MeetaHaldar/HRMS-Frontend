@@ -16,7 +16,7 @@ const EmployeeWelcomeCard = () => {
         if (!id || !token) return;
 
         const res = await axios.get(
-          `https://www.attend-pay.com/api/employee/id/?id=${id}`,
+          `https://atd.infosware-test.in/api/employee/id/?id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

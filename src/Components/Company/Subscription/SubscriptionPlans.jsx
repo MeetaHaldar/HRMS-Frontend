@@ -14,7 +14,7 @@ const SubscriptionPlans = () => {
       try {
         setLoading(true);
         const res = await axios.get(
-          "https://www.attend-pay.com/subscription/",
+          "https://atd.infosware-test.in/subscription/",
           {
             headers: { Authorization: `Bearer ${token}` },
           }

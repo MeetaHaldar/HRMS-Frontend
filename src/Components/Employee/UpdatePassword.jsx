@@ -31,7 +31,7 @@ const UpdatePassword = () => {
 
     try {
       const response = await axios.put(
-        "https://www.attend-pay.com/api/auth/changepassword",
+        "https://atd.infosware-test.in/api/auth/changepassword",
         {
           oldpass: oldPassword,
           newpass: newPassword,

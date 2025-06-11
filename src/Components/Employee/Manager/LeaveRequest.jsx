@@ -10,7 +10,7 @@ export default function LeaveRequest() {
     const fetchLeaveData = async () => {
       try {
         const response = await axios.get(
-          "https://www.attend-pay.com/attendence/getleavereq",
+          "https://atd.infosware-test.in/attendence/getleavereq",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -38,7 +38,7 @@ export default function LeaveRequest() {
   const updateLeaveStatus = async (leave_id, approval_status) => {
     try {
       await axios.put(
-        "https://www.attend-pay.com/attendence/changeLeaveStatus",
+        "https://atd.infosware-test.in/attendence/changeLeaveStatus",
         { leave_id, approval_status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

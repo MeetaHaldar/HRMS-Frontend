@@ -24,7 +24,7 @@ const WFH = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `https://www.attend-pay.com/api/employee/wfhdetails?month_year=${selectedMonth}&employee_id=${employeeId}`,
+        `https://atd.infosware-test.in/api/employee/wfhdetails?month_year=${selectedMonth}&employee_id=${employeeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,7 +47,7 @@ const WFH = () => {
   const handleApplyWFH = async (formData) => {
     try {
       await axios.post(
-        "https://www.attend-pay.com/attendence/applywfh",
+        "https://atd.infosware-test.in/attendence/applywfh",
         {
           start_date: formData.startDate,
           end_date: formData.endDate,

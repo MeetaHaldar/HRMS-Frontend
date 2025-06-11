@@ -12,7 +12,7 @@ const SubscribedCompanyList = () => {
     const fetchCompanies = async () => {
       try {
         const res = await axios.get(
-          "https://www.attend-pay.com/subscription/getsubscribedList",
+          "https://atd.infosware-test.in/subscription/getsubscribedList",
           {
             headers: {
               Authorization: `Bearer ${token}`,

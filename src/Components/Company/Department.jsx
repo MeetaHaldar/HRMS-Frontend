@@ -23,7 +23,7 @@ const Department = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "https://www.attend-pay.com/api/auth/company/getallDepartment",
+        "https://atd.infosware-test.in/api/auth/company/getallDepartment",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -55,7 +55,7 @@ const Department = () => {
     try {
       if (selectedDepartment) {
         await axios.put(
-          `https://www.attend-pay.com/api/auth/company/updateDepartment?id=${selectedDepartment.id}`,
+          `https://atd.infosware-test.in/api/auth/company/updateDepartment?id=${selectedDepartment.id}`,
           {
             dept_name: formData.dept_name,
             dept_code: formData.dept_code,
@@ -69,7 +69,7 @@ const Department = () => {
         );
       } else {
         await axios.post(
-          "https://www.attend-pay.com/api/auth/company/createDepartment",
+          "https://atd.infosware-test.in/api/auth/company/createDepartment",
           {
             dept_name: formData.dept_name,
             dept_code: formData.dept_code,
@@ -110,7 +110,7 @@ const Department = () => {
   const handleDeleteConfirm = async () => {
     try {
       await axios.delete(
-        `https://www.attend-pay.com/api/auth/company/deleteDepartment?id=${departmentToDelete.id}`,
+        `https://atd.infosware-test.in/api/auth/company/deleteDepartment?id=${departmentToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

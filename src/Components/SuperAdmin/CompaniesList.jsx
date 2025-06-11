@@ -24,7 +24,7 @@ const CompaniesList = () => {
       setLoading(true);
       try {
         const response = await axios.get(
-          `https://www.attend-pay.com/api/auth/company/`,
+          `https://atd.infosware-test.in/api/auth/company/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -68,7 +68,7 @@ const CompaniesList = () => {
   const confirmDelete = async () => {
     try {
       await axios.delete(
-        `https://www.attend-pay.com/api/auth/company/${companyToDelete.id}`,
+        `https://atd.infosware-test.in/api/auth/company/${companyToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

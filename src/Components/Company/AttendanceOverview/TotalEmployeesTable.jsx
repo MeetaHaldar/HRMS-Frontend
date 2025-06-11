@@ -14,7 +14,7 @@ export default function TotalEmployeesTable() {
     const token = localStorage.getItem("token");
     setLoading(true);
 
-    fetch(`https://www.attend-pay.com/api/employee/`, {
+    fetch(`https://atd.infosware-test.in/api/employee/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

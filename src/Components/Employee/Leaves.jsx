@@ -24,7 +24,7 @@ const Leaves = () => {
     const fetchLeaveCategories = async () => {
       try {
         const response = await axios.get(
-          "https://www.attend-pay.com/api/auth/company/getallLeaveCategory",
+          "https://atd.infosware-test.in/api/auth/company/getallLeaveCategory",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -42,7 +42,7 @@ const Leaves = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        "https://www.attend-pay.com/attendence/applyleave",
+        "https://atd.infosware-test.in/attendence/applyleave",
         formData,
         {
           headers: {

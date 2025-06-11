@@ -37,7 +37,7 @@ export default function YetToCheckinEmployeesTable() {
       const token = localStorage.getItem("token");
       const formattedDate = formatDateForAPI(date);
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/yettocheckin?date=${formattedDate}`,
+        `https://atd.infosware-test.in/attendence/yettocheckin?date=${formattedDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

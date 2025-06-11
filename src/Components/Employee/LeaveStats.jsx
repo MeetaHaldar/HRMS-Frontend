@@ -16,7 +16,7 @@ const LeaveStats = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://www.attend-pay.com/attendence/dashboard",
+          "https://atd.infosware-test.in/attendence/dashboard",
           {
             headers: {
               Authorization: `Bearer ${token}`,

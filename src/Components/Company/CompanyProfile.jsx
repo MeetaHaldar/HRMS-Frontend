@@ -30,7 +30,7 @@ const CompanyProfile = () => {
     const fetchCompanyData = async () => {
       try {
         const response = await axios.get(
-          `https://www.attend-pay.com/api/auth/company/companyProfile?id=${companyId}`,
+          `https://atd.infosware-test.in/api/auth/company/companyProfile?id=${companyId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const CompanyProfile = () => {
   const updateCompanyData = async () => {
     try {
       await axios.put(
-        `https://www.attend-pay.com/api/auth/company/companyProfile?id=${companyId}`,
+        `https://atd.infosware-test.in/api/auth/company/companyProfile?id=${companyId}`,
         companyData,
         {
           headers: {

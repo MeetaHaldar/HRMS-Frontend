@@ -15,7 +15,7 @@ const LeaveHistory = ({ selectedMonth, token, reloadTrigger }) => {
       setLoading(true);
 
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/history?month_year=${selectedMonth}&employee_id=${employeeId}`,
+        `https://atd.infosware-test.in/attendence/history?month_year=${selectedMonth}&employee_id=${employeeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

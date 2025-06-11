@@ -18,7 +18,7 @@ export default function WfhEmployeesTable() {
       const token = localStorage.getItem("token");
       const formattedDate = formatDateForAPI(date);
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/wfhemp?date=${formattedDate}`,
+        `https://atd.infosware-test.in/attendence/wfhemp?date=${formattedDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

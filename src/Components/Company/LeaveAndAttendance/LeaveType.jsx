@@ -39,7 +39,7 @@ const LeaveType = () => {
   const fetchLeaveTypes = async () => {
     try {
       const response = await axios.get(
-        "https://www.attend-pay.com/api/auth/company/getallLeaveCategory",
+        "https://atd.infosware-test.in/api/auth/company/getallLeaveCategory",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -76,7 +76,7 @@ const LeaveType = () => {
     if (isEditing) {
       try {
         const response = await axios.put(
-          `https://www.attend-pay.com/api/auth/company/updateLeaveCategory?id=${editingId}`,
+          `https://atd.infosware-test.in/api/auth/company/updateLeaveCategory?id=${editingId}`,
           leavePayload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -104,7 +104,7 @@ const LeaveType = () => {
     } else {
       try {
         const response = await axios.post(
-          "https://www.attend-pay.com/api/auth/company/addLeaveCategory",
+          "https://atd.infosware-test.in/api/auth/company/addLeaveCategory",
           leavePayload,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -153,7 +153,7 @@ const LeaveType = () => {
   const confirmDelete = async (id) => {
     try {
       await axios.delete(
-        `https://www.attend-pay.com/api/auth/company/deleteLeaveCategory?id=${id}`,
+        `https://atd.infosware-test.in/api/auth/company/deleteLeaveCategory?id=${id}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

@@ -24,7 +24,7 @@ const WorkShift = () => {
   const fetchSavedShift = async () => {
     try {
       const res = await axios.get(
-        `https://www.attend-pay.com/api/auth/company/getTimeInterval?company_id=${company_id}`,
+        `https://atd.infosware-test.in/api/auth/company/getTimeInterval?company_id=${company_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -95,7 +95,7 @@ const WorkShift = () => {
 
     try {
       await axios.post(
-        "https://www.attend-pay.com/api/auth/company/addtimeInterval",
+        "https://atd.infosware-test.in/api/auth/company/addtimeInterval",
         payload,
         {
           headers: {

@@ -32,7 +32,7 @@ export default function OnLeaveEmployeesTable() {
   const fetchEmployeesOnLeave = async (date) => {
     try {
       const response = await axios.get(
-        `https://www.attend-pay.com/attendence/leavemp?date=${formatDateForAPI(
+        `https://atd.infosware-test.in/attendence/leavemp?date=${formatDateForAPI(
           date
         )}`,
         {

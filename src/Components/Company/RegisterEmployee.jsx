@@ -66,9 +66,13 @@ const RegisterEmployee = () => {
 
     const token = localStorage.getItem("token");
     try {
-      await axios.post("https://www.attend-pay.com/api/employee/", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "https://atd.infosware-test.in/api/employee/",
+        formData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("Employee Registered Successfully");
     } catch (error) {
       alert("Error while registering employee");
