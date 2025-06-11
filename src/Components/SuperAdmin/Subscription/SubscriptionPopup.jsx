@@ -1,5 +1,4 @@
-// SubscriptionPopup.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const SubscriptionPopup = ({
   isOpen,
@@ -48,7 +47,6 @@ const SubscriptionPopup = ({
   }, [initialData, isEdit, errorMessage]);
   useEffect(() => {
     if (!isOpen) {
-      // Clear form when popup closes
       setFormData({
         name: "",
         description: "",

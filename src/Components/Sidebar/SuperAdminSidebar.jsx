@@ -4,6 +4,7 @@ import { MdSpaceDashboard } from "react-icons/md";
 import { FaBuilding } from "react-icons/fa";
 import { BsCardChecklist } from "react-icons/bs";
 import { FiLogOut } from "react-icons/fi";
+import { RiLockPasswordLine } from "react-icons/ri";
 
 const superAdminMenu = [
   { label: "Dashboard", to: "/adminDashboard", icon: <MdSpaceDashboard /> },
@@ -20,12 +21,19 @@ const superAdminMenu = [
       {
         label: "Subscription List",
         to: "/Subscription",
+        icon: <BsCardChecklist />,
       },
       {
         label: "Subscribed Companies",
         to: "/subscribedCompanyList",
+        icon: <BsCardChecklist />,
       },
     ],
+  },
+  {
+    label: "Update Password",
+    to: "/changePassword",
+    icon: <RiLockPasswordLine />,
   },
 ];
 

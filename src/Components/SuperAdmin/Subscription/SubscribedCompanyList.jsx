@@ -19,7 +19,7 @@ const SubscribedCompanyList = () => {
             },
           }
         );
-        console.log("Subscribed Companies:", res.data);
+
         setCompanies(res.data || []); // Adjust based on API response structure
       } catch (err) {
         console.error("Error fetching subscribed companies:", err);

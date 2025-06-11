@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -32,7 +32,7 @@ const CompaniesList = () => {
           }
         );
         const data = response.data;
-        console.log(data);
+
         setCompanies(data || []);
         setTotalPages(data.totalPages || 1);
       } catch (error) {

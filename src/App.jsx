@@ -19,6 +19,8 @@ function App() {
               element={<SubscribedCompanyList />}
             />
             <Route path="Subscription" element={<Subscription />} />
+            <Route path="changePassword" element={<UpdatePassword />} />
+
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           <Route

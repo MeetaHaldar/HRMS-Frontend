@@ -1,6 +1,10 @@
-import React from "react";
-
-const DeleteConfirmationPopup = ({ isOpen, onClose, onConfirm, data, message }) => {
+const DeleteConfirmationPopup = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  data,
+  message,
+}) => {
   if (!isOpen) return null;
 
   return (
