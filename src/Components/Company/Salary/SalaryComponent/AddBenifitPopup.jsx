@@ -1,66 +1,84 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Select from "react-select";
+import dev_url from "../../../../config";
 
-const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
-  const [benefitPlanOptions, setBenefitPlanOptions] = useState([]);
-  const [investmentOptions, setInvestmentOptions] = useState([]);
+const AddBenefitPopup = ({ isOpen, onClose, item }) => {
+  const [benefitTypes, setBenefitTypes] = useState([]);
   const [formData, setFormData] = useState({
-    benefitPlan: "",
-    investment: "",
-    nameInPayslip: "",
-    includeContribution: false,
-    isSuperFund: false,
-    isProRata: false,
-    isActive: false,
+    benefit_type_id: null,
+    include_employer_contribution: 0,
+    calculate_pro_rata: 0,
   });
 
-  useEffect(() => {
-    // Simulating backend fetch for benefit and investment options
-    setBenefitPlanOptions([
-      { id: 1, label: "Benefit Plan A" },
-      { id: 2, label: "Benefit Plan B" },
-    ]);
+  const token = localStorage.getItem("token");
 
-    setInvestmentOptions([
-      { id: 1, label: "Investment Option X" },
-      { id: 2, label: "Investment Option Y" },
-    ]);
-  }, []);
+  // Initial form state for reset
+  const initialFormState = {
+    benefit_type_id: null,
+    include_employer_contribution: 0,
+    calculate_pro_rata: 0,
+  };
 
   useEffect(() => {
-    if (item) {
-      // Pre-fill form data when editing an existing item
-      setFormData({
-        benefitPlan: item.benefitPlan || "",
-        investment: item.investment || "",
-        nameInPayslip: item.nameInPayslip || "",
-        includeContribution: item.includeContribution || false,
-        isSuperFund: item.isSuperFund || false,
-        isProRata: item.isProRata || false,
-        isActive: item.isActive || false,
+    const fetchBenefitTypes = async () => {
+      try {
+        const response = await axios.get(`${dev_url}salary/getBenefitTypes`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setBenefitTypes(
+          response.data.map((benefit) => ({
+            label: benefit.name,
+            value: benefit.id,
+          }))
+        );
+      } catch (error) {
+        console.error("Failed to fetch benefit types", error);
+      }
+    };
+
+    fetchBenefitTypes();
+  }, [token]);
+
+  const handleCheckboxChange = (e) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: checked ? 1 : 0,
+    }));
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setFormData((prev) => ({
+      ...prev,
+      benefit_type_id: selectedOption?.value || null,
+    }));
+  };
+
+  const resetForm = () => {
+    setFormData(initialFormState);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await axios.post(`${dev_url}salary/addbenefitComponent`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
+      resetForm();
+      onClose();
+    } catch (error) {
+      console.error("Error submitting benefit data:", error);
     }
-  }, [item]);
-
-  if (!isOpen) return null;
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
   };
 
-  const handleSelectChange = (name, selectedOption) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: selectedOption ? selectedOption.label : "",
-    }));
-  };
-
-  const handleSubmit = () => {
-    onSubmit(formData);
+  const handleCancel = () => {
+    resetForm();
+    onClose();
   };
 
   const customStyles = {
@@ -73,176 +91,85 @@ const AddBenefitPopup = ({ isOpen, onClose, onSubmit, item }) => {
     option: (base, state) => ({
       ...base,
       backgroundColor: state.isFocused ? "#FFD85F" : "white",
-      color: "black", // Ensure text is always visible
+      color: "black",
     }),
     singleValue: (base) => ({
       ...base,
-      color: "black", // Ensure selected text is black
-    }),
-    dropdownIndicator: (base) => ({
-      ...base,
-      color: "black", // Set darker color for the dropdown arrow
-      "&:hover": {
-        color: "black", // Slightly darker on hover
-      },
-    }),
-    indicatorSeparator: (base) => ({
-      ...base,
-      backgroundColor: "#8A8A8A", // Color of the separator line (if visible)
+      color: "black",
     }),
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-700">
-            {item ? `Edit ${item.name}` : "Add Benefit"}
+            {item ? `Edit Benefit` : "Add Benefit"}
           </h2>
           <button
-            onClick={onClose}
-            className="text-xl font-bold text-gray-500  cursor-pointer"
+            onClick={handleCancel}
+            className="text-xl font-bold text-gray-500 cursor-pointer"
           >
             ✕
           </button>
         </div>
 
         <div className="space-y-4">
-          {/* Benefit Plan Dropdown using react-select */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">
-              Benefits Plan <span className="text-red-500">*</span>
+              Benefit Type <span className="text-red-500">*</span>
             </label>
             <Select
-              name="benefitPlan"
-              value={benefitPlanOptions.find(
-                (option) => option.label === formData.benefitPlan
+              value={benefitTypes.find(
+                (opt) => opt.value === formData.benefit_type_id
               )}
-              onChange={(selectedOption) =>
-                handleSelectChange("benefitPlan", selectedOption)
-              }
-              options={benefitPlanOptions}
+              onChange={handleSelectChange}
+              options={benefitTypes}
               styles={customStyles}
+              placeholder="Select benefit type..."
               className="w-full"
-              placeholder="Select Benefit Plan...."
             />
           </div>
 
-          {/* Investment Dropdown using react-select */}
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">
-              Associate this benefit with{" "}
-              <span className="text-red-500">*</span>
+          <div className="space-y-3 text-sm text-gray-600">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="include_employer_contribution"
+                checked={!!formData.include_employer_contribution}
+                onChange={handleCheckboxChange}
+                className="accent-yellow-500"
+              />
+              <span>Include employer contribution</span>
             </label>
-            <Select
-              name="investment"
-              value={investmentOptions.find(
-                (option) => option.label === formData.investment
-              )}
-              onChange={(selectedOption) =>
-                handleSelectChange("investment", selectedOption)
-              }
-              options={investmentOptions}
-              styles={customStyles}
-              className="w-full"
-              placeholder="Select an investment...."
-            />
-          </div>
 
-          {/* Name in Payslip */}
-          <div>
-            <label className="block text-sm text-gray-600 mb-1">
-              Name in Payslip <span className="text-red-500">*</span>
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="calculate_pro_rata"
+                checked={!!formData.calculate_pro_rata}
+                onChange={handleCheckboxChange}
+                className="accent-yellow-500"
+              />
+              <span>Calculate on pro-rata basis</span>
             </label>
-            <input
-              type="text"
-              name="nameInPayslip"
-              value={formData.nameInPayslip}
-              onChange={handleChange}
-              placeholder="Name in Payslip..."
-              className="w-full rounded-lg px-3 py-2 bg-[#EAEAEA] focus:outline-none"
-            />
           </div>
-
-          {/* Checkbox Inputs */}
-          <div className="space-y-2 text-sm text-gray-600">
-            <div>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="includeContribution"
-                  checked={formData.includeContribution}
-                  onChange={handleChange}
-                  className="accent-yellow-500"
-                />
-                <span>
-                  Include employer's contribution in employee’s salary
-                  structure.
-                </span>
-              </label>
-            </div>
-
-            <div>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="isSuperFund"
-                  checked={formData.isSuperFund}
-                  onChange={handleChange}
-                  className="accent-yellow-500"
-                />
-                <span>Consider this a superannuation fund</span>
-              </label>
-            </div>
-
-            <div>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="isProRata"
-                  checked={formData.isProRata}
-                  onChange={handleChange}
-                  className="accent-yellow-500"
-                />
-                <span>
-                  Calculate on pro-rata basis <br />
-                  <small className="text-gray-400 block">
-                    Pay will be adjusted based on employee working days.
-                  </small>
-                </span>
-              </label>
-            </div>
-
-            <div>
-              <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="isActive"
-                  checked={formData.isActive}
-                  onChange={handleChange}
-                  className="accent-yellow-500"
-                />
-                <span>Mark this as Active</span>
-              </label>
-            </div>
-          </div>
-
-          <p className="text-xs text-gray-500 leading-relaxed mt-2">
-            <strong>Note:</strong> Once you associate this deduction with an
-            employee, you will only be able to edit the Name in Payslip. The
-            change will be reflected in both new and existing employees.
-          </p>
 
           <div className="flex justify-between mt-6">
             <button
               onClick={handleSubmit}
-              className="flex-1 bg-[#FFD85F] hover:bg-yellow-600 text-gray-700 font-semibold py-2 rounded-full mr-2  cursor-pointer"
+              disabled={!formData.benefit_type_id}
+              className={`flex-1 bg-[#FFD85F] hover:bg-yellow-600 text-gray-700 font-semibold py-2 rounded-full mr-2 
+    ${!formData.benefit_type_id ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               {item ? "Save Changes" : "+ Add Benefit"}
             </button>
+
             <button
-              onClick={onClose}
-              className="flex-1 border border-gray-300 hover:bg-gray-100 text-gray-600 font-medium py-2 rounded-full  cursor-pointer"
+              onClick={handleCancel}
+              className="flex-1 border border-gray-300 hover:bg-gray-100 text-gray-600 font-medium py-2 rounded-full"
             >
               Cancel
             </button>

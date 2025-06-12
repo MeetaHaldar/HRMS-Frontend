@@ -35,7 +35,7 @@ const SignIn = () => {
     if (!validate()) return;
 
     try {
-      const response = await axios.post(`${dev_url}/api/auth/login`, formData);
+      const response = await axios.post(`${dev_url}api/auth/login`, formData);
 
       const { token, user } = response.data;
 

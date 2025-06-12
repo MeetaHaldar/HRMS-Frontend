@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import axios from "axios";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
@@ -7,91 +8,23 @@ import AddDeductionPopup from "./AddDeductionPopup";
 import AddReimbursementPopup from "./AddReimbursementPopup";
 import AddEarningsPopup from "./AddEarningsPopup";
 import Pagination from "../../../Pagination";
+import dev_url from "../../../../config";
+import EarningsTab from "./EarningsTab";
+import DeductionsTab from "./DeductionsTab";
+import BenefitsTab from "./BenefitsTab";
+import ReimbursementTab from "./ReimbursementTab";
 
 export default function SalaryComponent() {
   const [activeTab, setActiveTab] = useState("earnings");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [editData, setEditData] = useState(null);
   const [showBenefitPopup, setShowBenefitPopup] = useState(false);
   const [showDeductionPopup, setShowDeductionPopup] = useState(false);
   const [showReimbursementPopup, setShowReimbursementPopup] = useState(false);
   const [showEarningsPopup, setShowEarningsPopup] = useState(false);
-  const [editData, setEditData] = useState(null);
-
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = () => {
-    if (activeTab === "earnings") {
-      setData([
-        {
-          id: 1,
-          name: "Earnings Name 1",
-          type: "Type 1",
-          calculation: "Calculation Type 1",
-          epf: true,
-          esi: true,
-          status: "active",
-        },
-        {
-          id: 2,
-          name: "Earnings Name 2",
-          type: "Type 2",
-          calculation: "Calculation Type 2",
-          epf: true,
-          esi: false,
-          status: "inactive",
-        },
-      ]);
-    } else if (activeTab === "deductions") {
-      setData([
-        {
-          id: 1,
-          name: "Deduction Name 1",
-          type: "Type 1",
-          calculation: "Calculation Type 1",
-          epf: false,
-          esi: false,
-          status: "active",
-        },
-        {
-          id: 2,
-          name: "Deduction Name 2",
-          type: "Type 2",
-          calculation: "Calculation Type 2",
-          epf: false,
-          esi: true,
-          status: "inactive",
-        },
-      ]);
-    } else if (activeTab === "benefits") {
-      setData([
-        {
-          id: 1,
-          name: "Benefit Name 1",
-          type: "Type 1",
-          calculation: "Calculation Type 1",
-          epf: true,
-          esi: true,
-          status: "active",
-        },
-        {
-          id: 2,
-          name: "Benefit Name 2",
-          type: "Type 2",
-          calculation: "Calculation Type 2",
-          epf: false,
-          esi: true,
-          status: "inactive",
-        },
-      ]);
-    }
-  };
 
   const handleDelete = (item) => {
     setSelectedItem(item);
@@ -99,28 +32,16 @@ export default function SalaryComponent() {
   };
 
   const confirmDelete = (item) => {
-    setData((prevData) => prevData.filter((d) => d.id !== item.id));
     setShowDeletePopup(false);
     setSelectedItem(null);
   };
 
-  const handleBenefitSubmit = (formData) => {
-    console.log("Benefit Submitted:", formData);
-    setShowBenefitPopup(false);
-    setEditData(null);
-  };
-
   const handleNameClick = (item) => {
     setEditData(item);
-    if (activeTab === "earnings") {
-      setShowEarningsPopup(true);
-    } else if (activeTab === "deductions") {
-      setShowDeductionPopup(true);
-    } else if (activeTab === "benefits") {
-      setShowBenefitPopup(true);
-    } else if (activeTab === "Reimbursment") {
-      setShowReimbursementPopup(true);
-    }
+    if (activeTab === "earnings") setShowEarningsPopup(true);
+    else if (activeTab === "deductions") setShowDeductionPopup(true);
+    else if (activeTab === "benefits") setShowBenefitPopup(true);
+    else if (activeTab === "Reimbursment") setShowReimbursementPopup(true);
   };
 
   return (
@@ -132,7 +53,7 @@ export default function SalaryComponent() {
         <div className="relative inline-block text-left">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex justify-center w-full rounded-full shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50  cursor-pointer"
+            className="inline-flex justify-center w-full rounded-full shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
             + Add Salary Component ▾
           </button>
@@ -183,79 +104,28 @@ export default function SalaryComponent() {
       </div>
 
       <div className="flex-grow overflow-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-4 py-3 text-left">Name</th>
-              <th className="px-4 py-3 text-left">
-                {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Type
-              </th>
-              <th className="px-4 py-3 text-left">Calculation Type</th>
-              <th className="px-4 py-3 text-left">Consider for EPF</th>
-              <th className="px-4 py-3 text-left">Consider for ESI</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50">
-                <td
-                  className="px-4 py-2 text-yellow-600 underline underline-offset-4 cursor-pointer"
-                  onClick={() => handleNameClick(item)}
-                >
-                  {item.name}
-                </td>
-                <td className="px-4 py-2">
-                  {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} Type
-                </td>
-                <td className="px-4 py-2">{item.calculation}</td>
-                <td className="px-4 py-2">
-                  {item.epf ? "Consider for EPF" : "-"}
-                </td>
-                <td className="px-4 py-2">
-                  {item.esi ? "Consider for ESI" : "-"}
-                </td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`inline-block px-2 py-1 font-semibold ${
-                      item.status === "active"
-                        ? "text-green-500"
-                        : "text-gray-600"
-                    }`}
-                  >
-                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                  </span>
-                </td>
-                <td className="px-4 py-2 space-x-2">
-                  <button
-                    className="text-gray-500 hover:text-gray-950  cursor-pointer"
-                    onClick={() => console.log("Edit item", item)}
-                  >
-                    <FiEdit />
-                  </button>
-                  <button
-                    className="text-gray-500 hover:text-gray-950 cursor-pointer"
-                    onClick={() => handleDelete(item)}
-                  >
-                    <RiDeleteBin6Line />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {activeTab === "earnings" && (
+          <EarningsTab onEdit={handleNameClick} onDelete={handleDelete} />
+        )}
+        {activeTab === "deductions" && (
+          <DeductionsTab onEdit={handleNameClick} onDelete={handleDelete} />
+        )}
+        {activeTab === "benefits" && (
+          <BenefitsTab onEdit={handleNameClick} onDelete={handleDelete} />
+        )}
+        {activeTab === "Reimbursment" && (
+          <ReimbursementTab onEdit={handleNameClick} onDelete={handleDelete} />
+        )}
       </div>
 
       <div className="mt-4">
         <Pagination
           currentPage={currentPage}
-          totalPages={10} // Replace with dynamic totalPages if needed
+          totalPages={10}
           onPageChange={(page) => setCurrentPage(page)}
         />
       </div>
 
-      {/* All your popups remain the same below */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
@@ -270,18 +140,12 @@ export default function SalaryComponent() {
           setShowBenefitPopup(false);
           setEditData(null);
         }}
-        onSubmit={handleBenefitSubmit}
         editData={editData}
       />
 
       <AddDeductionPopup
         isOpen={showDeductionPopup}
         onClose={() => {
-          setShowDeductionPopup(false);
-          setEditData(null);
-        }}
-        onSubmit={(data) => {
-          console.log("Deduction Submitted:", data);
           setShowDeductionPopup(false);
           setEditData(null);
         }}
@@ -294,22 +158,12 @@ export default function SalaryComponent() {
           setShowReimbursementPopup(false);
           setEditData(null);
         }}
-        onSubmit={(data) => {
-          console.log("Reimbursement Submitted:", data);
-          setShowReimbursementPopup(false);
-          setEditData(null);
-        }}
         editData={editData}
       />
 
       <AddEarningsPopup
         isOpen={showEarningsPopup}
         onClose={() => {
-          setShowEarningsPopup(false);
-          setEditData(null);
-        }}
-        onSubmit={(data) => {
-          console.log("Earnings Submitted:", data);
           setShowEarningsPopup(false);
           setEditData(null);
         }}
