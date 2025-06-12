@@ -1,14 +1,10 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-import { FiEdit } from "react-icons/fi";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
 import AddBenefitPopup from "./AddBenifitPopup";
 import AddDeductionPopup from "./AddDeductionPopup";
 import AddReimbursementPopup from "./AddReimbursementPopup";
 import AddEarningsPopup from "./AddEarningsPopup";
 import Pagination from "../../../Pagination";
-import dev_url from "../../../../config";
 import EarningsTab from "./EarningsTab";
 import DeductionsTab from "./DeductionsTab";
 import BenefitsTab from "./BenefitsTab";

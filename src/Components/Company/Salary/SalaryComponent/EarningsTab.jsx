@@ -3,17 +3,16 @@ import axios from "axios";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import dev_url from "../../../../config";
+import AddEarningsPopup from "./AddEarningsPopup";
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
 
-const EarningsTab = ({ setEditData, onEdit }) => {
+const EarningTab = () => {
   const [data, setData] = useState([]);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
   const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const companyId = JSON.parse(localStorage.getItem("user"))?.companyId;
 
   const fetchData = () => {
     axios
@@ -24,9 +23,23 @@ const EarningsTab = ({ setEditData, onEdit }) => {
       .catch(() => setData([]));
   };
 
-  const handleEdit = (item) => {
-    setEditData(item);
-    onEdit();
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleEdit = async (id) => {
+    try {
+      const res = await axios.get(
+        `${dev_url}salary/getComponentById?id=${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setSelectedItem(res.data);
+      setPopupOpen(true);
+    } catch (err) {
+      console.error("Error fetching earning by ID", err);
+    }
   };
 
   const handleDelete = (item) => {
@@ -39,12 +52,14 @@ const EarningsTab = ({ setEditData, onEdit }) => {
       await axios.delete(
         `${dev_url}salary/deleteearningComponent?id=${item.id}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      setData((prev) => prev.filter((d) => d.id !== item.id));
+      fetchData();
     } catch (error) {
-      console.error("Error deleting item:", error);
+      console.error("Failed to delete earning:", error);
     } finally {
       setShowDeletePopup(false);
       setSelectedItem(null);
@@ -58,8 +73,8 @@ const EarningsTab = ({ setEditData, onEdit }) => {
           <tr>
             <th className="px-4 py-2">Name</th>
             <th className="px-4 py-2">Payslip Name</th>
+            <th className="px-4 py-2">Calculation Type</th>
             <th className="px-4 py-2">Amount</th>
-            <th className="px-4 py-2">Pay Type</th>
             <th className="px-4 py-2">Status</th>
             <th className="px-4 py-2">Actions</th>
           </tr>
@@ -69,32 +84,32 @@ const EarningsTab = ({ setEditData, onEdit }) => {
             <tr key={item.id} className="hover:bg-gray-50">
               <td
                 className="px-4 py-2 text-yellow-600 underline cursor-pointer"
-                onClick={() => handleEdit(item)}
+                onClick={() => handleEdit(item.id)}
               >
                 {item.earning_name}
               </td>
               <td className="px-4 py-2">{item.name_in_payslip}</td>
+              <td className="px-4 py-2">{item.calculation_type}</td>
               <td className="px-4 py-2">{item.amount}</td>
-              <td className="px-4 py-2">{item.pay_type}</td>
               <td className="px-4 py-2">
                 <span
                   className={`inline-block px-2 py-1 font-semibold ${
                     item.is_active == 1 ? "text-green-600" : "text-red-600"
                   }`}
                 >
-                  {item.is_active == 1 ? "Active" : "Not Active"}
+                  {item.is_active ? "Active" : "Not Active"}
                 </span>
               </td>
               <td className="px-4 py-2">
                 <button
-                  onClick={() => handleEdit(item)}
+                  onClick={() => handleEdit(item.id)}
                   className="mr-2 text-gray-600 hover:text-black"
                 >
                   <FiEdit />
                 </button>
                 <button
-                  className="text-gray-600 hover:text-black"
                   onClick={() => handleDelete(item)}
+                  className="text-gray-600 hover:text-black"
                 >
                   <RiDeleteBin6Line />
                 </button>
@@ -103,6 +118,18 @@ const EarningsTab = ({ setEditData, onEdit }) => {
           ))}
         </tbody>
       </table>
+
+      {popupOpen && (
+        <AddEarningsPopup
+          isOpen={popupOpen}
+          onClose={() => {
+            setPopupOpen(false);
+            setSelectedItem(null);
+            fetchData();
+          }}
+          item={selectedItem}
+        />
+      )}
 
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
@@ -115,4 +142,4 @@ const EarningsTab = ({ setEditData, onEdit }) => {
   );
 };
 
-export default EarningsTab;
+export default EarningTab;
