@@ -4,11 +4,15 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import dev_url from "../../../../config";
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
+import AddDeductionPopup from "./AddDeductionPopup";
 
-const DeductionsTab = ({ setEditData, onEdit }) => {
+const DeductionsTab = () => {
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
+  const [editItemData, setEditItemData] = useState(null);
+
   const token = localStorage.getItem("token");
 
   const fetchData = () => {
@@ -24,9 +28,22 @@ const DeductionsTab = ({ setEditData, onEdit }) => {
     fetchData();
   }, []);
 
-  const handleEdit = (item) => {
-    setEditData(item);
-    onEdit();
+  const handleEdit = async (item) => {
+    try {
+      const response = await axios.get(
+        `${dev_url}salary/getdeductionById?id=${item.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setEditItemData(response.data.data);
+      console.log("Edit Item Data:", response.data.data);
+      setPopupOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch deduction by ID:", error);
+    }
   };
 
   const handleDelete = (item) => {
@@ -51,6 +68,12 @@ const DeductionsTab = ({ setEditData, onEdit }) => {
       setShowDeletePopup(false);
       setSelectedItem(null);
     }
+  };
+
+  const handlePopupClose = (shouldRefresh) => {
+    setPopupOpen(false);
+    setEditItemData(null);
+    if (shouldRefresh) fetchData();
   };
 
   return (
@@ -115,6 +138,15 @@ const DeductionsTab = ({ setEditData, onEdit }) => {
         data={selectedItem}
         message={`Are you sure you want to delete "${selectedItem?.deduction_type_name}"?`}
       />
+
+      {popupOpen && (
+        <AddDeductionPopup
+          isOpen={popupOpen}
+          onClose={handlePopupClose}
+          onSuccess={fetchData}
+          item={editItemData}
+        />
+      )}
     </>
   );
 };

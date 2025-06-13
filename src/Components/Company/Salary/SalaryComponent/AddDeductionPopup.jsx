@@ -1,53 +1,77 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
 import axios from "axios";
 import dev_url from "../../../../config";
 
-const AddDeductionPopup = ({ isOpen, onClose }) => {
-  const initialFormState = {
-    deduction_type_id: "",
-    deduction_name: "",
-    name_in_payslip: "",
-    deduction_frequency: "recurring",
-    pay_type: "fixed",
-    calculation_type: "flat",
-    amount: "",
-    show_in_payslip: false,
-    is_active: false,
-  };
-
+const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
+  const [selectedType, setSelectedType] = useState(null);
   const [deductionTypes, setDeductionTypes] = useState([]);
-  const [formData, setFormData] = useState(initialFormState);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (isOpen) {
-      fetchDeductionTypes();
-    }
-  }, [isOpen]);
-
-  const fetchDeductionTypes = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`${dev_url}salary/getdeductiontype`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const options = res.data.data?.map((item) => ({
-        id: item.id,
-        label: item.deduction_name,
-      }));
-      setDeductionTypes(options);
-    } catch (err) {
-      console.error("Error fetching deduction types:", err);
-    }
-  };
+  const [formData, setFormData] = useState({
+    nameInPayslip: "",
+    calculationType: "",
+    deductionFrequency: "",
+    amount: "",
+    isActive: false,
+    show_in_payslip: false,
+    pay_type: "",
+  });
+  const [errorMsg, setErrorMsg] = useState("");
 
   const resetForm = () => {
-    setFormData(initialFormState);
-    setError("");
-    onClose();
+    setSelectedType(null);
+    setFormData({
+      nameInPayslip: "",
+      calculationType: "",
+      amount: "",
+      isActive: 0,
+    });
+    setErrorMsg("");
   };
+
+  useEffect(() => {
+    const fetchDeductionTypes = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`${dev_url}salary/getdeductiontype`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const formatted = (response.data.data || []).map((item) => ({
+          value: item.id,
+          label: item.deduction_name,
+        }));
+
+        setDeductionTypes(formatted);
+      } catch (error) {
+        console.error("Error fetching deduction types:", error);
+      }
+    };
+
+    fetchDeductionTypes();
+  }, []);
+
+  useEffect(() => {
+    if (item) {
+      setSelectedType({
+        value: item.deduction_type_id || item.deduction_code,
+        label: item.deduction_name,
+      });
+
+      setFormData({
+        nameInPayslip: item.name_in_payslip || "",
+        calculationType: item.calculation_type || "",
+        amount: item.amount || "",
+        isActive: item.is_active || false,
+        show_in_payslip: item.show_in_payslip || false,
+        deductionFrequency: item.deduction_frequency || "",
+        pay_type: item.pay_type || "",
+      });
+    } else {
+      resetForm();
+    }
+  }, [item]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -59,267 +83,271 @@ const AddDeductionPopup = ({ isOpen, onClose }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setErrorMsg("");
+
+    if (!selectedType) {
+      setErrorMsg("Please select a Deduction Type");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    const body = {
+      id: item ? item.id : null,
+      deduction_type_id: selectedType.value,
+      // deduction_code: selectedType.value,
+      deduction_type_name: selectedType.label,
+      deduction_name: selectedType.label,
+      name_in_payslip: formData.nameInPayslip,
+      deduction_frequency: formData.deductionFrequency,
+      pay_type: formData.pay_type,
+      calculation_type: formData.calculationType,
+      amount: Number(formData.amount),
+      show_in_payslip: formData.show_in_payslip,
+      is_active: formData.isActive,
+    };
 
     try {
-      const token = localStorage.getItem("token");
-      const selectedType = deductionTypes.find(
-        (type) => type.id.toString() === formData.deduction_type_id
-      );
+      const url = item
+        ? `${dev_url}salary/updatedeductionComponent`
+        : `${dev_url}salary/adddeductionComponent`;
 
-      if (!selectedType) {
-        setError("Please select a valid deduction type.");
-        return;
-      }
+      const method = item ? "put" : "post";
 
-      const payload = {
-        deduction_type_id: Number(formData.deduction_type_id),
-        deduction_name: formData.deduction_name,
-        name_in_payslip: formData.name_in_payslip,
-        deduction_frequency: formData.deduction_frequency,
-        pay_type: formData.pay_type,
-        calculation_type: formData.calculation_type,
-        amount: Number(formData.amount),
-        show_in_payslip: formData.show_in_payslip ? 1 : 0,
-        is_active: formData.is_active ? 1 : 0,
-      };
-
-      await axios.post(`${dev_url}salary/adddeductionComponent`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await axios[method](url, body, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log(item ? "Updated:" : "Saved:", response.data);
+      onSuccess?.();
       resetForm();
-    } catch (err) {
-      setError("Failed to submit. Please check your inputs.");
-      console.error("POST error:", err);
+      onClose();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      const msg =
+        error.response?.data?.message ||
+        "Something went wrong. Please try again.";
+      setErrorMsg(msg);
     }
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-6 md:p-8 shadow-xl w-[90%] max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center bg-black/20 backdrop-blur-sm z-50">
+      <div className="bg-white p-6 rounded-2xl w-full max-w-md shadow-lg">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Deductions</h2>
+          <h2 className="text-lg font-semibold">
+            {item ? "Edit Deduction" : "Add Deduction"}
+          </h2>
           <button
-            onClick={resetForm}
-            className="text-gray-400 hover:text-gray-600 text-2xl leading-none  cursor-pointer"
+            onClick={handleClose}
+            className="text-gray-600 hover:text-black text-xl cursor-pointer"
           >
             &times;
           </button>
         </div>
 
-        {error && (
-          <div className="text-red-600 text-sm mb-2 text-center">{error}</div>
+        {errorMsg && (
+          <div className="text-red-500 text-sm mb-4 text-center">
+            {errorMsg}
+          </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block font-medium mb-1">
               Deduction Type <span className="text-red-500">*</span>
             </label>
-            <select
-              name="deduction_type_id"
-              value={formData.deduction_type_id}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            >
-              <option value="">Select Deduction Type</option>
-              {deductionTypes.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Deduction Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="deduction_name"
-              value={formData.deduction_name}
-              onChange={handleChange}
-              placeholder="Deduction Name..."
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+            <Select
+              value={selectedType}
+              onChange={setSelectedType}
+              options={deductionTypes}
+              placeholder="Select deduction type..."
+              styles={{
+                control: (base, state) => ({
+                  ...base,
+                  backgroundColor: "#EAEAEA",
+                  boxShadow: state.isFocused ? "0 0 0 2px #FFD85F" : "none",
+                  "&:hover": { borderColor: "#FFD85F" },
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isFocused ? "#FFD85F" : "white",
+                  color: "black",
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: "black",
+                }),
+              }}
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="mb-4">
+            <label className="block font-medium mb-1">
               Name in Payslip <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              name="name_in_payslip"
-              value={formData.name_in_payslip}
+              name="nameInPayslip"
+              value={formData.nameInPayslip}
               onChange={handleChange}
               placeholder="Name in Payslip..."
+              className="w-full border rounded px-3 py-2"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
           </div>
 
-          {/* Frequency */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Deduction Frequency <span className="text-red-500">*</span>
+          <div className="mb-4">
+            <label className="block font-medium mb-1">
+              Calculation Type <span className="text-red-500">*</span>
             </label>
-            <div className="flex space-x-4">
-              <label className="flex items-center space-x-1">
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center">
                 <input
                   type="radio"
-                  name="deduction_frequency"
-                  value="one-time"
-                  checked={formData.deduction_frequency === "one-time"}
+                  name="calculationType"
+                  value="flat"
+                  checked={formData.calculationType === "flat"}
                   onChange={handleChange}
-                  className="accent-yellow-500"
+                  required
                 />
-                <span>One-time</span>
+                <span className="ml-2">Flat Amount</span>
               </label>
-              <label className="flex items-center space-x-1">
+              <label className="flex items-center">
                 <input
                   type="radio"
-                  name="deduction_frequency"
-                  value="recurring"
-                  checked={formData.deduction_frequency === "recurring"}
+                  name="calculationType"
+                  value="percentage"
+                  checked={formData.calculationType === "percentage"}
                   onChange={handleChange}
-                  className="accent-yellow-500"
                 />
-                <span>Recurring</span>
+                <span className="ml-2">Percentage of Basic</span>
               </label>
             </div>
           </div>
 
-          {/* Pay Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="mb-4">
+            <label className="block font-medium mb-1">
+              Deduction Frequency <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="deductionFrequency"
+                  value="one-time"
+                  checked={formData.deductionFrequency === "one-time"}
+                  onChange={handleChange}
+                  required
+                />
+                <span className="ml-2">One-time</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="radio"
+                  name="deductionFrequency"
+                  value="recurring"
+                  checked={formData.deductionFrequency === "recurring"}
+                  onChange={handleChange}
+                />
+                <span className="ml-2">Recurring</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block font-medium mb-1">
               Pay Type <span className="text-red-500">*</span>
             </label>
-            <div className="flex space-x-4">
-              <label className="flex items-center space-x-1">
+            <div className="flex flex-col gap-2">
+              <label className="flex items-center">
                 <input
                   type="radio"
                   name="pay_type"
                   value="fixed"
                   checked={formData.pay_type === "fixed"}
                   onChange={handleChange}
-                  className="accent-yellow-500"
+                  required
                 />
-                <span>Fixed</span>
+                <span className="ml-2">Fixed</span>
               </label>
-              <label className="flex items-center space-x-1">
+              <label className="flex items-center">
                 <input
                   type="radio"
                   name="pay_type"
                   value="variable"
                   checked={formData.pay_type === "variable"}
                   onChange={handleChange}
-                  className="accent-yellow-500"
                 />
-                <span>Variable</span>
+                <span className="ml-2">Variable</span>
               </label>
             </div>
           </div>
 
-          {/* Calculation Type */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Calculation Type <span className="text-red-500">*</span>
-            </label>
-            <div className="flex space-x-4">
-              <label className="flex items-center space-x-1">
-                <input
-                  type="radio"
-                  name="calculation_type"
-                  value="flat"
-                  checked={formData.calculation_type === "flat"}
-                  onChange={handleChange}
-                  className="accent-yellow-500"
-                />
-                <span>Flat</span>
-              </label>
-              <label className="flex items-center space-x-1">
-                <input
-                  type="radio"
-                  name="calculation_type"
-                  value="percentage"
-                  checked={formData.calculation_type === "percentage"}
-                  onChange={handleChange}
-                  className="accent-yellow-500"
-                />
-                <span>Percentage</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Amount */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Amount <span className="text-red-500">*</span>
+          <div className="mb-4">
+            <label className="block font-medium mb-1">
+              Enter Amount <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
               name="amount"
               value={formData.amount}
               onChange={handleChange}
-              placeholder="Amount"
+              placeholder="Enter amount here..."
+              className="w-full border rounded px-3 py-2"
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
             />
           </div>
 
-          {/* Toggles */}
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="show_in_payslip"
-              name="show_in_payslip"
-              checked={formData.show_in_payslip}
-              onChange={handleChange}
-              className="accent-yellow-500"
-            />
-            <label htmlFor="show_in_payslip">Show in Payslip</label>
+          <div className="mb-4">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                name="isActive"
+                // value={formData.isActive}
+                checked={formData.isActive}
+                onChange={handleChange}
+              />
+              <span className="ml-2">Mark this as Active</span>
+            </label>
+          </div>
+          <div className="mb-4">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                name="shows_in_payslip"
+                // value={formData.show_in_payslip}
+                checked={formData.show_in_payslip}
+                onChange={handleChange}
+              />
+              <span className="ml-2">Show in Payslip</span>
+            </label>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="is_active"
-              name="is_active"
-              checked={formData.is_active}
-              onChange={handleChange}
-              className="accent-yellow-500"
-            />
-            <label htmlFor="is_active">Mark this as Active</label>
-          </div>
+          <p className="text-gray-500 text-xs mb-4">
+            Note: Once you associate this component with an employee, you will
+            only be able to edit the Name and Amount/Percentage. Changes apply
+            only to new employees.
+          </p>
 
-          {/* Note */}
-          <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
-            <strong>Note:</strong> Once you associate this component with an
-            employee, you will only be able to edit the Name and
-            Amount/Percentage. Changes will apply only to new employees.
-          </div>
-
-          {/* Buttons */}
-          <div className="flex justify-between items-center pt-4">
+          <div className="flex justify-between gap-4">
             <button
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-500 text-gray-700 font-semibold py-2 px-6 rounded-full  cursor-pointer w-1/2 mr-2"
+              className="bg-[#FFD85F] hover:bg-yellow-500 px-4 py-2 rounded-full w-1/2 cursor-pointer"
             >
-              + Add Deductions
+              {item ? "Save Changes" : "+ Add Deduction"}
             </button>
             <button
               type="button"
-              onClick={resetForm}
-              className="border border-gray-400 text-gray-700 font-semibold py-2 px-6 rounded-full hover:bg-gray-100  cursor-pointer w-1/2"
+              onClick={handleClose}
+              className="border px-4 py-2 rounded-full text-gray-700 w-1/2 cursor-pointer"
             >
               Cancel
             </button>
