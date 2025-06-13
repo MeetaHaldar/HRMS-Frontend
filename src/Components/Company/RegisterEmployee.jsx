@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import dev_url from "../../config";
+
 const RegisterEmployee = () => {
   const [formData, setFormData] = useState({
     emp_code: "",
@@ -19,7 +20,31 @@ const RegisterEmployee = () => {
     role: [],
   });
 
+  const [departments, setDepartments] = useState([]);
+  const [positions, setPositions] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState({});
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const [deptRes, posRes] = await Promise.all([
+          axios.get(`${dev_url}api/auth/company/getallDepartment`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${dev_url}api/auth/company/getallPosition`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        setDepartments(deptRes.data.data);
+        setPositions(posRes.data.data);
+      } catch (error) {
+        console.error("Error fetching department or position data", error);
+      }
+    };
+
+    fetchDropdownData();
+  }, []);
 
   const validate = () => {
     const tempErrors = {};
@@ -32,9 +57,8 @@ const RegisterEmployee = () => {
       tempErrors.mobile = "Mobile number must be 10 digits";
     if (!formData.hire_date) tempErrors.hire_date = "Hire Date is required";
     if (!formData.department_id)
-      tempErrors.department_id = "Department ID is required";
-    if (!formData.position_id)
-      tempErrors.position_id = "Position ID is required";
+      tempErrors.department_id = "Department is required";
+    if (!formData.position_id) tempErrors.position_id = "Position is required";
     if (!formData.password || formData.password.length < 6)
       tempErrors.password = "Password must be at least 6 characters";
     if (!formData.gender) tempErrors.gender = "Gender is required";
@@ -64,14 +88,24 @@ const RegisterEmployee = () => {
     e.preventDefault();
     if (!validate()) return;
 
+    const formattedData = {
+      ...formData,
+      hire_date: formData.hire_date.slice(0, 10),
+      birthday: formData.birthday.slice(0, 10),
+    };
+
     const token = localStorage.getItem("token");
     try {
       await axios.post(`${dev_url}api/employee/`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      setErrorMessage("");
       alert("Employee Registered Successfully");
+      handleCancel();
     } catch (error) {
-      alert("Error while registering employee");
+      const message =
+        error.response?.data?.message || "Error while registering employee";
+      setErrorMessage(message);
     }
   };
 
@@ -99,32 +133,45 @@ const RegisterEmployee = () => {
       <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
         Register Employee
       </h2>
+      {errorMessage && (
+        <div className="mb-4 text-red-600 font-semibold text-center border border-red-400 bg-red-100 px-4 py-2 rounded">
+          {errorMessage}
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 sm:grid-cols-2 gap-6"
       >
         {[
-          ["Employee Code", "emp_code"],
-          ["First Name", "first_name"],
-          ["Last Name", "last_name"],
-          ["Email", "email", "email"],
-          ["Mobile", "mobile"],
-          ["Hire Date", "hire_date", "date"],
-          ["Birthday", "birthday", "date"],
-          ["Department ID", "department_id"],
-          ["Position ID", "position_id"],
-          ["Address", "address"],
-          ["Password", "password", "password"],
-        ].map(([label, name, type = "text"]) => (
+          "emp_code",
+          "first_name",
+          "last_name",
+          "email",
+          "mobile",
+          "hire_date",
+          "birthday",
+          "address",
+          "password",
+        ].map((name) => (
           <div
             key={name}
             className="flex flex-col sm:flex-row items-start sm:items-center"
           >
             <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
-              {label}:
+              {name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+              :
             </label>
             <input
-              type={type}
+              type={
+                name === "hire_date" || name === "birthday"
+                  ? "date"
+                  : name === "password"
+                  ? "password"
+                  : name === "email"
+                  ? "email"
+                  : "text"
+              }
               name={name}
               value={formData[name]}
               onChange={handleChange}
@@ -133,29 +180,72 @@ const RegisterEmployee = () => {
           </div>
         ))}
 
+        {/* Department Dropdown */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+          <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
+            Department:
+          </label>
+          <select
+            name="department_id"
+            value={formData.department_id}
+            onChange={handleChange}
+            className="w-full sm:w-2/3 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+          >
+            <option value="">Select Department</option>
+            {departments.map((dept) => (
+              <option key={dept.id} value={dept.id}>
+                {dept.dept_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Position Dropdown */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+          <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
+            Position:
+          </label>
+          <select
+            name="position_id"
+            value={formData.position_id}
+            onChange={handleChange}
+            className="w-full sm:w-2/3 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+          >
+            <option value="">Select Position</option>
+            {positions.map((pos) => (
+              <option key={pos.id} value={pos.id}>
+                {pos.position_name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Gender */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center">
           <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
             Gender:
           </label>
           <div className="w-full sm:w-2/3 flex gap-4">
-            {["male", "female"].map((val) => (
-              <label key={val} className="flex items-center gap-1">
+            {[
+              { label: "Male", value: "m" },
+              { label: "Female", value: "f" },
+            ].map(({ label, value }) => (
+              <label key={value} className="flex items-center gap-1">
                 <input
                   type="radio"
                   name="gender"
-                  value={val}
-                  checked={formData.gender === val}
+                  value={value}
+                  checked={formData.gender === value}
                   onChange={handleChange}
                   className="bg-yellow-300 border border-black accent-yellow-500"
                 />
-                {val.charAt(0).toUpperCase() + val.slice(1)}
+                {label}
               </label>
             ))}
           </div>
         </div>
 
-        {/* Active */}
+        {/* Active Status */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center">
           <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
             Active Status:
@@ -180,7 +270,7 @@ const RegisterEmployee = () => {
           </div>
         </div>
 
-        {/* Role */}
+        {/* Role Checkboxes */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center">
           <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
             Role:
@@ -202,7 +292,7 @@ const RegisterEmployee = () => {
           </div>
         </div>
 
-        {/* Submit and Cancel Buttons */}
+        {/* Buttons */}
         <div className="col-span-1 sm:col-span-2 flex justify-center space-x-6 mt-8">
           <button
             type="button"
