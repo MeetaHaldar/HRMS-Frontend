@@ -4,11 +4,15 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import dev_url from "../../../../config";
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
+import AddReimbursementPopup from "./AddReimbursementPopup"; // ✅ Import the popup
 
-const ReimbursementTab = ({ setEditData, onEdit }) => {
+const ReimbursementTab = () => {
   const [data, setData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [editData, setEditData] = useState(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   const token = localStorage.getItem("token");
 
   const fetchData = () => {
@@ -24,9 +28,22 @@ const ReimbursementTab = ({ setEditData, onEdit }) => {
     fetchData();
   }, []);
 
-  const handleEdit = (item) => {
-    setEditData(item);
-    onEdit();
+  const handleEdit = async (item) => {
+    try {
+      const res = await axios.get(
+        `${dev_url}salary/getreimbursementById?id=${item.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const detailedData = res.data.data;
+      if (detailedData) {
+        setEditData(detailedData);
+        setIsEditOpen(true);
+      }
+    } catch (err) {
+      console.error("Error fetching reimbursement by ID:", err);
+    }
   };
 
   const handleDelete = (item) => {
@@ -106,9 +123,23 @@ const ReimbursementTab = ({ setEditData, onEdit }) => {
         </tbody>
       </table>
 
+
+      <AddReimbursementPopup
+        isOpen={isEditOpen}
+        onClose={() => {
+          setIsEditOpen(false);
+          setEditData(null);
+          fetchData();
+        }}
+        item={editData}
+      />
+
+      
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
-        onClose={() => setShowDeletePopup(false)}
+        onClose={() => {
+          setShowDeletePopup(false);
+        }}
         onConfirm={confirmDelete}
         data={selectedItem}
         message={`Are you sure you want to delete "${selectedItem?.reimbursement_type_name}"?`}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dev_url from "../../../../config";
 
-const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
+const AddReimbursementPopup = ({ isOpen, onClose, item = null }) => {
   const [reimbursementTypeId, setReimbursementTypeId] = useState("");
   const [reimbursementTypeName, setReimbursementTypeName] = useState("");
   const [nameInPayslip, setNameInPayslip] = useState("");
@@ -16,6 +16,7 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
 
   const token = localStorage.getItem("token");
 
+  // Fetch reimbursement types
   useEffect(() => {
     if (isOpen) {
       axios
@@ -30,6 +31,19 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
         });
     }
   }, [isOpen]);
+
+  // Fill fields in edit mode
+  useEffect(() => {
+    if (item && isOpen) {
+      setReimbursementTypeId(item.reimbursement_type_id?.toString() || "");
+      setReimbursementTypeName(item.reimbursement_type_name || "");
+      setNameInPayslip(item.name_in_payslip || "");
+      setIncludeInFBP(item.is_fbp === 1);
+      setUnclaimedHandling(item.unclaimed_option || "monthly");
+      setAmount(item.amount?.toString() || "");
+      setIsActive(item.is_active === 1);
+    }
+  }, [item, isOpen]);
 
   const handleClose = () => {
     setReimbursementTypeId("");
@@ -58,28 +72,48 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
     }
 
     const data = {
-      reimbursemnt_type_id: parseInt(reimbursementTypeId),
+      reimbursement_type_id: parseInt(reimbursementTypeId),
       reimbursement_type_name: reimbursementTypeName,
       name_in_payslip: nameInPayslip,
       is_fbp: includeInFBP ? 1 : 0,
       unclaimed_option: unclaimedHandling,
       amount: amountValue,
-      type: "monthly",
       is_active: isActive ? 1 : 0,
     };
 
-    axios
-      .post(`${dev_url}salary/addreimbursementComponent`, data, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        onSubmit(res.data);
-        handleClose();
-      })
-      .catch((err) => {
-        console.error("Error submitting reimbursement", err);
-        setError("Failed to submit reimbursement.");
-      });
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+    // If in edit mode, include the ID and call PUT
+    if (item && item.id) {
+      axios
+        .put(
+          `${dev_url}salary/updatereimbursemntComponent`,
+          { id: item.id, ...data },
+          config
+        )
+        .then((res) => {
+          // onSubmit(res.data);
+          handleClose();
+        })
+        .catch((err) => {
+          console.error("Error updating reimbursement", err);
+          setError("Failed to update reimbursement.");
+        });
+    } else {
+      // Else, POST for new entry
+      axios
+        .post(`${dev_url}salary/addreimbursementComponent`, data, config)
+        .then((res) => {
+          // onSubmit(res.data);
+          handleClose();
+        })
+        .catch((err) => {
+          console.error("Error submitting reimbursement", err);
+          setError("Failed to submit reimbursement.");
+        });
+    }
   };
 
   if (!isOpen) return null;
@@ -87,10 +121,9 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-xl w-[90%] max-w-md max-h-[90vh] flex flex-col">
-        {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-semibold text-gray-800">
-            Reimbursements
+            {item ? "Edit Reimbursement" : "Reimbursements"}
           </h2>
           <button
             onClick={handleClose}
@@ -100,7 +133,6 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
           </button>
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="space-y-4 p-6 overflow-y-auto"
@@ -128,6 +160,7 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
               }}
               required
               className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              disabled={!!item} // disable type on edit
             >
               <option value="">Select reimbursement type</option>
               {types.map((type) => (
@@ -237,7 +270,7 @@ const AddReimbursementPopup = ({ isOpen, onClose, onSubmit }) => {
               type="submit"
               className="w-1/2 text-sm bg-[#FFD85F] hover:bg-yellow-500 text-gray-700 font-semibold py-2 px-6 rounded-full cursor-pointer"
             >
-              + Add Reimbursement
+              {item ? "Update Reimbursement" : "+ Add Reimbursement"}
             </button>
             <button
               type="button"
