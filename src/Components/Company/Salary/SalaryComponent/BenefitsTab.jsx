@@ -4,9 +4,11 @@ import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import dev_url from "../../../../config";
 import DeleteConfirmationPopup from "../../../SuperAdmin/DeleteConfirmationPopup";
+import AddBenefitPopup from "./AddBenifitPopup";
 
-const BenefitsTab = ({ setEditData, onEdit }) => {
+const BenefitsTab = () => {
   const [data, setData] = useState([]);
+  const [popupOpen, setPopupOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const token = localStorage.getItem("token");
@@ -24,9 +26,21 @@ const BenefitsTab = ({ setEditData, onEdit }) => {
     fetchData();
   }, []);
 
-  const handleEdit = (item) => {
-    setEditData(item);
-    onEdit();
+  const handleEdit = async (item) => {
+    try {
+      const res = await axios.get(
+        `${dev_url}salary/getbenefitbyId?id=${item.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.data.data) {
+        setSelectedItem(res.data.data);
+        setPopupOpen(true);
+      }
+    } catch (error) {
+      console.error("Failed to fetch benefit by ID:", error);
+    }
   };
 
   const handleDelete = (item) => {
@@ -73,7 +87,7 @@ const BenefitsTab = ({ setEditData, onEdit }) => {
                 {item.benefit_type_name}
               </td>
               <td className="px-4 py-2">
-                {item.include_employer_contribution}
+                {item.include_employer_contribution ? "Yes" : "No"}
               </td>
               <td className="px-4 py-2">{item.benefit_type_id}</td>
               <td className="px-4 py-2">
@@ -103,6 +117,18 @@ const BenefitsTab = ({ setEditData, onEdit }) => {
           ))}
         </tbody>
       </table>
+
+      {popupOpen && (
+        <AddBenefitPopup
+          isOpen={popupOpen}
+          onClose={() => {
+            setPopupOpen(false);
+            setSelectedItem(null);
+            fetchData();
+          }}
+          item={selectedItem}
+        />
+      )}
 
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}

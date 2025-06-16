@@ -2,22 +2,28 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Select from "react-select";
 import dev_url from "../../../../config";
+import { id } from "date-fns/locale";
 
-const AddBenefitPopup = ({ isOpen, onClose, item }) => {
+const AddBenefitPopup = ({ isOpen, onClose, item = null }) => {
   const [benefitTypes, setBenefitTypes] = useState([]);
   const [formData, setFormData] = useState({
+    id: item ? item.id : null,
     benefit_type_id: null,
+    benefit_type_name: "",
     include_employer_contribution: 0,
     calculate_pro_rata: 0,
+    is_active: 1,
   });
 
   const token = localStorage.getItem("token");
 
-  // Initial form state for reset
   const initialFormState = {
+    id: item ? item.id : null,
     benefit_type_id: null,
+    benefit_type_name: "",
     include_employer_contribution: 0,
     calculate_pro_rata: 0,
+    is_active: 1,
   };
 
   useEffect(() => {
@@ -28,12 +34,12 @@ const AddBenefitPopup = ({ isOpen, onClose, item }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setBenefitTypes(
-          response.data.map((benefit) => ({
-            label: benefit.name,
-            value: benefit.id,
-          }))
-        );
+        const options = response.data.map((benefit) => ({
+          label: benefit.name,
+          value: benefit.id,
+          name: benefit.name,
+        }));
+        setBenefitTypes(options);
       } catch (error) {
         console.error("Failed to fetch benefit types", error);
       }
@@ -41,6 +47,21 @@ const AddBenefitPopup = ({ isOpen, onClose, item }) => {
 
     fetchBenefitTypes();
   }, [token]);
+
+  useEffect(() => {
+    if (item) {
+      setFormData({
+        id: item.id,
+        benefit_type_id: item.benefit_type_id,
+        benefit_type_name: item.benefit_type_name,
+        include_employer_contribution: item.include_employer_contribution,
+        calculate_pro_rata: item.calculate_pro_rata,
+        is_active: item.is_active,
+      });
+    } else {
+      setFormData(initialFormState);
+    }
+  }, [item, isOpen]);
 
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
@@ -54,6 +75,7 @@ const AddBenefitPopup = ({ isOpen, onClose, item }) => {
     setFormData((prev) => ({
       ...prev,
       benefit_type_id: selectedOption?.value || null,
+      benefit_type_name: selectedOption?.name || "",
     }));
   };
 
@@ -63,7 +85,11 @@ const AddBenefitPopup = ({ isOpen, onClose, item }) => {
 
   const handleSubmit = async () => {
     try {
-      await axios.post(`${dev_url}salary/addbenefitComponent`, formData, {
+      const endpoint = item
+        ? `${dev_url}salary/updatebenfitComponent`
+        : `${dev_url}salary/addbenefitComponent`;
+      const method = item ? "put" : "post";
+      await axios[method](endpoint, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -155,6 +181,17 @@ const AddBenefitPopup = ({ isOpen, onClose, item }) => {
               />
               <span>Calculate on pro-rata basis</span>
             </label>
+
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="is_active"
+                checked={!!formData.is_active}
+                onChange={handleCheckboxChange}
+                className="accent-yellow-500"
+              />
+              <span>Mark this active</span>
+            </label>
           </div>
 
           <div className="flex justify-between mt-6">
@@ -162,7 +199,9 @@ const AddBenefitPopup = ({ isOpen, onClose, item }) => {
               onClick={handleSubmit}
               disabled={!formData.benefit_type_id}
               className={`flex-1 bg-[#FFD85F] hover:bg-yellow-600 text-gray-700 font-semibold py-2 rounded-full mr-2 
-    ${!formData.benefit_type_id ? "opacity-50 cursor-not-allowed" : ""}`}
+              ${
+                !formData.benefit_type_id ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
               {item ? "Save Changes" : "+ Add Benefit"}
             </button>
