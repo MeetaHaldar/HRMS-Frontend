@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import dev_url from "../../config";
 
-const RegisterEmployee = () => {
+const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
   const [formData, setFormData] = useState({
     emp_code: "",
     first_name: "",
@@ -22,8 +22,11 @@ const RegisterEmployee = () => {
 
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
   const [errors, setErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const isEditMode = !!item;
+
   useEffect(() => {
     const fetchDropdownData = async () => {
       const token = localStorage.getItem("token");
@@ -39,12 +42,29 @@ const RegisterEmployee = () => {
         setDepartments(deptRes.data.data);
         setPositions(posRes.data.data);
       } catch (error) {
-        console.error("Error fetching department or position data", error);
+        console.error("Error fetching dropdowns", error);
       }
     };
-
     fetchDropdownData();
   }, []);
+
+  useEffect(() => {
+    if (item) {
+      const formatDate = (dateString) => {
+        if (!dateString) return "";
+        return new Date(dateString).toISOString().split("T")[0];
+      };
+
+      setFormData((prev) => ({
+        ...prev,
+        ...item,
+        hire_date: formatDate(item.hire_date),
+        birthday: formatDate(item.birthday),
+        password: "",
+        role: Array.isArray(item.role) ? item.role : [],
+      }));
+    }
+  }, [item]);
 
   const validate = () => {
     const tempErrors = {};
@@ -59,7 +79,7 @@ const RegisterEmployee = () => {
     if (!formData.department_id)
       tempErrors.department_id = "Department is required";
     if (!formData.position_id) tempErrors.position_id = "Position is required";
-    if (!formData.password || formData.password.length < 6)
+    if (!isEditMode && (!formData.password || formData.password.length < 6))
       tempErrors.password = "Password must be at least 6 characters";
     if (!formData.gender) tempErrors.gender = "Gender is required";
     if (!formData.role.length) tempErrors.role = "Select at least one role";
@@ -88,24 +108,26 @@ const RegisterEmployee = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    const formattedData = {
-      ...formData,
-      hire_date: formData.hire_date.slice(0, 10),
-      birthday: formData.birthday.slice(0, 10),
-    };
-
     const token = localStorage.getItem("token");
+
     try {
-      await axios.post(`${dev_url}api/employee/`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setErrorMessage("");
-      alert("Employee Registered Successfully");
-      handleCancel();
+      if (isEditMode) {
+        await axios.put(
+          `${dev_url}api/employee/emp?id=${item.id}`,
+          { ...formData },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(`${dev_url}api/employee/`, formData, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      }
+      onSuccess?.();
+      onClose();
     } catch (error) {
       const message =
-        error.response?.data?.message || "Error while registering employee";
-      setErrorMessage(message);
+        error.response?.data?.message || "An error occurred. Try again.";
+      setErrorMessage(error.message);
     }
   };
 
@@ -126,189 +148,214 @@ const RegisterEmployee = () => {
       password: "",
       role: [],
     });
+    setErrors({});
+    onClose();
   };
 
+  if (!isOpen) return null;
+
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-8">
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        Register Employee
-      </h2>
-      {errorMessage && (
-        <div className="mb-4 text-red-600 font-semibold text-center border border-red-400 bg-red-100 px-4 py-2 rounded">
-          {errorMessage}
-        </div>
-      )}
+    <div className="fixed inset-0 bg-opacity-30 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-lg">
+        <h2 className="text-xl font-semibold mb-4 text-center">
+          {isEditMode ? "Edit Employee" : "Register Employee"}
+        </h2>
 
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-      >
-        {[
-          "emp_code",
-          "first_name",
-          "last_name",
-          "email",
-          "mobile",
-          "hire_date",
-          "birthday",
-          "address",
-          "password",
-        ].map((name) => (
-          <div
-            key={name}
-            className="flex flex-col sm:flex-row items-start sm:items-center"
-          >
-            <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
-              {name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-              :
-            </label>
-            <input
-              type={
-                name === "hire_date" || name === "birthday"
-                  ? "date"
-                  : name === "password"
-                  ? "password"
-                  : name === "email"
-                  ? "email"
-                  : "text"
-              }
-              name={name}
-              value={formData[name]}
+        {errorMessage && (
+          <div className="text-red-600 font-medium mb-3 text-center border border-red-400 bg-red-100 p-2 rounded">
+            {errorMessage}
+          </div>
+        )}
+
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+        >
+          {[
+            "emp_code",
+            "first_name",
+            "last_name",
+            "email",
+            "mobile",
+            "hire_date",
+            "birthday",
+            "address",
+          ].map((name) => (
+            <div key={name} className="flex flex-col">
+              <label className="text-gray-700 font-medium">
+                {name
+                  .replace(/_/g, " ")
+                  .replace(/\b\w/g, (c) => c.toUpperCase())}
+              </label>
+              <input
+                type={
+                  name === "hire_date" || name === "birthday"
+                    ? "date"
+                    : name === "email"
+                    ? "email"
+                    : "text"
+                }
+                name={name}
+                value={formData[name] || ""}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              />
+              {errors[name] && (
+                <span className="text-red-500 text-sm">{errors[name]}</span>
+              )}
+            </div>
+          ))}
+
+          {(!isEditMode ||
+            (isEditMode && (!item.role || item.role.length === 0))) && (
+            <div className="flex flex-col">
+              <label className="text-gray-700 font-medium">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+              />
+              {errors.password && (
+                <span className="text-red-500 text-sm">{errors.password}</span>
+              )}
+            </div>
+          )}
+
+          {/* Department */}
+          <div className="flex flex-col">
+            <label className="text-gray-700 font-medium">Department</label>
+            <select
+              name="department_id"
+              value={formData.department_id}
               onChange={handleChange}
-              className="w-full sm:w-2/3 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-            />
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="">Select Department</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.dept_name}
+                </option>
+              ))}
+            </select>
+            {errors.department_id && (
+              <span className="text-red-500 text-sm">
+                {errors.department_id}
+              </span>
+            )}
           </div>
-        ))}
 
-        {/* Department Dropdown */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center">
-          <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
-            Department:
-          </label>
-          <select
-            name="department_id"
-            value={formData.department_id}
-            onChange={handleChange}
-            className="w-full sm:w-2/3 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-          >
-            <option value="">Select Department</option>
-            {departments.map((dept) => (
-              <option key={dept.id} value={dept.id}>
-                {dept.dept_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Position Dropdown */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center">
-          <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
-            Position:
-          </label>
-          <select
-            name="position_id"
-            value={formData.position_id}
-            onChange={handleChange}
-            className="w-full sm:w-2/3 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-          >
-            <option value="">Select Position</option>
-            {positions.map((pos) => (
-              <option key={pos.id} value={pos.id}>
-                {pos.position_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Gender */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center">
-          <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
-            Gender:
-          </label>
-          <div className="w-full sm:w-2/3 flex gap-4">
-            {[
-              { label: "Male", value: "m" },
-              { label: "Female", value: "f" },
-            ].map(({ label, value }) => (
-              <label key={value} className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="gender"
-                  value={value}
-                  checked={formData.gender === value}
-                  onChange={handleChange}
-                  className="bg-yellow-300 border border-black accent-yellow-500"
-                />
-                {label}
-              </label>
-            ))}
+          {/* Position */}
+          <div className="flex flex-col">
+            <label className="text-gray-700 font-medium">Position</label>
+            <select
+              name="position_id"
+              value={formData.position_id}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="">Select Position</option>
+              {positions.map((pos) => (
+                <option key={pos.id} value={pos.id}>
+                  {pos.position_name}
+                </option>
+              ))}
+            </select>
+            {errors.position_id && (
+              <span className="text-red-500 text-sm">{errors.position_id}</span>
+            )}
           </div>
-        </div>
 
-        {/* Active Status */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center">
-          <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
-            Active Status:
-          </label>
-          <div className="w-full sm:w-2/3 flex gap-4">
-            {[
-              { label: "Active", value: 1 },
-              { label: "Inactive", value: 0 },
-            ].map(({ label, value }) => (
-              <label key={value} className="flex items-center gap-1">
-                <input
-                  type="radio"
-                  name="is_active"
-                  value={value}
-                  checked={formData.is_active === value}
-                  onChange={handleChange}
-                  className="bg-yellow-300 border border-black accent-yellow-500"
-                />
-                {label}
-              </label>
-            ))}
+          {/* Gender */}
+          <div className="flex flex-col">
+            <label className="text-gray-700 font-medium">Gender</label>
+            <div className="flex gap-4 mt-1">
+              {[
+                { label: "Male", value: "m" },
+                { label: "Female", value: "f" },
+              ].map(({ label, value }) => (
+                <label key={value} className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={value}
+                    checked={formData.gender === value}
+                    onChange={handleChange}
+                    className="accent-yellow-500"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {errors.gender && (
+              <span className="text-red-500 text-sm">{errors.gender}</span>
+            )}
           </div>
-        </div>
 
-        {/* Role Checkboxes */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center">
-          <label className="w-full sm:w-1/3 text-gray-700 font-medium mb-1 sm:mb-0">
-            Role:
-          </label>
-          <div className="w-full sm:w-2/3 flex flex-col sm:flex-row gap-4">
-            {["employee", "manager", "systemadmin"].map((role) => (
-              <label key={role} className="flex items-center gap-1">
-                <input
-                  type="checkbox"
-                  name="role"
-                  value={role}
-                  checked={formData.role.includes(role)}
-                  onChange={handleChange}
-                  className="accent-yellow-500"
-                />
-                {role.charAt(0).toUpperCase() + role.slice(1)}
-              </label>
-            ))}
+          {/* Active Status */}
+          <div className="flex flex-col">
+            <label className="text-gray-700 font-medium">Active Status</label>
+            <div className="flex gap-4 mt-1">
+              {[
+                { label: "Active", value: 1 },
+                { label: "Inactive", value: 0 },
+              ].map(({ label, value }) => (
+                <label key={value} className="flex items-center gap-1">
+                  <input
+                    type="radio"
+                    name="is_active"
+                    value={value}
+                    checked={formData.is_active === value}
+                    onChange={handleChange}
+                    className="accent-yellow-500"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Buttons */}
-        <div className="col-span-1 sm:col-span-2 flex justify-center space-x-6 mt-8">
-          <button
-            type="button"
-            onClick={handleCancel}
-            className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-8 rounded-full"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-8 rounded-full"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
+          {/* Role */}
+          <div className="flex flex-col sm:col-span-2">
+            <label className="text-gray-700 font-medium">Role</label>
+            <div className="flex flex-wrap gap-4 mt-1">
+              {["employee", "manager", "systemadmin"].map((role) => (
+                <label key={role} className="flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    name="role"
+                    value={role}
+                    checked={formData.role.includes(role)}
+                    onChange={handleChange}
+                    className="accent-yellow-500"
+                  />
+                  {role.charAt(0).toUpperCase() + role.slice(1)}
+                </label>
+              ))}
+            </div>
+            {errors.role && (
+              <span className="text-red-500 text-sm">{errors.role}</span>
+            )}
+          </div>
+
+          <div className="sm:col-span-2 flex justify-center gap-6 mt-4">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-6 rounded-full"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-6 rounded-full"
+            >
+              {isEditMode ? "Update" : "Register"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
