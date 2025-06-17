@@ -15,7 +15,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
     city: "",
     payment_type: 0,
     max_employees_limit: 0,
-    admin: "",
+    admin_name: "",
     file: null,
     subscription_id: "",
   });
@@ -35,9 +35,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
 
       try {
         const res = await axios.get(`${dev_url}subscription/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         const options = res.data.map((sub) => ({
           label: sub.title,
@@ -49,17 +47,31 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
       }
 
       if (item) {
-        setFormData({ ...item, password: "" }); // Don't pre-fill password
         const cities = City.getCitiesOfCountry(item.country).map((city) => ({
           label: city.name,
           value: city.name,
         }));
         setCityOptions(cities);
+
+        setFormData({
+          name: item.name || "",
+          sub_domain: item.sub_domain || "",
+          email: item.systemAdmin_email || "",
+          password: "",
+          address_1: item.address_1 || "",
+          country: item.country || "",
+          city: item.city || "",
+          payment_type: item.payment_type || 0,
+          max_employees_limit: item.max_employees_limit || 0,
+          admin_name: item.systemAdmin_name || "",
+          file: null,
+          subscription_id: item.subscription_id || "",
+        });
       }
     };
 
     fetchInitialData();
-  }, [item, token]);
+  }, [item]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -90,7 +102,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
     e.preventDefault();
     const payload = new FormData();
     for (const key in formData) {
-      if (item && key === "password") continue; // Skip password if editing
+      if (item && key === "password") continue;
       if (formData[key] !== null && formData[key] !== "") {
         payload.append(key, formData[key]);
       }
@@ -99,32 +111,47 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
     try {
       if (item) {
         await axios.put(`${dev_url}api/auth/company`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
       } else {
         await axios.post(`${dev_url}api/auth/company`, payload, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
       }
       onSuccess();
-      onClose();
+      handleCancel();
     } catch (error) {
       console.error("Submit error:", error);
     }
   };
 
+  const handleCancel = () => {
+    setFormData({
+      name: "",
+      sub_domain: "",
+      email: "",
+      password: "",
+      address_1: "",
+      country: "",
+      city: "",
+      payment_type: 0,
+      max_employees_limit: 0,
+      admin_name: "",
+      file: null,
+      subscription_id: "",
+    });
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white bg-opacity-80 z-50">
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-80 z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-2xl shadow-lg overflow-y-auto max-h-[90vh]">
         <h2 className="text-xl font-semibold mb-4">
           {item ? "Edit Company" : "Register New Company"}
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block font-medium">Name</label>
@@ -202,7 +229,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
             />
           </div>
           <div>
-            <label className="block font-medium">Payment Type</label>
+            <label className="block font-medium">Amount</label>
             <input
               type="number"
               name="payment_type"
@@ -222,13 +249,14 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
             />
           </div>
           <div>
-            <label className="block font-medium">Admin</label>
+            <label className="block font-medium">Admin Name</label>
             <input
               type="text"
-              name="admin"
-              value={formData.admin}
+              name="admin_name"
+              value={formData.admin_name}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
+              required
             />
           </div>
           <div>
@@ -252,17 +280,17 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
               className="w-full"
             />
           </div>
-          <div className="flex justify-end space-x-4 mt-6">
+          <div className="flex space-x-4 mt-6">
             <button
               type="button"
-              onClick={onClose}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+              onClick={handleCancel}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-full cursor-pointer font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-[#FFD85F] hover:bg-yellow-500 text-black px-4 py-2 rounded"
+              className="bg-[#FFD85F] hover:bg-yellow-500 text-black px-4 py-2 rounded-full cursor-pointer font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {item ? "Update" : "Register"}
             </button>

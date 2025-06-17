@@ -70,7 +70,7 @@ const CompaniesList = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`${dev_url}api/auth/company/${companyToDelete.id}`, {
+      await axios.delete(`${dev_url}api/auth/?id=${companyToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCompanies(companies.filter((c) => c.id !== companyToDelete.id));
@@ -102,7 +102,6 @@ const CompaniesList = () => {
               <th className="p-2 md:p-3">Organisation's Name</th>
               <th className="p-2 md:p-3">Domain</th>
               <th className="p-2 md:p-3">City/Country</th>
-              <th className="p-2 md:p-3">Subscription</th>
               <th className="p-2 md:p-3">Actions</th>
             </tr>
           </thead>
@@ -134,9 +133,7 @@ const CompaniesList = () => {
                   <td className="p-2 md:p-3">
                     {company.city}, {company.country}
                   </td>
-                  <td className="p-2 md:p-3">
-                    {getSubscriptionName(company.subscription_id)}
-                  </td>
+
                   <td className="p-2 md:p-3 flex space-x-2">
                     <button
                       className="text-gray-500 hover:text-gray-950"
@@ -197,6 +194,7 @@ const CompaniesList = () => {
         isOpen={showPopup}
         onClose={() => {
           setShowPopup(false);
+          setSelectedCompany(null); // clear the form
           fetchCompanies();
         }}
         item={selectedCompany}
