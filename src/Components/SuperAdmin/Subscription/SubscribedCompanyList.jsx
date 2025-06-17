@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import dev_url from "../../../config";
+
 const SubscribedCompanyList = () => {
   const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
@@ -30,14 +31,6 @@ const SubscribedCompanyList = () => {
 
     fetchCompanies();
   }, [token]);
-
-  const handleStatusChange = (id, newStatus) => {
-    setCompanies((prev) =>
-      prev.map((company) =>
-        company.id === id ? { ...company, status: newStatus } : company
-      )
-    );
-  };
 
   if (loading) {
     return <div className="p-4 text-gray-500">Loading companies...</div>;
@@ -81,21 +74,16 @@ const SubscribedCompanyList = () => {
                 <td className="py-2 px-4">
                   {new Date(company.start_date).toLocaleDateString("en-CA")}
                 </td>
-                <td className="py-2 px-4">
-                  <select
-                    value={company.status}
-                    onChange={(e) =>
-                      handleStatusChange(company.id, e.target.value)
-                    }
-                    className={`font-semibold rounded px-2 py-1 text-sm ${
-                      company.status === "Active"
+                <td className="py-2 px-4 font-semibold">
+                  <span
+                    className={`${
+                      company.is_active === "Active"
                         ? "text-green-600"
                         : "text-red-500"
                     }`}
                   >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                  </select>
+                    {company.is_active}
+                  </span>
                 </td>
                 <td className="py-2 px-4">
                   {new Date(company.end_date).toLocaleDateString("en-CA")}
