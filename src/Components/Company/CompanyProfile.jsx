@@ -7,6 +7,7 @@ import enLocale from "i18n-iso-countries/langs/en.json";
 import { Country, State, City } from "country-state-city";
 import axios from "axios";
 import dev_url from "../../config";
+
 countries.registerLocale(enLocale);
 
 const countryOptions = Country.getAllCountries().map((country) => ({
@@ -19,8 +20,8 @@ const CompanyProfile = () => {
   const [logo, setLogo] = useState(null);
   const [stateOptions, setStateOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
-
   const [companyData, setCompanyData] = useState(null);
+  const [message, setMessage] = useState(null);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const companyId = user.companyId;
@@ -37,31 +38,26 @@ const CompanyProfile = () => {
             },
           }
         );
-        setCompanyData(response.data.data);
+        const data = response.data.data;
+        setCompanyData(data);
+
+        // Populate state and city options immediately
+        if (data.country) {
+          const states = State.getStatesOfCountry(data.country);
+          setStateOptions(states);
+        }
+        if (data.country && data.state) {
+          const cities = City.getCitiesOfState(data.country, data.state);
+          setCityOptions(cities);
+        }
       } catch (error) {
         console.error("Error fetching company data:", error);
+        setMessage({ type: "error", text: "Failed to fetch company data." });
       }
     };
 
     fetchCompanyData();
   }, []);
-
-  useEffect(() => {
-    if (companyData?.country) {
-      const states = State.getStatesOfCountry(companyData.country);
-      setStateOptions(states);
-    }
-  }, [companyData?.country]);
-
-  useEffect(() => {
-    if (companyData?.state && companyData?.country) {
-      const cities = City.getCitiesOfState(
-        companyData.country,
-        companyData.state
-      );
-      setCityOptions(cities);
-    }
-  }, [companyData?.state, companyData?.country]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,20 +65,88 @@ const CompanyProfile = () => {
   };
 
   const handleSelectChange = (selectedOption, name) => {
-    setCompanyData((prev) => ({
-      ...prev,
-      [name]: selectedOption.value,
-      ...(name === "country" ? { state: "", city: "" } : {}),
-      ...(name === "state" ? { city: "" } : {}),
-    }));
+    setCompanyData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: selectedOption.value,
+        ...(name === "country" ? { state: "", city: "" } : {}),
+        ...(name === "state" ? { city: "" } : {}),
+      };
+
+      if (name === "country") {
+        const states = State.getStatesOfCountry(selectedOption.value);
+        setStateOptions(states);
+        setCityOptions([]);
+      }
+
+      if (name === "state") {
+        const cities = City.getCitiesOfState(
+          companyData.country,
+          selectedOption.value
+        );
+        setCityOptions(cities);
+      }
+
+      return updated;
+    });
   };
 
-  const handleLogoUpload = (e) => {
+  const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setLogo(imageUrl);
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    console.log("Uploading file:", file, formData);
+
+    try {
+      const response = await axios.put(
+        `${dev_url}api/auth/company?id=${companyId}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setCompanyData((prev) => ({
+        ...prev,
+        file: response.data.logo,
+      }));
+      setLogo(URL.createObjectURL(file));
+      setMessage({ type: "success", text: "Logo updated successfully." });
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      setMessage({ type: "error", text: "Failed to upload logo." });
     }
+  };
+
+  const updateCompanyData = async () => {
+    try {
+      await axios.put(
+        `${dev_url}api/auth/company?id=${companyId}`,
+        companyData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setMessage({
+        type: "success",
+        text: "Company profile updated successfully.",
+      });
+    } catch (error) {
+      console.error("Error updating company data:", error);
+      setMessage({ type: "error", text: "Failed to update company profile." });
+    }
+  };
+
+  const handleSaveCompany = async () => {
+    await updateCompanyData();
+    setEditTop(false);
   };
 
   const formatLabel = (key) => {
@@ -92,31 +156,20 @@ const CompanyProfile = () => {
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
-  const updateCompanyData = async () => {
-    try {
-      await axios.put(
-        `${dev_url}api/auth/company/companyProfile?id=${companyId}`,
-        companyData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error updating company data:", error);
-    }
-  };
-
-  const handleSaveCompany = async () => {
-    await updateCompanyData();
-    setEditTop(false);
-  };
-
   if (!companyData) return null;
 
   return (
     <div className="p-6 max-w-6xl mx-auto text-gray-700 font-medium text-sm">
+      {message && (
+        <div
+          className={`mb-4 p-2 rounded text-white text-center ${
+            message.type === "success" ? "bg-green-500" : "bg-red-500"
+          }`}
+        >
+          {message.text}
+        </div>
+      )}
+
       <div className="relative mb-6 border-b pb-6 border-gray-300">
         <button
           onClick={() => setEditTop(!editTop)}
@@ -128,9 +181,9 @@ const CompanyProfile = () => {
         <div className="flex items-start gap-4">
           <div className="flex-shrink-0">
             <label className="w-20 h-20 bg-gray-200 rounded flex flex-col items-center justify-center text-xs text-gray-500 cursor-pointer relative overflow-hidden">
-              {logo ? (
+              {companyData.logo ? (
                 <img
-                  src={logo}
+                  src={companyData.logo}
                   alt="Logo"
                   className="w-full h-full object-cover rounded"
                 />
@@ -160,19 +213,13 @@ const CompanyProfile = () => {
                 />
               </div>
             ) : (
-              <>
-                <h1 className="text-xl font-semibold mb-2">
-                  {companyData.name}
-                </h1>
-              </>
+              <h1 className="text-xl font-semibold mb-2">{companyData.name}</h1>
             )}
           </div>
         </div>
       </div>
 
-      {/* Info Sections */}
       <div className="grid grid-cols-2 gap-8">
-        {/* Company Info */}
         <div className="relative space-y-4 border-r-2 border-gray-300 p-4">
           <h2 className="text-lg text-gray-500 font-semibold text-center mb-6">
             {companyData.name} Info.
@@ -206,10 +253,10 @@ const CompanyProfile = () => {
                   "contact_phone",
                   "contact_name",
                   "max_employees_limit",
-                  "end_date",
-                  "start_date",
                   "subscription_start_date",
                   "subscription_end_date",
+                  "company_address",
+                  "phone_no",
                 ].includes(key)
             )
             .map(([key, value]) => (
@@ -280,9 +327,7 @@ const CompanyProfile = () => {
           )}
         </div>
 
-        {/* Admin Info + Subscription Info */}
         <div className="space-y-6">
-          {/* Admin Info */}
           <div className="relative space-y-4 p-4">
             <h2 className="text-lg text-gray-500 font-semibold text-center mb-6">
               Admin Info.
@@ -290,7 +335,6 @@ const CompanyProfile = () => {
 
             <div className="flex items-start gap-x-4 py-1">
               <span className="w-40 text-gray-500">Admin Name:</span>
-
               <span className="text-gray-700">
                 {companyData.superadmin_name}
               </span>
@@ -298,7 +342,6 @@ const CompanyProfile = () => {
 
             <div className="flex items-start gap-x-4 py-1">
               <span className="w-40 text-gray-500">Admin Email:</span>
-
               <span className="text-gray-700">
                 {companyData.superadmin_email}
               </span>
@@ -306,19 +349,17 @@ const CompanyProfile = () => {
 
             <div className="flex items-start gap-x-4 py-1">
               <span className="w-40 text-gray-500">Admin Contact:</span>
-
               <span className="text-gray-700">{companyData.company_phone}</span>
             </div>
           </div>
 
-          {/* Subscription Info */}
           <div className="space-y-2 rounded p-4">
             <h2 className="text-lg text-gray-500 font-semibold text-center mb-6">
               Subscription Details
             </h2>
 
             <div className="flex items-start gap-x-4 py-1">
-              <span className="w-40 text-gray-500">subscription Title:</span>
+              <span className="w-40 text-gray-500">Subscription Title:</span>
               <span className="text-gray-700">
                 {companyData.subscription_title}
               </span>
