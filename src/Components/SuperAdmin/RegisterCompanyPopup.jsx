@@ -16,30 +16,50 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
     payment_type: 0,
     max_employees_limit: 0,
     admin: "",
-    logo: null,
+    file: null,
     subscription_id: "",
   });
 
   const [countryOptions, setCountryOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
+  const [subscriptionOptions, setSubscriptionOptions] = useState([]);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const countries = Country.getAllCountries().map((country) => ({
-      label: country.name,
-      value: country.isoCode,
-    }));
-    setCountryOptions(countries);
-
-    if (item) {
-      setFormData({ ...item, password: "" }); // clear password for edit
-      const cities = City.getCitiesOfCountry(item.country).map((city) => ({
-        label: city.name,
-        value: city.name,
+    const fetchInitialData = async () => {
+      const countries = Country.getAllCountries().map((country) => ({
+        label: country.name,
+        value: country.isoCode,
       }));
-      setCityOptions(cities);
-    }
-  }, [item]);
+      setCountryOptions(countries);
+
+      try {
+        const res = await axios.get(`${dev_url}subscription/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const options = res.data.map((sub) => ({
+          label: sub.title,
+          value: sub.id,
+        }));
+        setSubscriptionOptions(options);
+      } catch (error) {
+        console.error("Failed to fetch subscriptions:", error);
+      }
+
+      if (item) {
+        setFormData({ ...item, password: "" }); // Don't pre-fill password
+        const cities = City.getCitiesOfCountry(item.country).map((city) => ({
+          label: city.name,
+          value: city.name,
+        }));
+        setCityOptions(cities);
+      }
+    };
+
+    fetchInitialData();
+  }, [item, token]);
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -62,36 +82,35 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
     setFormData({ ...formData, city: selected.value });
   };
 
+  const handleSubscriptionChange = (selected) => {
+    setFormData({ ...formData, subscription_id: selected.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // const form = new FormData();
-
-    // Object.entries(formData).forEach(([key, value]) => {
-    //   if (item && key === "password") return; // skip password if editing
-    //   if (value !== null && value !== "") {
-    //     form.append(key, value);
-    //   }
-    // });
+    const payload = new FormData();
+    for (const key in formData) {
+      if (item && key === "password") continue; // Skip password if editing
+      if (formData[key] !== null && formData[key] !== "") {
+        payload.append(key, formData[key]);
+      }
+    }
 
     try {
       if (item) {
-        await axios.put(`${dev_url}api/auth/company`, formData, {
+        await axios.put(`${dev_url}api/auth/company`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "content-Type": "multipart/form-data",
           },
         });
       } else {
-        console.log(formData);
-        // console.log(form.logo);
-        await axios.post(`${dev_url}api/auth/company`, formData, {
+        await axios.post(`${dev_url}api/auth/company`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
           },
         });
       }
-      onSuccess(); // refetch list
+      onSuccess();
       onClose();
     } catch (error) {
       console.error("Submit error:", error);
@@ -101,7 +120,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-30 z-50">
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-white bg-opacity-80 z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-2xl shadow-lg overflow-y-auto max-h-[90vh]">
         <h2 className="text-xl font-semibold mb-4">
           {item ? "Edit Company" : "Register New Company"}
@@ -167,11 +186,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
             <label className="block font-medium">Country</label>
             <Select
               options={countryOptions}
-              value={
-                formData.country
-                  ? countryOptions.find((c) => c.value === formData.country)
-                  : null
-              }
+              value={countryOptions.find((c) => c.value === formData.country)}
               onChange={handleCountryChange}
               placeholder="Select Country"
             />
@@ -180,11 +195,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
             <label className="block font-medium">City</label>
             <Select
               options={cityOptions}
-              value={
-                formData.city
-                  ? cityOptions.find((c) => c.value === formData.city)
-                  : null
-              }
+              value={cityOptions.find((c) => c.value === formData.city)}
               onChange={handleCityChange}
               placeholder="Select City"
               isDisabled={!formData.country}
@@ -221,26 +232,26 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
             />
           </div>
           <div>
-            <label className="block font-medium">Subscription ID</label>
-            <input
-              type="text"
-              name="subscription_id"
-              value={formData.subscription_id}
-              onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
+            <label className="block font-medium">Subscription</label>
+            <Select
+              options={subscriptionOptions}
+              value={subscriptionOptions.find(
+                (s) => String(s.value) === String(formData.subscription_id)
+              )}
+              onChange={handleSubscriptionChange}
+              placeholder="Select Subscription"
             />
           </div>
           <div>
             <label className="block font-medium">Logo</label>
             <input
               type="file"
-              name="logo"
+              name="file"
               accept="image/*"
               onChange={handleChange}
               className="w-full"
             />
           </div>
-
           <div className="flex justify-end space-x-4 mt-6">
             <button
               type="button"
