@@ -101,21 +101,16 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = new FormData();
+
     for (const key in formData) {
-      //   if (item && key === "password") continue;
+      if (item && key === "password") continue;
       if (formData[key] !== null && formData[key] !== "") {
-        console.log(key, formData[key]);
         payload.append(key, formData[key]);
-       
-        // payload.append(key, formData[key]);
-        // payload.append("company_id", item ? item.id : "");
-        // // console.log("payload", payload);
       }
     }
-    console.log(payload, "payload");
     try {
       if (item) {
-        await axios.put(`${dev_url}api/auth/company`, payload, {
+        await axios.put(`${dev_url}api/auth/company?id=${item.id}`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
@@ -163,8 +158,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
           {item ? "Edit Company" : "Register New Company"}
         </h2>
 
-            
-        <form onSubmit={handleSubmit} className="space-y-4"  encType="multipart"  >
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block font-medium">Name</label>
             <input
