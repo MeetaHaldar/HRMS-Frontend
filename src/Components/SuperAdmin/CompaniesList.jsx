@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import EditCompanyPopup from "./EditCompanyPopup";
+import RegisterCompanyPopup from "./RegisterCompanyPopup";
 import DeleteConfirmationPopup from "./DeleteConfirmationPopup";
 import axios from "axios";
 import dev_url from "../../config";
+
 const CompaniesList = () => {
-  const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState(null);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -19,42 +19,48 @@ const CompaniesList = () => {
 
   const token = localStorage.getItem("token");
 
+  const fetchCompanies = async () => {
+    setLoading(true);
+    try {
+      const [companyRes, subscriptionRes] = await Promise.all([
+        axios.get(`${dev_url}api/auth/company/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get(`${dev_url}subscription/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      const companyData = companyRes.data || [];
+      const subscriptionData = subscriptionRes.data || [];
+
+      setCompanies(companyData);
+      setSubscriptions(subscriptionData);
+      setTotalPages(companyData.totalPages || 1);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchCompanies = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`${dev_url}api/auth/company/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = response.data;
-
-        setCompanies(data || []);
-        setTotalPages(data.totalPages || 1);
-      } catch (error) {
-        console.error("Error fetching companies:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchCompanies();
-  }, [currentPage, token]);
+  }, [currentPage]);
+
+  const getSubscriptionName = (id) => {
+    const sub = subscriptions.find((s) => s.id === id);
+    return sub ? sub.name : "-";
+  };
 
   const handleEditClick = (company) => {
     setSelectedCompany(company);
-    setShowEditModal(true);
+    setShowPopup(true);
   };
 
-  const handleEditSubmit = (updatedData) => {
-    const updatedList = companies.map((comp) =>
-      comp.id === updatedData.id
-        ? { ...comp, ...updatedData, name: updatedData.companyName }
-        : comp
-    );
-    setCompanies(updatedList);
-    setShowEditModal(false);
+  const handleAddClick = () => {
+    setSelectedCompany(null);
+    setShowPopup(true);
   };
 
   const handleDeleteClick = (company) => {
@@ -64,14 +70,9 @@ const CompaniesList = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(
-        `https://atd.infosware-test.in/api/auth/company/${companyToDelete.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`${dev_url}api/auth/company/${companyToDelete.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setCompanies(companies.filter((c) => c.id !== companyToDelete.id));
     } catch (error) {
       console.error("Error deleting company:", error);
@@ -88,7 +89,7 @@ const CompaniesList = () => {
         </h2>
         <button
           className="bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm rounded-full font-semibold cursor-pointer"
-          onClick={() => navigate("/RegisterCompany")}
+          onClick={handleAddClick}
         >
           + New Company
         </button>
@@ -101,7 +102,7 @@ const CompaniesList = () => {
               <th className="p-2 md:p-3">Organisation's Name</th>
               <th className="p-2 md:p-3">Domain</th>
               <th className="p-2 md:p-3">City/Country</th>
-
+              <th className="p-2 md:p-3">Subscription</th>
               <th className="p-2 md:p-3">Actions</th>
             </tr>
           </thead>
@@ -129,12 +130,13 @@ const CompaniesList = () => {
               companies.map((company, index) => (
                 <tr key={index} className="hover:bg-gray-100">
                   <td className="p-2 md:p-3">{company.name}</td>
-
                   <td className="p-2 md:p-3">{company.sub_domain}</td>
                   <td className="p-2 md:p-3">
                     {company.city}, {company.country}
                   </td>
-
+                  <td className="p-2 md:p-3">
+                    {getSubscriptionName(company.subscription_id)}
+                  </td>
                   <td className="p-2 md:p-3 flex space-x-2">
                     <button
                       className="text-gray-500 hover:text-gray-950"
@@ -156,7 +158,6 @@ const CompaniesList = () => {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="flex justify-between items-center mt-4 px-2 text-sm text-gray-600">
         <button
           className="hover:underline disabled:text-gray-400"
@@ -191,15 +192,18 @@ const CompaniesList = () => {
         </button>
       </div>
 
-      {/* Edit Modal */}
-      <EditCompanyPopup
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        onSubmit={handleEditSubmit}
-        initialData={selectedCompany}
+      {/* Register / Edit Company Popup */}
+      <RegisterCompanyPopup
+        isOpen={showPopup}
+        onClose={() => {
+          setShowPopup(false);
+          fetchCompanies();
+        }}
+        item={selectedCompany}
+        onSuccess={fetchCompanies}
       />
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation Popup */}
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}

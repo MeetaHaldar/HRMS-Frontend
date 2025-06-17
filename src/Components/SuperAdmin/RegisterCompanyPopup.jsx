@@ -1,0 +1,265 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Select from "react-select";
+import { Country, City } from "country-state-city";
+import dev_url from "../../config";
+
+const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    sub_domain: "",
+    email: "",
+    password: "",
+    address_1: "",
+    country: "",
+    city: "",
+    payment_type: 0,
+    max_employees_limit: 0,
+    admin: "",
+    logo: null,
+    subscription_id: "",
+  });
+
+  const [countryOptions, setCountryOptions] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const countries = Country.getAllCountries().map((country) => ({
+      label: country.name,
+      value: country.isoCode,
+    }));
+    setCountryOptions(countries);
+
+    if (item) {
+      setFormData({ ...item, password: "" }); // clear password for edit
+      const cities = City.getCitiesOfCountry(item.country).map((city) => ({
+        label: city.name,
+        value: city.name,
+      }));
+      setCityOptions(cities);
+    }
+  }, [item]);
+
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "file" ? files[0] : value,
+    });
+  };
+
+  const handleCountryChange = (selected) => {
+    const cities = City.getCitiesOfCountry(selected.value).map((city) => ({
+      label: city.name,
+      value: city.name,
+    }));
+    setCityOptions(cities);
+    setFormData({ ...formData, country: selected.value, city: "" });
+  };
+
+  const handleCityChange = (selected) => {
+    setFormData({ ...formData, city: selected.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // const form = new FormData();
+
+    // Object.entries(formData).forEach(([key, value]) => {
+    //   if (item && key === "password") return; // skip password if editing
+    //   if (value !== null && value !== "") {
+    //     form.append(key, value);
+    //   }
+    // });
+
+    try {
+      if (item) {
+        await axios.put(`${dev_url}api/auth/company`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "content-Type": "multipart/form-data",
+          },
+        });
+      } else {
+        console.log(formData);
+        // console.log(form.logo);
+        await axios.post(`${dev_url}api/auth/company`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      }
+      onSuccess(); // refetch list
+      onClose();
+    } catch (error) {
+      console.error("Submit error:", error);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-opacity-30 z-50">
+      <div className="bg-white p-6 rounded-lg w-full max-w-2xl shadow-lg overflow-y-auto max-h-[90vh]">
+        <h2 className="text-xl font-semibold mb-4">
+          {item ? "Edit Company" : "Register New Company"}
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block font-medium">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Sub Domain</label>
+            <input
+              type="text"
+              name="sub_domain"
+              value={formData.sub_domain}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+          {!item && (
+            <div>
+              <label className="block font-medium">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full border rounded px-3 py-2"
+                required
+              />
+            </div>
+          )}
+          <div>
+            <label className="block font-medium">Address</label>
+            <input
+              type="text"
+              name="address_1"
+              value={formData.address_1}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Country</label>
+            <Select
+              options={countryOptions}
+              value={
+                formData.country
+                  ? countryOptions.find((c) => c.value === formData.country)
+                  : null
+              }
+              onChange={handleCountryChange}
+              placeholder="Select Country"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">City</label>
+            <Select
+              options={cityOptions}
+              value={
+                formData.city
+                  ? cityOptions.find((c) => c.value === formData.city)
+                  : null
+              }
+              onChange={handleCityChange}
+              placeholder="Select City"
+              isDisabled={!formData.country}
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Payment Type</label>
+            <input
+              type="number"
+              name="payment_type"
+              value={formData.payment_type}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Max Employees</label>
+            <input
+              type="number"
+              name="max_employees_limit"
+              value={formData.max_employees_limit}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Admin</label>
+            <input
+              type="text"
+              name="admin"
+              value={formData.admin}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Subscription ID</label>
+            <input
+              type="text"
+              name="subscription_id"
+              value={formData.subscription_id}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+            />
+          </div>
+          <div>
+            <label className="block font-medium">Logo</label>
+            <input
+              type="file"
+              name="logo"
+              accept="image/*"
+              onChange={handleChange}
+              className="w-full"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-4 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-[#FFD85F] hover:bg-yellow-500 text-black px-4 py-2 rounded"
+            >
+              {item ? "Update" : "Register"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default RegisterCompanyPopup;
