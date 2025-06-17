@@ -64,7 +64,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
           payment_type: item.payment_type || 0,
           max_employees_limit: item.max_employees_limit || 0,
           admin_name: item.systemAdmin_name || "",
-          file: null,
+          file: item.logo || null,
           subscription_id: item.subscription_id || "",
         });
       }
@@ -102,20 +102,31 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
     e.preventDefault();
     const payload = new FormData();
     for (const key in formData) {
-      if (item && key === "password") continue;
+      //   if (item && key === "password") continue;
       if (formData[key] !== null && formData[key] !== "") {
+        console.log(key, formData[key]);
         payload.append(key, formData[key]);
+       
+        // payload.append(key, formData[key]);
+        // payload.append("company_id", item ? item.id : "");
+        // // console.log("payload", payload);
       }
     }
-
+    console.log(payload, "payload");
     try {
       if (item) {
         await axios.put(`${dev_url}api/auth/company`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         });
       } else {
         await axios.post(`${dev_url}api/auth/company`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         });
       }
       onSuccess();
@@ -152,7 +163,8 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
           {item ? "Edit Company" : "Register New Company"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+            
+        <form onSubmit={handleSubmit} className="space-y-4"  encType="multipart"  >
           <div>
             <label className="block font-medium">Name</label>
             <input
