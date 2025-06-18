@@ -50,7 +50,10 @@ function App() {
               element={<AddNewSalaryTemplate />}
             />
 
-            <Route path="viewSalaryTemplate" element={<ViewSalaryTemplate />} />
+            <Route
+              path="viewSalaryTemplate/:id"
+              element={<ViewSalaryTemplate />}
+            />
             <Route path="companyProfile" element={<CompanyProfile />} />
             <Route path="subscriptionPlans" element={<SubscriptionPlans />} />
             <Route path="my-subscriptions" element={<MySubscription />} />

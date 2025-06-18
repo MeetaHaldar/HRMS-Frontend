@@ -4,7 +4,7 @@ import dev_url from "../../../../config";
 
 const SalaryComponentDropdown = ({
   onAddComponent,
-  selectedComponents = [],
+  selectedComponents = [], // list of already selected IDs
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -37,20 +37,10 @@ const SalaryComponentDropdown = ({
           ]);
 
         setComponentOptions({
-          Earnings:
-            earningsRes.data?.map((item, index) => item.earning_name) || [],
-          Deduction:
-            deductionRes.data?.data?.map(
-              (item, index) => item.deduction_name
-            ) || [],
-          Reimbursement:
-            reimbursementRes.data?.map(
-              (item) => item.reimbursement_type_name
-            ) || [],
-          Benefits:
-            benefitRes.data?.data?.map(
-              (item, index) => item.benefit_type_name
-            ) || [],
+          Earnings: earningsRes.data || [],
+          Deduction: deductionRes.data?.data || [],
+          Reimbursement: reimbursementRes.data || [],
+          Benefits: benefitRes.data?.data || [],
         });
       } catch (error) {
         console.error("Error fetching salary components:", error);
@@ -70,7 +60,6 @@ const SalaryComponentDropdown = ({
   };
 
   const handleItemClick = (category, item) => {
-    if (selectedComponents.includes(item)) return;
     onAddComponent(category, item);
     setIsDropdownOpen(false);
     setActiveCategory(null);
@@ -99,20 +88,34 @@ const SalaryComponentDropdown = ({
               {activeCategory === category && (
                 <ul className="mt-1 ml-4 bg-white rounded-md shadow z-20">
                   {items.map((item) => {
-                    const isAlreadyAdded = selectedComponents.includes(item);
+                    const itemId = item.id;
+                    const isAlreadySelected =
+                      selectedComponents.includes(itemId);
+
+                    const label =
+                      item.earning_name ||
+                      item.deduction_type_name ||
+                      item.reimbursement_type_name ||
+                      item.benefit_type_name ||
+                      item.earning_name ||
+                      item.deduction_name ||
+                      item.reimbursement_type_name ||
+                      item.benefit_type_name ||
+                      "Unknown";
+
                     return (
                       <li
-                        key={item}
+                        key={itemId}
                         className={`px-4 py-2 ${
-                          isAlreadyAdded
+                          isAlreadySelected
                             ? "text-gray-400 cursor-not-allowed"
                             : "hover:bg-[#FFD85F] cursor-pointer"
                         }`}
                         onClick={() =>
-                          !isAlreadyAdded && handleItemClick(category, item)
+                          !isAlreadySelected && handleItemClick(category, item)
                         }
                       >
-                        {item}
+                        {label}
                       </li>
                     );
                   })}
