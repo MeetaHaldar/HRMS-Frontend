@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import dev_url from "../../../config";
 const EmployeeWelcomeCard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [employee, setEmployee] = useState(null);
   const user = JSON.parse(localStorage.getItem("user"));
   const id = user?.emp_id;
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -15,14 +17,11 @@ const EmployeeWelcomeCard = () => {
       try {
         if (!id || !token) return;
 
-        const res = await axios.get(
-          `https://atd.infosware-test.in/api/employee/id/?id=${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await axios.get(`${dev_url}api/employee/id/?id=${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setEmployee(res.data.employee);
       } catch (error) {
         console.error("Failed to fetch employee data:", error);
@@ -36,7 +35,7 @@ const EmployeeWelcomeCard = () => {
   return (
     <div className="rounded-xl p-4 md:p-6 flex items-start w-full">
       <img
-        src={employee.photo}
+        src={`${dev_url}public/upload/${employee.photo}`}
         alt="Employee"
         className="w-14 h-14 rounded-full object-cover border border-gray-300 mr-4"
       />

@@ -17,7 +17,6 @@ const countryOptions = Country.getAllCountries().map((country) => ({
 
 const CompanyProfile = () => {
   const [editTop, setEditTop] = useState(false);
-  const [logo, setLogo] = useState(null);
   const [stateOptions, setStateOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
   const [companyData, setCompanyData] = useState(null);
@@ -27,35 +26,35 @@ const CompanyProfile = () => {
   const companyId = user.companyId;
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    const fetchCompanyData = async () => {
-      try {
-        const response = await axios.get(
-          `${dev_url}api/auth/company/companyProfile?id=${companyId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = response.data.data;
-        setCompanyData(data);
+  const fetchCompanyData = async () => {
+    try {
+      const response = await axios.get(
+        `${dev_url}api/auth/company/companyProfile?id=${companyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = response.data.data;
+      setCompanyData(data);
 
-        // Populate state and city options immediately
-        if (data.country) {
-          const states = State.getStatesOfCountry(data.country);
-          setStateOptions(states);
-        }
-        if (data.country && data.state) {
-          const cities = City.getCitiesOfState(data.country, data.state);
-          setCityOptions(cities);
-        }
-      } catch (error) {
-        console.error("Error fetching company data:", error);
-        setMessage({ type: "error", text: "Failed to fetch company data." });
+      if (data.country) {
+        const states = State.getStatesOfCountry(data.country);
+        setStateOptions(states);
       }
-    };
+      if (data.country && data.state) {
+        const cities = City.getCitiesOfState(data.country, data.state);
+        setCityOptions(cities);
+      }
+    } catch (error) {
+      console.error("Error fetching company data:", error);
+      setMessage({ type: "error", text: "Failed to fetch company data." });
+      setTimeout(() => setMessage(null), 3000);
+    }
+  };
 
+  useEffect(() => {
     fetchCompanyData();
   }, []);
 
@@ -97,28 +96,22 @@ const CompanyProfile = () => {
 
     const formData = new FormData();
     formData.append("file", file);
-    console.log("Uploading file:", file, formData);
 
     try {
-      const response = await axios.put(
-        `${dev_url}api/auth/company?id=${companyId}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      setCompanyData((prev) => ({
-        ...prev,
-        file: response.data.logo,
-      }));
-      setLogo(URL.createObjectURL(file));
+      await axios.put(`${dev_url}api/auth/company?id=${companyId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       setMessage({ type: "success", text: "Logo updated successfully." });
+      await fetchCompanyData();
+      setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       console.error("Error uploading logo:", error);
       setMessage({ type: "error", text: "Failed to upload logo." });
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -138,9 +131,11 @@ const CompanyProfile = () => {
         type: "success",
         text: "Company profile updated successfully.",
       });
+      setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       console.error("Error updating company data:", error);
       setMessage({ type: "error", text: "Failed to update company profile." });
+      setTimeout(() => setMessage(null), 3000);
     }
   };
 
@@ -183,7 +178,7 @@ const CompanyProfile = () => {
             <label className="w-20 h-20 bg-gray-200 rounded flex flex-col items-center justify-center text-xs text-gray-500 cursor-pointer relative overflow-hidden">
               {companyData.logo ? (
                 <img
-                  src={`https://atd.infosware-test.in/public/upload/${companyData.logo}`}
+                  src={`${dev_url}public/upload/${companyData.logo}`}
                   alt="Logo"
                   className="w-full h-full object-cover rounded"
                 />
