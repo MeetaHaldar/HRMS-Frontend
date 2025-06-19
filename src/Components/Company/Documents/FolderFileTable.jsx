@@ -38,14 +38,18 @@ const FolderFileTable = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`${dev_url}salary/moveToTrash`, {
-    "id":id,
-    "type":"files"
-},{
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.put(
+        `${dev_url}salary/moveToTrash`,
+        {
+          id: id,
+          type: "files",
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // Remove deleted file from UI
       setFiles((prev) => prev.filter((file) => file.id !== id));
@@ -54,15 +58,36 @@ const FolderFileTable = () => {
     }
   };
 
-  if (files.length === 0) return null;
+  if (files.length === 0)
+    return (
+      <div className="relative h-[300px] flex flex-col justify-center items-center">
+        <button
+          onClick={() => window.history.back()}
+          className="absolute top-4 left-4 text-lg text-gray-600 hover:text-black px-3 py-1"
+        >
+          ← Back
+        </button>
+        <p className="text-gray-600 text-lg">There is No Files in the Folder</p>
+      </div>
+    );
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col">
-      <div className="flex items-center mb-6">
-        <h2 className="text-lg text-gray-600 font-semibold underline underline-offset-4 ml-2">
+      <div className="mb-6">
+        <div>
+          <button
+            onClick={() => window.history.back()}
+            className="text-sm text-gray-600 font-semibold underline underline-offset-4 ml-2"
+          >
+            ← Back
+          </button>
+        </div>
+
+        <h2 className="text-lg text-gray-600 font-semibold underline underline-offset-4 ml-2 mt-2">
           Folders:
         </h2>
       </div>
+
       <table className="w-full border border-gray-300 rounded-xl overflow-hidden p-5">
         <thead className="bg-gray-200 text-gray-700 text-sm font-semibold">
           <tr>
@@ -80,7 +105,7 @@ const FolderFileTable = () => {
                 className="px-4 py-3 underline text-blue-600 cursor-pointer"
                 onClick={() =>
                   window.open(
-                    `https://atd.infosware-test.in/public/upload/${file.filename}`,
+                    `${dev_url}public/upload/${file.filename}`,
                     "_blank"
                   )
                 }

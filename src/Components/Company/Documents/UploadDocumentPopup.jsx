@@ -81,12 +81,9 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
           ? organizationFolders
           : employeeFolders;
 
-        console.log("seeeee", selectedFolderList);
-
         const selectedFolder = selectedFolderList.find(
           (f) => f.name === folderName
         );
-        console.log("nammmmm", selectedFolder, associateDocument);
 
         if (!selectedFolder) {
           alert("Invalid folder selected.");
@@ -108,25 +105,13 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        if (res.status == 200) {
-          onUpload({
-            name: file.name,
-            size: file.size,
-            folder: folderName,
-            folderType: folderType["Organisation Folder"]
-              ? "Organisation Folder"
-              : "Employee Folder",
-            associateDocument,
-            uploadedOn: new Date().toLocaleDateString(),
-          });
-          handleClose();
-        } else {
-          alert("Upload failed.");
-        }
+        handleClose();
       } catch (err) {
         console.error("Upload error:", err);
-        alert("Error uploading file.");
+        const message =
+          err.response?.data?.message ||
+          "Error uploading file. Please try again.";
+        alert(message);
       }
     }
   };
