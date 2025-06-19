@@ -64,14 +64,20 @@ const Profile = () => {
           <div className="flex items-center">
             <User size={16} className="mr-2" />
             <span className="font-semibold w-36 shrink-0">Designation:</span>
-            <span>{employee.designation ?? ""}</span>
+            <span>{employee.position_name ?? ""}</span>
           </div>
 
           <div className="flex items-center">
             <Calendar size={16} className="mr-2" />
             <span className="font-semibold w-36 shrink-0">Joining Date:</span>
             <span>
-              {new Date(employee.hire_date).toLocaleDateString("en-CA")}
+              {employee.hire_date
+                ? new Date(employee.hire_date).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : ""}
             </span>
           </div>
 
@@ -105,19 +111,33 @@ const Profile = () => {
           <div className="flex items-center">
             <Building2 size={16} className="mr-2" />
             <span className="font-semibold w-36 shrink-0">Department:</span>
-            <span>{employee.department ?? ""}</span>
+            <span>{employee.department_name ?? ""}</span>
           </div>
 
           <div className="flex items-center">
             <BiSolidUserDetail size={16} className="mr-2" />
             <span className="font-semibold w-36 shrink-0">Gender:</span>
-            <span>{employee.gender ?? ""}</span>
+            <span>
+              {employee.gender === "m"
+                ? "Male"
+                : employee.gender === "f"
+                ? "Female"
+                : ""}
+            </span>
           </div>
 
           <div className="flex items-center">
             <Calendar size={16} className="mr-2" />
             <span className="font-semibold w-36 shrink-0">D.O.B. :</span>
-            <span>{employee.birthday ?? ""}</span>
+            <span>
+              {employee.birthday
+                ? new Date(employee.birthday).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })
+                : ""}
+            </span>
           </div>
         </div>
       </div>
