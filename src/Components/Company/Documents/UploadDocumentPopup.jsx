@@ -22,28 +22,34 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
 
   useEffect(() => {
     if (!isOpen) return;
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
 
     const fetchFoldersAndEmployees = async () => {
       try {
         const [orgRes, empRes, employeeRes] = await Promise.all([
-          axios.get(`${dev_url}salary/getlist?type=folders&field=type&value=org`,{
-            headers:{
-              Authorization:`Bearer ${token}`
+          axios.get(
+            `${dev_url}salary/getlist?type=folders&field=type&value=org`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
-          }),
-          axios.get(`${dev_url}salary/getlist?type=folders&field=type&value=employee`,{
-             headers:{
-              Authorization:`Bearer ${token}`
+          ),
+          axios.get(
+            `${dev_url}salary/getlist?type=folders&field=type&value=employee`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
-          }),
-          axios.get(`${dev_url}api/employee/`,{
-             headers:{
-              Authorization:`Bearer ${token}`
-            }
+          ),
+          axios.get(`${dev_url}api/employee/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }),
         ]);
-        console.log(employeeRes.data)
+        console.log(employeeRes.data);
         setOrganizationFolders(orgRes.data.data);
         setEmployeeFolders(empRes.data.data);
         setEmployeeList(employeeRes.data.employees);
@@ -57,84 +63,73 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    console.log('selected fileeeeeee',selectedFile)
-    setFile(selectedFile)
-     setStep(2);
-    // if (selectedFile) {
-    //   setFile({
-    //     name: selectedFile.name,
-    //     size: (selectedFile.size / (1024 * 1024)).toFixed(1) + "MB",
-    //   });
-    //   setStep(2);
-    // }
+    console.log("selected fileeeeeee", selectedFile);
+    setFile(selectedFile);
+    setStep(2);
   };
 
   const handleSave = async () => {
-    console.log(file,folderType)
-  if (
-    file &&
-    (folderType["Organisation Folder"] || folderType["Employee Folder"]) &&
-    folderName
-  ) {
-    try {
-      const token = localStorage.getItem("token");
+    if (
+      file &&
+      (folderType["Organisation Folder"] || folderType["Employee Folder"]) &&
+      folderName
+    ) {
+      try {
+        const token = localStorage.getItem("token");
 
-      const selectedFolderList = folderType["Organisation Folder"]
-        ? organizationFolders
-        : employeeFolders;
+        const selectedFolderList = folderType["Organisation Folder"]
+          ? organizationFolders
+          : employeeFolders;
 
-      console.log('seeeee',selectedFolderList)
+        console.log("seeeee", selectedFolderList);
 
-      const selectedFolder = selectedFolderList.find(
-        (f) => f.name === folderName
-      );
-      console.log('nammmmm',selectedFolder,associateDocument)
+        const selectedFolder = selectedFolderList.find(
+          (f) => f.name === folderName
+        );
+        console.log("nammmmm", selectedFolder, associateDocument);
 
-      if (!selectedFolder) {
-        alert("Invalid folder selected.");
-        return;
-      }
+        if (!selectedFolder) {
+          alert("Invalid folder selected.");
+          return;
+        }
 
-      const folder_id = selectedFolder.id;
+        const folder_id = selectedFolder.id;
 
-      const formData = new FormData();
-      formData.append("folderId", folder_id);
-      if (folderType["Employee Folder"]) {
-        formData.append("employee_id", associateDocument);
-      }
-      formData.append("file",file);
-      console.log('rrrrrrrrrr',file)
+        const formData = new FormData();
+        formData.append("folderId", folder_id);
+        if (folderType["Employee Folder"]) {
+          formData.append("employee_id", associateDocument);
+        }
+        formData.append("file", file);
 
-      const res = await axios.post(`${dev_url}salary/addfile`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if ( res.status==200) {
-        onUpload({
-          name: file.name,
-          size: file.size,
-          folder: folderName,
-          folderType: folderType["Organisation Folder"]
-            ? "Organisation Folder"
-            : "Employee Folder",
-          associateDocument,
-          uploadedBy: "You",
-          uploadedOn: new Date().toLocaleDateString(),
+        const res = await axios.post(`${dev_url}salary/addfile`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
         });
-        handleClose();
-      } else {
-        alert("Upload failed.");
-      }
-    } catch (err) {
-      console.error("Upload error:", err);
-      alert("Error uploading file.");
-    }
-  }
-};
 
+        if (res.status == 200) {
+          onUpload({
+            name: file.name,
+            size: file.size,
+            folder: folderName,
+            folderType: folderType["Organisation Folder"]
+              ? "Organisation Folder"
+              : "Employee Folder",
+            associateDocument,
+            uploadedOn: new Date().toLocaleDateString(),
+          });
+          handleClose();
+        } else {
+          alert("Upload failed.");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        alert("Error uploading file.");
+      }
+    }
+  };
 
   const handleClose = () => {
     setFile(null);
@@ -313,7 +308,9 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
                   <option value="">Select employee</option>
                   {employeeList.map((emp) => (
                     <option key={emp.id} value={emp.id}>
-                      {emp.first_name + ' ' +  (emp.last_name?emp.last_name:'')}
+                      {emp.first_name +
+                        " " +
+                        (emp.last_name ? emp.last_name : "")}
                     </option>
                   ))}
                 </select>

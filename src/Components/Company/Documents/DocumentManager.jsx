@@ -9,7 +9,7 @@ import dev_url from "../../../config";
 import axios from "axios";
 import TrashButton from "./TrashButton";
 import { useNavigate } from "react-router-dom";
-
+import AddNewFolder from "./AddNewFolder";
 export default function DocumentManager() {
   const [activeTab, setActiveTab] = useState("all");
   const [isUploadPopupOpen, setIsUploadPopupOpen] = useState(false);
@@ -18,6 +18,9 @@ export default function DocumentManager() {
   const [isMoveToPopupOpen, setIsMoveToPopupOpen] = useState(false);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [docToDelete, setDocToDelete] = useState(null);
+  const [isAddFolderPopupOpen, setIsAddFolderPopupOpen] = useState(false);
+  const [folderToEdit, setFolderToEdit] = useState(null);
+
   const [cardData, setCardData] = useState({
     all: [],
     organisation: [],
@@ -109,9 +112,11 @@ export default function DocumentManager() {
   };
 
   const handleEdit = (id) => {
-    const doc = allDocs.find((d) => d.id === id);
-    setDocumentToEdit(doc);
-    setIsEditPopupOpen(true);
+    const folder = allDocs.find((f) => f.id === id);
+    if (folder) {
+      setFolderToEdit(folder);
+      setIsAddFolderPopupOpen(true);
+    }
   };
 
   const handleSaveEditedDoc = (updatedDoc) => {
@@ -126,6 +131,15 @@ export default function DocumentManager() {
     setCardData(updated);
     setDocumentToEdit(null);
     setIsEditPopupOpen(false);
+  };
+  const handleFolderSave = () => {
+    if (folderToEdit?.type === "employee") {
+      fetchDocuments("employee");
+    } else {
+      fetchDocuments("org");
+    }
+    setFolderToEdit(null);
+    setIsAddFolderPopupOpen(false);
   };
 
   const fetchDocuments = async (folderType) => {
@@ -238,7 +252,10 @@ export default function DocumentManager() {
 
                   <td className="px-4 py-2">{doc.type}</td>
                   <td className="px-4 py-2">{doc.description}</td>
-                  <td className="px-4 py-2"> {doc.created_at?.slice(0, 10) || "—"}</td>
+                  <td className="px-4 py-2">
+                    {" "}
+                    {doc.created_at?.slice(0, 10) || "—"}
+                  </td>
                   <td className="px-4 py-2 flex space-x-2">
                     <button onClick={() => handleEdit(doc.id)}>
                       <FiEdit />
@@ -257,13 +274,27 @@ export default function DocumentManager() {
       {(activeTab === "employee" || activeTab === "organisation") && (
         <div className="flex flex-col items-center justify-center text-gray-500 text-lg font-semibold mt-8 space-y-2">
           <div>or</div>
-          <AddNewFolderButton />
+          <AddNewFolderButton
+            onClick={() => {
+              setFolderToEdit(null);
+              setIsAddFolderPopupOpen(true);
+            }}
+          />
         </div>
       )}
 
       <div className="p-8 bg-gray-50 min-h-screen flex flex-col relative">
         <TrashButton />
       </div>
+      <AddNewFolder
+        isOpen={isAddFolderPopupOpen}
+        onClose={() => {
+          setIsAddFolderPopupOpen(false);
+          setFolderToEdit(null);
+        }}
+        item={folderToEdit}
+        onSuccess={handleFolderSave}
+      />
 
       <UploadDocumentPopup
         isOpen={isUploadPopupOpen}
