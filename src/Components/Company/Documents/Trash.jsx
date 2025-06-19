@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { FiTrash2 } from "react-icons/fi";
 import { MdSettingsBackupRestore } from "react-icons/md";
 import DeleteConfirmationPopup from "../../SuperAdmin/DeleteConfirmationPopup";
@@ -10,46 +11,33 @@ export default function Trash() {
   const [isRestorePopupOpen, setIsRestorePopupOpen] = useState(false);
   const [documentsToDelete, setDocumentsToDelete] = useState([]);
   const [documentsToRestore, setDocumentsToRestore] = useState([]);
-  const [isToolbarOpen, setIsToolbarOpen] = useState(false); // Track if toolbar is open
+  const [isToolbarOpen, setIsToolbarOpen] = useState(false);
 
   const [cardData, setCardData] = useState({
-    organisation: [
-      {
-        id: 1,
-        documentName: "Company Policy.pdf",
-        name: "Company Policy",
-        folder: "Organisation",
-        uploadedBy: "Admin",
-        uploadedOn: "2025-04-01",
-      },
-      {
-        id: 2,
-        documentName: "Holiday List.docx",
-        name: "Holiday List",
-        folder: "Organisation",
-        uploadedBy: "Admin",
-        uploadedOn: "2025-04-02",
-      },
-    ],
-    employee: [
-      {
-        id: 3,
-        documentName: "John Resume.pdf",
-        name: "John Resume",
-        folder: "Employee",
-        uploadedBy: "John Doe",
-        uploadedOn: "2025-04-03",
-      },
-      {
-        id: 4,
-        documentName: "Jane Offer Letter.pdf",
-        name: "Jane Offer Letter",
-        folder: "Employee",
-        uploadedBy: "Jane Smith",
-        uploadedOn: "2025-04-04",
-      },
-    ],
+    organisation: [],
+    employee: [],
   });
+
+  useEffect(() => {
+    fetchTrashData();
+  }, []);
+
+  const fetchTrashData = async () => {
+    try {
+      const res = await axios.get("http://localhost:10000/salary/TrashList", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const folders = res.data?.data?.[0]?.folders || [];
+      const files = res.data?.data?.[1]?.files || [];
+
+      setCardData({ organisation: folders, employee: files });
+    } catch (error) {
+      console.error("Failed to fetch trash list:", error);
+    }
+  };
 
   const toggleSelect = (id) => {
     setSelectedIds((prev) =>
@@ -70,7 +58,7 @@ export default function Trash() {
         ...cardData.employee.map((doc) => doc.id),
       ]);
     }
-    setIsToolbarOpen(true); // Open the toolbar when something is selected
+    setIsToolbarOpen(true);
   };
 
   const handleRestoreSingle = (doc) => {
@@ -88,22 +76,20 @@ export default function Trash() {
   };
 
   const handleConfirmRestore = () => {
-    setCardData((prevData) => {
-      const updatedOrganisation = prevData.organisation.filter(
+    setCardData((prevData) => ({
+      organisation: prevData.organisation.filter(
         (doc) => !documentsToRestore.some((d) => d.id === doc.id)
-      );
-      const updatedEmployee = prevData.employee.filter(
+      ),
+      employee: prevData.employee.filter(
         (doc) => !documentsToRestore.some((d) => d.id === doc.id)
-      );
-      return { organisation: updatedOrganisation, employee: updatedEmployee };
-    });
-
+      ),
+    }));
     setSelectedIds((prev) =>
       prev.filter((id) => !documentsToRestore.some((doc) => doc.id === id))
     );
     setIsRestorePopupOpen(false);
     setDocumentsToRestore([]);
-    setIsToolbarOpen(false); // Close toolbar after restore
+    setIsToolbarOpen(false);
   };
 
   const handleDeleteSingle = (doc) => {
@@ -121,26 +107,42 @@ export default function Trash() {
   };
 
   const handleConfirmDelete = () => {
-    setCardData((prevData) => {
-      const updatedOrganisation = prevData.organisation.filter(
+    setCardData((prevData) => ({
+      organisation: prevData.organisation.filter(
         (doc) => !documentsToDelete.some((d) => d.id === doc.id)
-      );
-      const updatedEmployee = prevData.employee.filter(
-        (doc) => !documentsToDelete.some((d) => d.id === doc.id)
-      );
-      return { organisation: updatedOrganisation, employee: updatedEmployee };
-    });
-
+      ),
+      employee: prevData.employee.filter(
+        (doc) => !documentsToDelete.some((d) => doc.id === d.id)
+      ),
+    }));
     setSelectedIds((prev) =>
       prev.filter((id) => !documentsToDelete.some((doc) => doc.id === id))
     );
     setIsDeletePopupOpen(false);
     setDocumentsToDelete([]);
-    setIsToolbarOpen(false); // Close toolbar after delete
+    setIsToolbarOpen(false);
   };
 
   const hasDocuments =
     cardData.organisation.length > 0 || cardData.employee.length > 0;
+
+  const allDocs = [
+    ...cardData.organisation.map((doc) => ({
+      ...doc,
+      type: "Organisation",
+      displayName: doc.name,
+      uploadedBy: "Admin",
+      uploadedOn: new Date(doc.created_at).toISOString().slice(0, 10),
+    })),
+    ...cardData.employee.map((doc) => ({
+      ...doc,
+      type: "Employee",
+      displayName: doc.name,
+      file_name: doc.file_name || doc.name,
+      uploadedBy: "Admin",
+      uploadedOn: new Date(doc.created_at).toISOString().slice(0, 10),
+    })),
+  ];
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col">
@@ -148,26 +150,25 @@ export default function Trash() {
         <div className="font-2xl">
           <FiTrash2 />
         </div>
-        <h2 className="text-lg text-gray-600 font-semibold underline underline-offset-4 ml-2">
+        <h2 className="text-lg text-gray-600 font-semibold underline ml-2">
           Trash
         </h2>
       </div>
 
       <div className="relative">
-        {/* Toolbar Above Table Header */}
         {isToolbarOpen && selectedIds.length > 0 && (
           <div className="absolute -top-4 left-4 z-10 bg-white border border-gray-300 rounded-lg p-2 shadow-md flex space-x-4 items-center">
             <button
               title="Restore"
               onClick={handleBulkRestore}
-              className="text-gray-700 hover:text-black text-xl cursor-pointer"
+              className="text-gray-700 hover:text-black text-xl"
             >
               <MdSettingsBackupRestore />
             </button>
             <button
               title="Delete"
               onClick={handleBulkDelete}
-              className="text-gray-700 hover:text-black text-xl cursor-pointer"
+              className="text-gray-700 hover:text-black text-xl"
             >
               <FiTrash2 />
             </button>
@@ -175,9 +176,9 @@ export default function Trash() {
               title="Cancel"
               onClick={() => {
                 setIsToolbarOpen(false);
-                setSelectedIds([]); // Clear selected IDs when cancel is clicked
-              }} // Close the toolbar when cancel is clicked
-              className="text-gray-500 text-xs underline underline-offset-2 cursor-pointer"
+                setSelectedIds([]);
+              }}
+              className="text-gray-500 text-xs underline"
             >
               Cancel
             </button>
@@ -186,41 +187,43 @@ export default function Trash() {
 
         <div className="rounded-lg overflow-y-auto">
           {hasDocuments ? (
-            <table className="w-full border-separate border-spacing-0 border border-gray-400 rounded-xl overflow-hidden mt-6">
+            <table className="w-full border border-gray-400 rounded-xl mt-6">
               <thead className="bg-gray-200">
                 <tr className="text-gray-600 text-sm">
-                  <th className="px-4 py-3 text-left rounded-tl-xl">
+                  <th className="px-4 py-3 text-left">S.No.</th>
+                  <th className="px-4 py-3 text-left">
                     <input
                       type="checkbox"
                       checked={allSelected}
                       onChange={toggleSelectAll}
-                      className="form-checkbox h-5 w-5 text-gray-600 border-gray-400 bg-gray-100 accent-gray-50"
+                      className="form-checkbox h-5 w-5 text-gray-600"
                     />
                   </th>
                   <th className="px-4 py-3 text-left">Document Name</th>
-                  <th className="px-4 py-3 text-left">Name</th>
+                  {/* <th className="px-4 py-3 text-left">File Name</th>
                   <th className="px-4 py-3 text-left">Folder</th>
-                  <th className="px-4 py-3 text-left">Uploaded By</th>
+                  <th className="px-4 py-3 text-left">Uploaded By</th> */}
                   <th className="px-4 py-3 text-left">Uploaded On</th>
                   <th className="px-4 py-3 text-left">Actions</th>
                 </tr>
               </thead>
               <tbody className="text-sm text-gray-700">
-                {[...cardData.organisation, ...cardData.employee].map((doc) => (
+                {allDocs.map((doc, index) => (
                   <tr key={doc.id} className="hover:bg-gray-100 transition">
+                    <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(doc.id)}
                         onChange={() => toggleSelect(doc.id)}
-                        className="form-checkbox border-gray-400 h-5 w-5 bg-gray-100 accent-gray-50"
+                        className="form-checkbox h-5 w-5"
                       />
                     </td>
-                    <td className="px-4 py-2 font-semibold underline text-gray-800 cursor-pointer">
-                      {doc.documentName}
+                    <td className="px-4 py-2 underline text-gray-800 cursor-pointer">
+                      {doc.displayName}
                     </td>
-                    <td className="px-4 py-2">{doc.name}</td>
-                    <td className="px-4 py-2">{doc.folder}</td>
+                    <td className="px-4 py-2">{doc.file_name || "-"}</td>
+                    <td className="px-4 py-2">{doc.type}</td>
                     <td className="px-4 py-2">{doc.uploadedBy}</td>
                     <td className="px-4 py-2">{doc.uploadedOn}</td>
                     <td className="px-4 py-2">
@@ -246,14 +249,13 @@ export default function Trash() {
               </tbody>
             </table>
           ) : (
-            <div className="flex flex-col justify-center items-center h-full text-gray-600 font-semibold">
+            <div className="flex justify-center items-center h-full text-gray-600 font-semibold">
               No documents found
             </div>
           )}
         </div>
       </div>
 
-      {/* Delete Confirmation Popup */}
       <DeleteConfirmationPopup
         isOpen={isDeletePopupOpen}
         onClose={() => setIsDeletePopupOpen(false)}
@@ -261,7 +263,6 @@ export default function Trash() {
         data={documentsToDelete}
       />
 
-      {/* Restore Confirmation Popup */}
       <RestoreConfirmationPopup
         isOpen={isRestorePopupOpen}
         onClose={() => setIsRestorePopupOpen(false)}

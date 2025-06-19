@@ -1,26 +1,65 @@
 import React, { useState } from "react";
+import axios from "axios";
+import dev_url from "../../../config";
 
 const AddNewFolder = ({ isOpen, onClose }) => {
   const [folderName, setFolderName] = useState("");
   const [folderDescription, setFolderDescription] = useState("");
-  const [isOrgFolder, setIsOrgFolder] = useState(false);
-  const [isEmployeeFolder, setIsEmployeeFolder] = useState(false);
+  const [type, setType] = useState("org");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const user = localStorage.getItem('user');
+  const companyId = JSON.parse(user).companyId
+  const token = localStorage.getItem('token')
 
-  const handleSave = () => {
-    console.log({
-      folderName,
-      folderDescription,
-      isOrgFolder,
-      isEmployeeFolder,
-    });
-    onClose();
+  const handleSave = async () => {
+   
+  
+  console.log('folh',folderDescription,folderName,type,companyId)
+
+    if (!folderName || !folderDescription || !type || !companyId) {
+      setError("All fields are required.");
+      return;
+    }
+
+    const data = {
+      name: folderName,
+      description: folderDescription,
+      type,
+      company_id: companyId,
+    };
+
+    try {
+      setLoading(true);
+      setError("");
+      const response = await axios.post(`${dev_url}salary/addfolder`, data,
+        {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        }
+      );
+
+      console.log("API response:", response.data);
+      onClose();
+
+      // Optionally reset fields
+      setFolderName("");
+      setFolderDescription("");
+      setType("org");
+    } catch (err) {
+      console.error("API error:", err);
+      setError("Something went wrong while saving the folder.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
     setFolderName("");
     setFolderDescription("");
-    setIsOrgFolder(false);
-    setIsEmployeeFolder(false);
+    setType("org");
+    setError("");
     onClose();
   };
 
@@ -30,18 +69,18 @@ const AddNewFolder = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-white p-6 rounded-xl w-[430px]">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg text-gray-700 font-semibold">
-            Add New Folder
-          </h2>
+          <h2 className="text-lg text-gray-700 font-semibold">Add New Folder</h2>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 text-3xl leading-none  cursor-pointer"
+            className="text-gray-600 hover:text-gray-900 text-3xl leading-none cursor-pointer"
           >
             &times;
           </button>
         </div>
 
         <div className="border-b border-gray-200 mb-4" />
+
+        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
 
         <div className="mb-4">
           <label className="block text-sm text-gray-700 font-medium mb-1">
@@ -56,26 +95,17 @@ const AddNewFolder = ({ isOpen, onClose }) => {
         </div>
 
         <div className="mb-4">
-          <div className="flex justify-between">
-            <label className="flex items-center text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={isOrgFolder}
-                onChange={() => setIsOrgFolder(!isOrgFolder)}
-                className="mr-2 h-5 w-5 accent-yellow-500"
-              />
-              Organization Folder
-            </label>
-            <label className="flex items-center text-sm text-gray-700">
-              <input
-                type="checkbox"
-                checked={isEmployeeFolder}
-                onChange={() => setIsEmployeeFolder(!isEmployeeFolder)}
-                className="mr-2 h-5 w-5 accent-yellow-500"
-              />
-              Employee Folder
-            </label>
-          </div>
+          <label className="block text-sm text-gray-700 font-medium mb-1">
+            Folder Type <span className="text-red-500">*</span>
+          </label>
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            className="w-full px-4 py-2 border border-dashed border-gray-400 bg-[#FFFAEB] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
+          >
+            <option value="org">Organization Folder</option>
+            <option value="employee">Employee Folder</option>
+          </select>
         </div>
 
         <div className="mb-4">
@@ -93,13 +123,15 @@ const AddNewFolder = ({ isOpen, onClose }) => {
         <div className="flex space-x-4">
           <button
             onClick={handleSave}
-            className="w-full py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition  cursor-pointer"
+            disabled={loading}
+            className="w-full py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition cursor-pointer"
           >
-            Save Folder
+            {loading ? "Saving..." : "Save Folder"}
           </button>
           <button
             onClick={handleCancel}
-            className="w-full py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition  cursor-pointer"
+            disabled={loading}
+            className="w-full py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition cursor-pointer"
           >
             Cancel
           </button>

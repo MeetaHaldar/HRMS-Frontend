@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiUpload, FiTrash2, FiEdit2 } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
 import AddNewFolderButton from "./AddNewFolderButton";
+import axios from "axios";
+import dev_url from "../../../config";
 
 export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
-  const [step, setStep] = useState(1); // 1: Upload Step, 2: Document Details Step
   const [file, setFile] = useState(null);
   const [folderType, setFolderType] = useState({
     "Organisation Folder": false,
@@ -13,38 +14,127 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
   const [folderName, setFolderName] = useState("");
   const [associateDocument, setAssociateDocument] = useState("");
   const [isDragOver, setIsDragOver] = useState(false);
+  const [step, setStep] = useState(1);
+
+  const [organizationFolders, setOrganizationFolders] = useState([]);
+  const [employeeFolders, setEmployeeFolders] = useState([]);
+  const [employeeList, setEmployeeList] = useState([]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const token = localStorage.getItem('token')
+
+    const fetchFoldersAndEmployees = async () => {
+      try {
+        const [orgRes, empRes, employeeRes] = await Promise.all([
+          axios.get(`${dev_url}salary/getlist?type=folders&field=type&value=org`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          }),
+          axios.get(`${dev_url}salary/getlist?type=folders&field=type&value=employee`,{
+             headers:{
+              Authorization:`Bearer ${token}`
+            }
+          }),
+          axios.get(`${dev_url}api/employee/`,{
+             headers:{
+              Authorization:`Bearer ${token}`
+            }
+          }),
+        ]);
+        console.log(employeeRes.data)
+        setOrganizationFolders(orgRes.data.data);
+        setEmployeeFolders(empRes.data.data);
+        setEmployeeList(employeeRes.data.employees);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchFoldersAndEmployees();
+  }, [isOpen]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile({
-        name: selectedFile.name,
-        size: (selectedFile.size / (1024 * 1024)).toFixed(1) + "MB",
-      });
-      setStep(2);
-    }
+    console.log('selected fileeeeeee',selectedFile)
+    setFile(selectedFile)
+     setStep(2);
+    // if (selectedFile) {
+    //   setFile({
+    //     name: selectedFile.name,
+    //     size: (selectedFile.size / (1024 * 1024)).toFixed(1) + "MB",
+    //   });
+    //   setStep(2);
+    // }
   };
 
-  const handleSave = () => {
-    if (
-      file &&
-      (folderType["Organisation Folder"] || folderType["Employee Folder"]) &&
-      folderName
-    ) {
-      onUpload({
-        name: file.name,
-        size: file.size,
-        folder: folderName,
-        folderType: folderType["Organisation Folder"]
-          ? "Organisation Folder"
-          : "Employee Folder",
-        associateDocument,
-        uploadedBy: "You",
-        uploadedOn: new Date().toLocaleDateString(),
+  const handleSave = async () => {
+    console.log(file,folderType)
+  if (
+    file &&
+    (folderType["Organisation Folder"] || folderType["Employee Folder"]) &&
+    folderName
+  ) {
+    try {
+      const token = localStorage.getItem("token");
+
+      const selectedFolderList = folderType["Organisation Folder"]
+        ? organizationFolders
+        : employeeFolders;
+
+      console.log('seeeee',selectedFolderList)
+
+      const selectedFolder = selectedFolderList.find(
+        (f) => f.name === folderName
+      );
+      console.log('nammmmm',selectedFolder,associateDocument)
+
+      if (!selectedFolder) {
+        alert("Invalid folder selected.");
+        return;
+      }
+
+      const folder_id = selectedFolder.id;
+
+      const formData = new FormData();
+      formData.append("folderId", folder_id);
+      if (folderType["Employee Folder"]) {
+        formData.append("employee_id", associateDocument);
+      }
+      formData.append("file",file);
+      console.log('rrrrrrrrrr',file)
+
+      const res = await axios.post(`${dev_url}salary/addfile`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
       });
-      handleClose();
+
+      if ( res.status==200) {
+        onUpload({
+          name: file.name,
+          size: file.size,
+          folder: folderName,
+          folderType: folderType["Organisation Folder"]
+            ? "Organisation Folder"
+            : "Employee Folder",
+          associateDocument,
+          uploadedBy: "You",
+          uploadedOn: new Date().toLocaleDateString(),
+        });
+        handleClose();
+      } else {
+        alert("Upload failed.");
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Error uploading file.");
     }
-  };
+  }
+};
+
 
   const handleClose = () => {
     setFile(null);
@@ -85,10 +175,9 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl px-6 py-5 w-[430px] relative shadow-lg">
-        {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl  cursor-pointer"
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl cursor-pointer"
         >
           <IoMdClose />
         </button>
@@ -132,32 +221,27 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
 
         {step === 2 && file && (
           <div className="space-y-4">
-            {/* New label for Selected Document */}
             <div className="mb-2">
               <label className="block text-sm text-gray-700">
                 Selected Document
               </label>
             </div>
 
-            {/* Dashed border and light yellow background for the uploaded document */}
             <div className="flex items-center bg-[#FFFAEB] border-dashed border-2 p-4 rounded-lg justify-between">
               <div>
                 <p className="font-semibold text-gray-700">{file.name}</p>
                 <p className="text-sm text-gray-400">{file.size}</p>
               </div>
               <div className="flex items-center space-x-3 text-gray-500">
-                <button
-                  onClick={() => setStep(1)}
-                  className=" cursor-pointer" // Allows re-uploading the document
-                >
+                <button onClick={() => setStep(1)} className="cursor-pointer">
                   <FiEdit2 />
                 </button>
                 <button
-                  className=" cursor-pointer"
                   onClick={() => {
                     setFile(null);
                     setStep(1);
                   }}
+                  className="cursor-pointer"
                 >
                   <FiTrash2 />
                 </button>
@@ -205,9 +289,14 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
                 onChange={(e) => setFolderName(e.target.value)}
               >
                 <option value="">Select folder</option>
-                <option value="Folder 1">Folder 1</option>
-                <option value="Folder 2">Folder 2</option>
-                <option value="Folder 3">Folder 3</option>
+                {(folderType["Organisation Folder"]
+                  ? organizationFolders
+                  : employeeFolders
+                ).map((folder) => (
+                  <option key={folder.id} value={folder.name}>
+                    {folder.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -221,15 +310,16 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
                   value={associateDocument}
                   onChange={(e) => setAssociateDocument(e.target.value)}
                 >
-                  <option value="">Select associated document</option>
-                  <option value="Document 1">Document 1</option>
-                  <option value="Document 2">Document 2</option>
-                  <option value="Document 3">Document 3</option>
+                  <option value="">Select employee</option>
+                  {employeeList.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.first_name + ' ' +  (emp.last_name?emp.last_name:'')}
+                    </option>
+                  ))}
                 </select>
               </div>
             )}
 
-            {/* "or" and "+ Add New Folder" below fields */}
             <div className="flex flex-col items-center mt-4 text-sm text-gray-600">
               <span className="mb-1">or</span>
               <span className="text-black font-semibold cursor-pointer">
@@ -239,7 +329,6 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
           </div>
         )}
 
-        {/* Footer buttons */}
         <div className="flex justify-between space-x-4 mt-6">
           <button
             onClick={handleSave}
@@ -250,7 +339,7 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
           </button>
           <button
             onClick={handleClose}
-            className="w-1/2 py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition  cursor-pointer"
+            className="w-1/2 py-2 rounded-full border text-sm font-medium text-gray-600 hover:bg-gray-100 transition cursor-pointer"
           >
             Cancel
           </button>
