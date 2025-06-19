@@ -1,3 +1,4 @@
+// Add this near the top with other imports
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Select from "react-select";
@@ -20,6 +21,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
     subscription_id: "",
   });
 
+  const [previewImage, setPreviewImage] = useState(null);
   const [countryOptions, setCountryOptions] = useState([]);
   const [cityOptions, setCityOptions] = useState([]);
   const [subscriptionOptions, setSubscriptionOptions] = useState([]);
@@ -67,6 +69,10 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
           file: item.logo || null,
           subscription_id: item.subscription_id || "",
         });
+
+        if (item.logo) {
+          setPreviewImage(`${dev_url}public/upload/${item.logo}`);
+        }
       }
     };
 
@@ -75,10 +81,15 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "file" ? files[0] : value,
-    });
+    if (type === "file") {
+      const file = files[0];
+      if (file) {
+        setFormData({ ...formData, file });
+        setPreviewImage(URL.createObjectURL(file));
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleCountryChange = (selected) => {
@@ -146,6 +157,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
       file: null,
       subscription_id: "",
     });
+    setPreviewImage(null);
     onClose();
   };
 
@@ -159,6 +171,7 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Form Fields */}
           <div>
             <label className="block font-medium">Name</label>
             <input
@@ -285,7 +298,16 @@ const RegisterCompanyPopup = ({ isOpen, onClose, item = null, onSuccess }) => {
               onChange={handleChange}
               className="w-full"
             />
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="w-24 h-24 object-cover mt-2 rounded border"
+              />
+            )}
           </div>
+
+          {/* Buttons */}
           <div className="flex space-x-4 mt-6">
             <button
               type="button"
