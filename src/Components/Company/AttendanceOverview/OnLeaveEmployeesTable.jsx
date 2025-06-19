@@ -45,7 +45,7 @@ export default function OnLeaveEmployeesTable() {
           name: emp.first_name + " " + emp.last_name || "-",
           email: emp.email || "-",
           phone: emp.mobile || "-",
-          days: emp.calculated_days ? `${emp.no_of_days} Days` : "-",
+          days: emp.calculated_days || "-",
           department: emp.department_name || "-",
           status: "On Leave",
           from:

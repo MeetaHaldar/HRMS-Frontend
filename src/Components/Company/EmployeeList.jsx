@@ -101,10 +101,18 @@ const EmployeeList = () => {
                   <td className="p-3">{employee.first_name}</td>
                   <td className="p-3">{employee.department_name}</td>
                   <td className="p-3">{employee.position_name}</td>
-
                   <td className="p-3">
-                    {employee.is_active ? "Active" : "InActive"}
+                    <span
+                      className={
+                        employee.is_active
+                          ? "text-green-600 font-semibold"
+                          : "text-red-600 font-semibold"
+                      }
+                    >
+                      {employee.is_active ? "Active" : "InActive"}
+                    </span>
                   </td>
+
                   <td className="p-3 flex space-x-2">
                     <button
                       className="text-gray-500 hover:text-gray-900"
