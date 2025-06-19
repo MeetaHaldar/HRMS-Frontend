@@ -17,12 +17,6 @@ const EmployeeWelcomeCard = () => {
   return (
     <div className="p-4 w-full flex justify-between items-start">
       <div className="flex gap-4 w-full">
-        <img
-          src="https://randomuser.me/api/portraits/men/32.jpg"
-          alt="Profile"
-          className="w-16 h-16 rounded-lg object-cover"
-        />
-
         <div className="">
           <h2 className="text-gray-700 text-base font-normal m-auto">
             Welcome back, <span className="font-semibold">“{userName}”</span>

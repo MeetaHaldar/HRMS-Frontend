@@ -183,7 +183,7 @@ const CompanyProfile = () => {
             <label className="w-20 h-20 bg-gray-200 rounded flex flex-col items-center justify-center text-xs text-gray-500 cursor-pointer relative overflow-hidden">
               {companyData.logo ? (
                 <img
-                  src={companyData.logo}
+                  src={`https://atd.infosware-test.in/public/upload/${companyData.logo}`}
                   alt="Logo"
                   className="w-full h-full object-cover rounded"
                 />
