@@ -13,7 +13,6 @@ const SubscriptionPopup = ({
     maxEmployeeLimit: "",
     subscriptionAmount: "",
     limitedPeriodDiscount: "",
-    discountedOfferPrice: "",
     duration: "",
     id: "",
   });
@@ -28,7 +27,6 @@ const SubscriptionPopup = ({
         maxEmployeeLimit: initialData.max_employee_no || "",
         subscriptionAmount: initialData.total_amount || "",
         limitedPeriodDiscount: initialData.discount || "",
-        discountedOfferPrice: initialData.discountedOfferPrice || "",
         duration: initialData.duration || "",
         id: initialData.id || "",
       });
@@ -39,12 +37,12 @@ const SubscriptionPopup = ({
         maxEmployeeLimit: "",
         subscriptionAmount: "",
         limitedPeriodDiscount: "",
-        discountedOfferPrice: "",
         duration: "",
         id: "",
       });
     }
   }, [initialData, isEdit, errorMessage]);
+
   useEffect(() => {
     if (!isOpen) {
       setFormData({
@@ -53,7 +51,6 @@ const SubscriptionPopup = ({
         maxEmployeeLimit: "",
         subscriptionAmount: "",
         limitedPeriodDiscount: "",
-        discountedOfferPrice: "",
         duration: "",
         id: "",
       });
@@ -135,15 +132,6 @@ const SubscriptionPopup = ({
             onChange={handleChange}
             required
             placeholder="Discount %"
-            className="w-full bg-gray-100 rounded-xl px-4 py-2"
-          />
-          <input
-            type="number"
-            name="discountedOfferPrice"
-            value={formData.discountedOfferPrice}
-            onChange={handleChange}
-            required
-            placeholder="Amount After Discount"
             className="w-full bg-gray-100 rounded-xl px-4 py-2"
           />
           <select
