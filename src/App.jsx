@@ -37,7 +37,7 @@ function App() {
             <Route path="employeeList" element={<EmployeeList />} />
             <Route path="documents" element={<DocumentManager />} />
             <Route path="documents/trash" element={<Trash />} />
-
+            <Route path="folderFileTable" element={<FolderFileTable />} />
             <Route path="HolidayList" element={<HolidayList />} />
             <Route path="Department" element={<Department />} />
             <Route path="Designation" element={<Designation />} />
@@ -50,7 +50,10 @@ function App() {
               element={<AddNewSalaryTemplate />}
             />
 
-            <Route path="viewSalaryTemplate" element={<ViewSalaryTemplate />} />
+            <Route
+              path="viewSalaryTemplate/:id"
+              element={<ViewSalaryTemplate />}
+            />
             <Route path="companyProfile" element={<CompanyProfile />} />
             <Route path="subscriptionPlans" element={<SubscriptionPlans />} />
             <Route path="my-subscriptions" element={<MySubscription />} />
@@ -172,3 +175,4 @@ import CompanyDashboard from "./Components/Company/Dashboard/CompanyDashboard";
 import PayScheduleForm from "./Components/Company/PayScheduleForm";
 import WfhEmployeesTable from "./Components/Company/AttendanceOverview/WfhEmployeesTable";
 import UpdatePassword from "./Components/Employee/UpdatePassword";
+import FolderFileTable from "./Components/Company/Documents/FolderFileTable";
