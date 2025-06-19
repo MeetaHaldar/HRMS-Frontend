@@ -7,7 +7,8 @@ import EditDocumentPopup from "./EditDocumentPopup";
 import MoveToFolderPopup from "./MoveToFolderPopup";
 import dev_url from "../../../config";
 import axios from "axios";
-import TrashButton from './TrashButton'
+import TrashButton from "./TrashButton";
+import { useNavigate } from "react-router-dom";
 
 export default function DocumentManager() {
   const [activeTab, setActiveTab] = useState("all");
@@ -22,19 +23,25 @@ export default function DocumentManager() {
     organisation: [],
     employee: [],
   });
-
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchAllDocuments = async () => {
       try {
         const [orgRes, empRes] = await Promise.all([
-          axios.get(`${dev_url}salary/getlist?type=folders&field=type&value=org`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${dev_url}salary/getlist?type=folders&field=type&value=employee`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          axios.get(
+            `${dev_url}salary/getlist?type=folders&field=type&value=org`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
+          axios.get(
+            `${dev_url}salary/getlist?type=folders&field=type&value=employee`,
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          ),
         ]);
 
         const organisation = orgRes.data.data;
@@ -53,7 +60,8 @@ export default function DocumentManager() {
     return [...cardData.organisation, ...cardData.employee];
   };
 
-  const allDocs = activeTab === "all" ? getCombinedAllDocuments() : cardData[activeTab];
+  const allDocs =
+    activeTab === "all" ? getCombinedAllDocuments() : cardData[activeTab];
 
   const handleUpload = (newDoc) => {
     const updated = { ...cardData };
@@ -71,12 +79,16 @@ export default function DocumentManager() {
   const confirmDelete = async () => {
     if (!docToDelete) return;
     try {
-      await axios.put(`${dev_url}salary/moveToTrash`, {
-        id: docToDelete.id,
-        type: "folders",
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `${dev_url}salary/moveToTrash`,
+        {
+          id: docToDelete.id,
+          type: "folders",
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const updated = { ...cardData };
       Object.keys(updated).forEach((key) => {
@@ -125,7 +137,8 @@ export default function DocumentManager() {
         }
       );
       const updated = { ...cardData };
-      updated[folderType === "org" ? "organisation" : "employee"] = res.data.data;
+      updated[folderType === "org" ? "organisation" : "employee"] =
+        res.data.data;
       setCardData(updated);
     } catch (error) {
       console.error("Error fetching documents:", error);
@@ -184,11 +197,21 @@ export default function DocumentManager() {
           <table className="min-w-full border-separate border-spacing-0 border border-gray-400 rounded-xl overflow-hidden">
             <thead>
               <tr className="bg-gray-200 text-gray-600 text-sm">
-                <th className="px-4 py-3 text-left border-b border-gray-300">Folder Name</th>
-                <th className="px-4 py-3 text-left border-b border-gray-300">Folder Type</th>
-                <th className="px-4 py-3 text-left border-b border-gray-300">Description</th>
-                <th className="px-4 py-3 text-left border-b border-gray-300">Created On</th>
-                <th className="px-4 py-3 text-left border-b border-gray-300">Actions</th>
+                <th className="px-4 py-3 text-left border-b border-gray-300">
+                  Folder Name
+                </th>
+                <th className="px-4 py-3 text-left border-b border-gray-300">
+                  Folder Type
+                </th>
+                <th className="px-4 py-3 text-left border-b border-gray-300">
+                  Description
+                </th>
+                <th className="px-4 py-3 text-left border-b border-gray-300">
+                  Created On
+                </th>
+                <th className="px-4 py-3 text-left border-b border-gray-300">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="text-sm text-gray-700">
@@ -197,24 +220,39 @@ export default function DocumentManager() {
                   key={doc.id}
                   className="border-b border-gray-200 hover:bg-gray-50 transition"
                 >
-                  <td className="px-4 py-2 font-semibold underline underline-offset-4 text-gray-800 cursor-pointer">
+                  <td
+                    className="px-4 py-2 font-semibold underline underline-offset-4 text-gray-800 cursor-pointer"
+                    onClick={() =>
+                      navigate("/companyAdmin/folderFileTable", {
+                        state: {
+                          type: "files",
+                          field: "folder_id",
+                          value: doc.id,
+                          foldername: doc.name,
+                        },
+                      })
+                    }
+                  >
                     {doc.name}
                   </td>
+
                   <td className="px-4 py-2">{doc.type}</td>
                   <td className="px-4 py-2">{doc.description}</td>
-                  <td className="px-4 py-2">{doc.created_at}</td>
+                  <td className="px-4 py-2"> {doc.created_at?.slice(0, 10) || "—"}</td>
                   <td className="px-4 py-2 flex space-x-2">
-                    <button onClick={() => handleEdit(doc.id)}><FiEdit /></button>
-                    <button onClick={() => handleDeleteClick(doc)}><FiTrash2 /></button>
+                    <button onClick={() => handleEdit(doc.id)}>
+                      <FiEdit />
+                    </button>
+                    <button onClick={() => handleDeleteClick(doc)}>
+                      <FiTrash2 />
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         )}
-
       </div>
-
 
       {(activeTab === "employee" || activeTab === "organisation") && (
         <div className="flex flex-col items-center justify-center text-gray-500 text-lg font-semibold mt-8 space-y-2">
@@ -247,8 +285,6 @@ export default function DocumentManager() {
         onCancel={cancelDelete}
         data={[docToDelete]}
       />
-
-      
     </div>
   );
 }

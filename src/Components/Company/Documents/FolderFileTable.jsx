@@ -8,21 +8,13 @@ const FolderFileTable = () => {
   const location = useLocation();
   const [files, setFiles] = useState([]);
 
-  const getQueryParams = () => {
-    const searchParams = new URLSearchParams(location.search);
-    return {
-      type: searchParams.get("type"),
-      field: searchParams.get("field"),
-      value: searchParams.get("value"),
-    };
-  };
+  const { type, field, value, foldername } = location.state || {};
 
   useEffect(() => {
-    const { type, field, value } = getQueryParams();
     if (type && field && value) {
       fetchFiles(type, field, value);
     }
-  }, [location.search]);
+  }, [type, field, value]);
 
   const fetchFiles = async (type, field, value) => {
     try {
@@ -36,10 +28,29 @@ const FolderFileTable = () => {
         }
       );
       if (response.data?.data) {
-        setFiles(response.data.data.filter((item) => item.trash === 0));
+        setFiles(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching files:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`${dev_url}salary/moveToTrash`, {
+    "id":id,
+    "type":"files"
+},{
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Remove deleted file from UI
+      setFiles((prev) => prev.filter((file) => file.id !== id));
+    } catch (error) {
+      console.error("Failed to delete file:", error);
     }
   };
 
@@ -55,9 +66,6 @@ const FolderFileTable = () => {
       <table className="w-full border border-gray-300 rounded-xl overflow-hidden p-5">
         <thead className="bg-gray-200 text-gray-700 text-sm font-semibold">
           <tr>
-            <th className="px-4 py-3 text-left">
-              <input type="checkbox" className="h-4 w-4" />
-            </th>
             <th className="px-4 py-3 text-left">Document Name</th>
             <th className="px-4 py-3 text-left">Folder</th>
             <th className="px-4 py-3 text-left">Uploaded By</th>
@@ -68,14 +76,19 @@ const FolderFileTable = () => {
         <tbody className="text-sm text-gray-800">
           {files.map((file) => (
             <tr key={file.id} className="border-t hover:bg-gray-50">
-              <td className="px-4 py-3">
-                <input type="checkbox" className="h-4 w-4" />
-              </td>
-              <td className="px-4 py-3 underline cursor-pointer">
+              <td
+                className="px-4 py-3 underline text-blue-600 cursor-pointer"
+                onClick={() =>
+                  window.open(
+                    `https://atd.infosware-test.in/public/upload/${file.filename}`,
+                    "_blank"
+                  )
+                }
+              >
                 {file.filename}
               </td>
-              <td className="px-4 py-3">{file.folder_type}</td>
-              <td className="px-4 py-3">{file.uploaded_by || "—"}</td>
+              <td className="px-4 py-3">{foldername}</td>
+              <td className="px-4 py-3">Admin</td>
               <td className="px-4 py-3">
                 {file.uploaded_at?.slice(0, 10) || "—"}
               </td>
@@ -83,7 +96,10 @@ const FolderFileTable = () => {
                 <button className="text-gray-600 hover:text-blue-600">
                   <FiEdit size={16} />
                 </button>
-                <button className="text-gray-600 hover:text-red-600">
+                <button
+                  className="text-gray-600 hover:text-red-600"
+                  onClick={() => handleDelete(file.id)}
+                >
                   <FiTrash2 size={16} />
                 </button>
               </td>
