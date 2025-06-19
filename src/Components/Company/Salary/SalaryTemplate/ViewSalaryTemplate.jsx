@@ -50,10 +50,10 @@ const ViewSalaryTemplate = () => {
           }));
 
         const allComponents = [
-          ...formatComponents(data.earningDetails || [], "earning"),
           ...formatComponents(data.deductionDetails || [], "deduction"),
           ...formatComponents(data.reimbursementDetails || [], "reimbursement"),
           ...formatComponents(data.benefitDetails || [], "benefit"),
+          ...formatComponents(data.earningDetails || [], "earning"),
         ];
 
         setComponents(allComponents);
@@ -128,11 +128,15 @@ const ViewSalaryTemplate = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`${dev_url}salary/updateSalaryTemplate`, payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.put(
+        `${dev_url}salary/updateTemplate?id=${templateId}`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       alert("Template updated successfully.");
       navigate("/companyAdmin/salaryTemplate");
     } catch (err) {
