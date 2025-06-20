@@ -68,7 +68,7 @@ const Designation = () => {
         },
       });
       setShowDeletePopup(false);
-      await fetchDesignations(); // Refresh list after delete
+      await fetchDesignations(); 
     } catch (error) {
       console.error("Failed to delete designation:", error);
     }

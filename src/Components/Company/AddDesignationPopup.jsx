@@ -144,7 +144,7 @@ const AddDesignationPopup = ({ isOpen, onClose, onSubmit, initialData }) => {
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full mt-2 bg-gray-200 hover:bg-yellow-300 text-gray-500 font-medium py-2 rounded-xl transition ${
+            className={`w-full mt-2 bg-yellow-400 text-gray-900 font-medium py-2 rounded-xl transition ${
               submitting ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
             }`}
           >

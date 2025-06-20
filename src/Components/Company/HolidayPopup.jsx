@@ -14,9 +14,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
     if (mode === "edit" && initialData) {
       setFormData({
         name: initialData.alias || "",
-        date: initialData.start_date
-          ? initialData.start_date.slice(0, 10) // Convert ISO to yyyy-MM-dd
-          : "",
+        date: initialData.start_date ? initialData.start_date.slice(0, 10) : "",
         duration: initialData.duration_day?.toString() || "1",
         id: initialData.id || "",
       });
@@ -28,7 +26,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrorMessage(""); // clear any previous error
+    setErrorMessage("");
   };
 
   const handleSubmit = async (e) => {
@@ -153,7 +151,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
 
           <button
             type="submit"
-            className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 rounded-xl transition cursor-pointer"
+            className="w-full mt-2 bg-yellow-400 text-gray-900 font-medium py-2 rounded-xl transition cursor-pointer"
           >
             {mode === "edit" ? "Save Changes" : "Add Holiday"}
           </button>
