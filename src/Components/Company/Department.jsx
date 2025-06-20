@@ -135,7 +135,7 @@ const Department = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg text-gray-500 font-semibold">Departments:</h2>
         <button
-          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold"
+          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
         >
           + Add Department
@@ -171,7 +171,7 @@ const Department = () => {
                   <td className="p-3">{department.dept_code}</td>
                   <td className="p-3 flex space-x-2">
                     <button
-                      className="text-gray-500 hover:text-gray-950"
+                      className="text-gray-500 hover:text-gray-950 cursor-pointer"
                       onClick={() => {
                         setSelectedDepartment(department);
                         setApiError("");
@@ -181,7 +181,7 @@ const Department = () => {
                       <FiEdit />
                     </button>
                     <button
-                      className="text-gray-500 hover:text-gray-950"
+                      className="text-gray-500 hover:text-gray-950 cursor-pointer"
                       onClick={() => handleDeleteRequest(department)}
                     >
                       <RiDeleteBin6Line />

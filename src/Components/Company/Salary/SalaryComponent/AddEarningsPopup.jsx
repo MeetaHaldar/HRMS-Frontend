@@ -214,6 +214,7 @@ const AddEarningsPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="flat"
                   checked={formData.calculationType === "flat"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                   required
                 />
                 <span className="ml-2">Flat Amount</span>
@@ -225,6 +226,7 @@ const AddEarningsPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="percentage"
                   checked={formData.calculationType === "percentage"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                 />
                 <span className="ml-2">Percentage of Basic</span>
               </label>
@@ -253,6 +255,7 @@ const AddEarningsPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                 name="isActive"
                 checked={formData.isActive}
                 onChange={handleChange}
+                className="accent-yellow-500"
               />
               <span className="ml-2">Mark this as Active</span>
             </label>

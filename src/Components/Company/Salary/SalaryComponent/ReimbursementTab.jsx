@@ -107,13 +107,13 @@ const ReimbursementTab = () => {
               <td className="px-4 py-2">
                 <button
                   onClick={() => handleEdit(item)}
-                  className="mr-2 text-gray-600 hover:text-black"
+                  className="mr-2 text-gray-600 hover:text-black cursor-pointer"
                 >
                   <FiEdit />
                 </button>
                 <button
                   onClick={() => handleDelete(item)}
-                  className="text-gray-600 hover:text-black"
+                  className="text-gray-600 hover:text-black cursor-pointer"
                 >
                   <RiDeleteBin6Line />
                 </button>
@@ -122,7 +122,6 @@ const ReimbursementTab = () => {
           ))}
         </tbody>
       </table>
-
 
       <AddReimbursementPopup
         isOpen={isEditOpen}
@@ -134,7 +133,6 @@ const ReimbursementTab = () => {
         item={editData}
       />
 
-      
       <DeleteConfirmationPopup
         isOpen={showDeletePopup}
         onClose={() => {

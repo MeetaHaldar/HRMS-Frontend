@@ -216,6 +216,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="flat"
                   checked={formData.calculationType === "flat"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                   required
                 />
                 <span className="ml-2">Flat Amount</span>
@@ -227,6 +228,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="percentage"
                   checked={formData.calculationType === "percentage"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                 />
                 <span className="ml-2">Percentage of Basic</span>
               </label>
@@ -245,6 +247,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="one-time"
                   checked={formData.deductionFrequency === "one-time"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                   required
                 />
                 <span className="ml-2">One-time</span>
@@ -256,6 +259,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="recurring"
                   checked={formData.deductionFrequency === "recurring"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                 />
                 <span className="ml-2">Recurring</span>
               </label>
@@ -274,6 +278,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="fixed"
                   checked={formData.pay_type === "fixed"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                   required
                 />
                 <span className="ml-2">Fixed</span>
@@ -285,6 +290,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
                   value="variable"
                   checked={formData.pay_type === "variable"}
                   onChange={handleChange}
+                  className="accent-yellow-500"
                 />
                 <span className="ml-2">Variable</span>
               </label>
@@ -311,10 +317,11 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
               <input
                 type="checkbox"
                 name="isActive"
-                // value={formData.isActive}
                 checked={formData.isActive}
                 onChange={handleChange}
+                className="accent-yellow-500"
               />
+
               <span className="ml-2">Mark this as Active</span>
             </label>
           </div>
@@ -323,7 +330,7 @@ const AddDeductionPopup = ({ isOpen, onClose, onSuccess, item = null }) => {
               <input
                 type="checkbox"
                 name="shows_in_payslip"
-                // value={formData.show_in_payslip}
+                className="accent-yellow-500"
                 checked={formData.show_in_payslip}
                 onChange={handleChange}
               />
