@@ -14,8 +14,6 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
   const [fetchError, setFetchError] = useState("");
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  // Fetch leave categories on open
   useEffect(() => {
     if (!isOpen) return;
 
@@ -93,7 +91,7 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
     try {
       setSubmitting(true);
       await onSubmit(payload);
-      // Clear form after success
+
       setFormData({
         category_id: "",
         startDate: "",
@@ -102,7 +100,7 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
       });
       onClose();
     } catch (error) {
-      setFormError("Failed to apply leave. Please try again.");
+      setFormError(error.response?.data?.message || "Failed to apply leave.");
       console.error(error);
     } finally {
       setSubmitting(false);

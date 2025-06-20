@@ -319,8 +319,8 @@ export default function DocumentManager() {
       )}
       <TrashDeleteConfirmationPopup
         isOpen={isDeletePopupOpen}
-        onClose={confirmDelete}
-        onCancel={cancelDelete}
+        onConfirm={confirmDelete}
+        onClose={cancelDelete}
         data={[docToDelete]}
       />
     </div>
