@@ -151,7 +151,7 @@ const HolidayPopup = ({ isOpen, onClose, onSubmit, initialData, mode }) => {
 
           <button
             type="submit"
-            className="w-full mt-2 bg-yellow-400 text-gray-900 font-medium py-2 rounded-xl transition cursor-pointer"
+            className="w-full mt-2 bg-[#FFD85F]  text-gray-900 font-medium py-2 rounded-xl transition cursor-pointer"
           >
             {mode === "edit" ? "Save Changes" : "Add Holiday"}
           </button>

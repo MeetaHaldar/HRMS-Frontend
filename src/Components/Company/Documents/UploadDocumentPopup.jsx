@@ -185,7 +185,7 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
               <FiUpload />
             </div>
             <p className="text-gray-400 mb-4">or</p>
-            <label className="bg-[#FFD85F] hover:bg-yellow-400 text-gray-600 py-2 px-4 rounded-full shadow cursor-pointer">
+            <label className="bg-[#FFD85F] hover:bg-[#FFD85F]  text-gray-600 py-2 px-4 rounded-full shadow cursor-pointer">
               Choose file to upload
               <input
                 type="file"

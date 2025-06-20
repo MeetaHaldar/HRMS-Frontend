@@ -123,7 +123,7 @@ const Subscription = () => {
         </h2>
         <button
           onClick={openAddPopup}
-          className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-yellow-400 text-gray-700 font-semibold py-2 px-4 rounded-full shadow"
+          className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-[#FFD85F]  text-gray-700 font-semibold py-2 px-4 rounded-full shadow"
         >
           <FiPlus />
           <span>Add Subscription</span>

@@ -166,7 +166,7 @@ export default function DocumentManager() {
         <h2 className="text-lg text-gray-600 font-semibold">Documents:</h2>
         <button
           onClick={() => setIsUploadPopupOpen(true)}
-          className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-yellow-400 text-gray-700 font-semibold py-2 px-4 rounded-full cursor-pointer shadow"
+          className="flex items-center space-x-2 bg-[#FFD85F] hover:bg-[#FFD85F]  text-gray-700 font-semibold py-2 px-4 rounded-full cursor-pointer shadow"
         >
           <FiPlus />
           <span>Add Document</span>

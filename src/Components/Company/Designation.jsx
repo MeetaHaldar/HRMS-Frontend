@@ -68,7 +68,7 @@ const Designation = () => {
         },
       });
       setShowDeletePopup(false);
-      await fetchDesignations(); 
+      await fetchDesignations();
     } catch (error) {
       console.error("Failed to delete designation:", error);
     }
@@ -81,7 +81,7 @@ const Designation = () => {
           Designations:
         </h2>
         <button
-          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
+          className="bg-[#FFD85F]  hover:bg-yellow-500 text-gray-900 px-3 py-1 md:px-4 md:py-2 shadow-md text-xs md:text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
         >
           + Add Designation

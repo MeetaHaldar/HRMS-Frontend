@@ -358,7 +358,7 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
             </button>
             <button
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-6 rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[#FFD85F]  hover:bg-yellow-500 text-black font-semibold py-2 px-6 rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isEditMode ? "Update" : "Register"}
             </button>

@@ -132,7 +132,7 @@ export default function EditDocumentPopup({
             </div>
             <p className="text-gray-500 mb-4">or</p>
 
-            <label className="bg-[#FFD85F] hover:bg-yellow-400 text-gray-800 font-medium py-2 px-4 rounded-full shadow cursor-pointer inline-block">
+            <label className="bg-[#FFD85F] hover:bg-[#FFD85F]  text-gray-800 font-medium py-2 px-4 rounded-full shadow cursor-pointer inline-block">
               Choose file to upload
               <input
                 ref={fileInputRef}
@@ -152,7 +152,7 @@ export default function EditDocumentPopup({
           <button
             onClick={handleSave}
             disabled={!file}
-            className="w-1/2 py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-1/2 py-2 rounded-full bg-[#FFD85F] hover:bg-[#FFD85F]  text-sm font-semibold text-gray-800 transition disabled:opacity-70 disabled:cursor-not-allowed"
           >
             Update Document
           </button>

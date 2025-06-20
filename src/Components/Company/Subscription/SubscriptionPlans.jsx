@@ -54,7 +54,7 @@ const SubscriptionPlans = () => {
           <button
             className={`px-4 py-1 rounded-full text-sm font-medium cursor-pointer transition-transform transform active:scale-95 ${
               !showAll && planType === "Monthly"
-                ? "bg-yellow-400 text-gray-800"
+                ? "bg-[#FFD85F]  text-gray-800"
                 : "text-gray-400"
             }`}
             onClick={() => {
@@ -67,7 +67,7 @@ const SubscriptionPlans = () => {
           <button
             className={`px-4 py-1 rounded-full text-sm font-medium cursor-pointer transition-transform transform active:scale-95 ${
               !showAll && planType === "Annually"
-                ? "bg-yellow-400 text-gray-800"
+                ? "bg-[#FFD85F]  text-gray-800"
                 : "text-gray-400"
             }`}
             onClick={() => {

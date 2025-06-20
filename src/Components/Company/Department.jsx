@@ -135,7 +135,7 @@ const Department = () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg text-gray-500 font-semibold">Departments:</h2>
         <button
-          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold cursor-pointer"
+          className="bg-[#FFD85F]  hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold cursor-pointer"
           onClick={handleAddClick}
         >
           + Add Department

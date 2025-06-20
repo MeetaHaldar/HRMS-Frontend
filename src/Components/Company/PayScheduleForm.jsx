@@ -56,7 +56,7 @@ const PayScheduleForm = () => {
               <div
                 className={`absolute top-1 left-1 w-3 h-3 rounded-full border-2 ${
                   selectedDays.includes(day.label)
-                    ? "bg-yellow-400 border-black border-3"
+                    ? "bg-[#FFD85F]  border-black border-3"
                     : "border-gray-300"
                 }`}
               ></div>
@@ -138,7 +138,7 @@ const PayScheduleForm = () => {
       <div className="flex gap-4 mt-4">
         <button
           type="submit"
-          className="bg-yellow-400 text-gray-800 px-8 py-2 rounded-full font-semibold cursor-pointer w-1/5"
+          className="bg-[#FFD85F]  text-gray-800 px-8 py-2 rounded-full font-semibold cursor-pointer w-1/5"
         >
           Save
         </button>

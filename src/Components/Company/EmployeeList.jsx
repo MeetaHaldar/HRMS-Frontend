@@ -59,7 +59,7 @@ const EmployeeList = () => {
         <h2 className="text-lg text-gray-500 font-semibold">Employee List</h2>
         <button
           onClick={handleAddEmployee}
-          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold cursor-pointer"
+          className="bg-[#FFD85F]  hover:bg-yellow-500 text-gray-900 px-4 py-2 shadow-md text-sm rounded-full font-semibold cursor-pointer"
         >
           + New Employee
         </button>

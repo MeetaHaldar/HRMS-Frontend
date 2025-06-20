@@ -135,7 +135,7 @@ const AddNewFolder = ({ isOpen, onClose, item = null, onSuccess }) => {
           <button
             onClick={handleSave}
             disabled={loading}
-            className="w-full py-2 rounded-full bg-[#FFD85F] hover:bg-yellow-400 text-sm font-semibold text-gray-800 transition cursor-pointer"
+            className="w-full py-2 rounded-full bg-[#FFD85F] hover:bg-[#FFD85F]  text-sm font-semibold text-gray-800 transition cursor-pointer"
           >
             {loading
               ? item
