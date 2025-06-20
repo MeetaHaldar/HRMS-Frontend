@@ -13,7 +13,6 @@ export default function LeaveRequestsTable() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Update current time every second
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
@@ -27,18 +26,16 @@ export default function LeaveRequestsTable() {
     return () => clearInterval(interval);
   }, []);
 
-  // Format date to yyyy-MM for API query param
   const formatMonthYear = (date) => {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     return `${year}-${month}`;
   };
 
-  // Fetch leave requests from API based on selectedDate
   const fetchLeaveRequests = async (date) => {
     setLoading(true);
     setError(null);
-    const token = localStorage.getItem("token"); // Get token from localStorage
+    const token = localStorage.getItem("token");
 
     try {
       const response = await axios.get(`${dev_url}attendence/history`, {
@@ -47,7 +44,6 @@ export default function LeaveRequestsTable() {
           Authorization: `Bearer ${token}`,
         },
       });
-      // Assuming response.data contains the array of leave requests
       setLeaveRequests(response.data.leave_history);
     } catch (err) {
       setError("Failed to fetch leave requests");
@@ -69,7 +65,6 @@ export default function LeaveRequestsTable() {
     fetchLeaveRequests(date);
   };
 
-  // Custom input component for the date picker
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
     <div
       className="flex items-center gap-2 cursor-pointer border rounded px-2 py-1"
@@ -103,7 +98,8 @@ export default function LeaveRequestsTable() {
             selected={selectedDate}
             onChange={onDateChange}
             customInput={<CustomDateInput />}
-            dateFormat="dd/MMM/yyyy"
+            dateFormat="MMM/yyyy"
+            showMonthYearPicker
           />
         </div>
       </div>

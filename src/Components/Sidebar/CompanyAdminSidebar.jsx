@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoSettingsOutline } from "react-icons/io5";
 import { RiLockPasswordLine } from "react-icons/ri";
+import { FaUmbrellaBeach } from "react-icons/fa6";
+
 import {
   FaFolderPlus,
   FaBookOpen,
@@ -66,7 +68,7 @@ const settingsMenu = [
   {
     label: "Holidays",
     to: "/companyAdmin/HolidayList",
-    icon: <PiSunglasses />,
+    icon: <FaUmbrellaBeach />,
   },
   {
     label: "Salary Components",
