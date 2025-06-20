@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
 import Pagination from "../Pagination";
-import { useNavigate } from "react-router-dom";
 import dev_url from "../../config";
 import RegisterEmployee from "./RegisterEmployee";
 
@@ -12,8 +11,6 @@ const EmployeeList = () => {
   const [loading, setLoading] = useState(true);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-  const navigate = useNavigate();
 
   const fetchEmployees = () => {
     const token = localStorage.getItem("token");
@@ -47,14 +44,13 @@ const EmployeeList = () => {
   }, [currentPage]);
 
   const handleAddEmployee = () => {
-    setSelectedEmployee(null); // Clear any selected employee
-    setIsPopupOpen(true); // Open popup in add mode
+    setSelectedEmployee(null);
+    setIsPopupOpen(true);
   };
 
   const handleEditEmployee = (employee) => {
-    console.log("Editing employee:", employee);
-    setSelectedEmployee(employee); // Set employee to edit
-    setIsPopupOpen(true); // Open popup in edit mode
+    setSelectedEmployee(employee);
+    setIsPopupOpen(true);
   };
 
   return (

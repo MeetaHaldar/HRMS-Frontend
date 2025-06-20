@@ -49,7 +49,7 @@ export default function UploadDocumentPopup({ isOpen, onClose, onUpload }) {
             },
           }),
         ]);
-        console.log(employeeRes.data);
+
         setOrganizationFolders(orgRes.data.data);
         setEmployeeFolders(empRes.data.data);
         setEmployeeList(employeeRes.data.employees);
