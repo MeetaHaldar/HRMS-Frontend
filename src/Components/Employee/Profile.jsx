@@ -60,7 +60,7 @@ const Profile = () => {
       });
       setSuccessMessage("Profile photo updated successfully!");
       setTimeout(() => setSuccessMessage(""), 3000);
-      // optionally reload profile image only
+     
       setEmployee((prev) => ({
         ...prev,
         photo: `${file.name}?updated=${Date.now()}`,
@@ -81,7 +81,6 @@ const Profile = () => {
         </div>
       )}
 
-      {/* Profile Image + Welcome */}
       <div className="flex flex-col items-start">
         <img
           src={`${dev_url}public/upload/${employee.photo}`}

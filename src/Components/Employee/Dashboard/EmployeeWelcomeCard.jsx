@@ -77,11 +77,11 @@ const EmployeeWelcomeCard = () => {
           </div>
           <div className="w-full md:w-1/3 mb-1 md:mb-0">
             <span className="font-normal">Designation: </span>
-            <span className="font-semibold">Sr. Associate Mgr.</span>
+            <span className="font-semibold">{employee.position_name}</span>
           </div>
           <div className="w-full md:w-1/3">
             <span className="font-normal">Department: </span>
-            <span className="font-semibold">Operations</span>
+            <span className="font-semibold">{employee.department_name}</span>
           </div>
         </div>
       </div>
