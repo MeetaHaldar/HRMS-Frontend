@@ -84,7 +84,7 @@ const FolderFileTable = () => {
       <div className="relative h-[300px] flex flex-col justify-center items-center">
         <button
           onClick={() => window.history.back()}
-          className="absolute top-4 left-4 text-lg text-gray-600 hover:text-black px-3 py-1"
+          className="absolute top-4 left-4 text-lg text-gray-600 hover:text-black px-3 py-1 cursor-pointer"
         >
           ← Back
         </button>
@@ -95,21 +95,18 @@ const FolderFileTable = () => {
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col">
       <div className="mb-6">
-        <div>
+        <h2 className="text-lg text-gray-600 font-semibold underline underline-offset-4 ml-2 mt-2">
           <button
             onClick={() => window.history.back()}
-            className="text-sm text-gray-600 font-semibold underline underline-offset-4 ml-2"
+            className="text-2xl text-gray-600 font-semibold  ml-2 cursor-pointer hover:text-black px-3 py-1"
           >
-            ← Back
-          </button>
-        </div>
-
-        <h2 className="text-lg text-gray-600 font-semibold underline underline-offset-4 ml-2 mt-2">
+            ←
+          </button>{" "}
           Folders:
         </h2>
       </div>
 
-      <table className="w-full border border-gray-300 rounded-xl overflow-hidden p-5">
+      <table className="min-w-full border-separate border-spacing-0 border border-gray-400 rounded-xl overflow-hidden">
         <thead className="bg-gray-200 text-gray-700 text-sm font-semibold">
           <tr>
             <th className="px-4 py-3 text-left">Document Name</th>

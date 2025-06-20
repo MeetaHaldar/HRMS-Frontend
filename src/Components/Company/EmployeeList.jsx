@@ -115,7 +115,7 @@ const EmployeeList = () => {
 
                   <td className="p-3 flex space-x-2">
                     <button
-                      className="text-gray-500 hover:text-gray-900"
+                      className="text-gray-500 hover:text-gray-900 cursor-pointer"
                       onClick={() => handleEditEmployee(employee)}
                     >
                       <FiEdit />

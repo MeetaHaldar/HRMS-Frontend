@@ -161,13 +161,13 @@ export default function Trash() {
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col">
       <div className=" mb-6">
-        <button
-          onClick={() => window.history.back()}
-          className="text-lg text-gray-600 hover:text-black px-3 py-1"
-        >
-          ← Back
-        </button>
         <div className="flex items-center mt-8">
+          <button
+            onClick={() => window.history.back()}
+            className="text-2xl text-gray-600 hover:text-black px-3 py-1 cursor-pointer"
+          >
+            ←
+          </button>
           <div className="font-2xl">
             <FiTrash2 />
           </div>
@@ -183,14 +183,14 @@ export default function Trash() {
             <button
               title="Restore"
               onClick={handleBulkRestore}
-              className="text-gray-700 hover:text-black text-xl"
+              className="text-gray-700 hover:text-black text-xl cursor-pointer"
             >
               <MdSettingsBackupRestore />
             </button>
             <button
               title="Delete"
               onClick={handleBulkDelete}
-              className="text-gray-700 hover:text-black text-xl"
+              className="text-gray-700 hover:text-black text-xl cursor-pointer"
             >
               <FiTrash2 />
             </button>
@@ -200,7 +200,7 @@ export default function Trash() {
                 setIsToolbarOpen(false);
                 setSelectedIds([]);
               }}
-              className="text-gray-500 text-xs underline"
+              className="text-gray-500 text-xs underline cursor-pointer hover:text-gray-700"
             >
               Cancel
             </button>
@@ -209,7 +209,7 @@ export default function Trash() {
 
         <div className="rounded-lg overflow-y-auto">
           {documents.length > 0 ? (
-            <table className="w-full border border-gray-400 rounded-xl mt-6">
+            <table className="min-w-full border-separate border-spacing-0 border border-gray-400 rounded-xl overflow-hidden">
               <thead className="bg-gray-200">
                 <tr className="text-gray-600 text-sm">
                   <th className="px-4 py-3 text-left">
@@ -217,7 +217,7 @@ export default function Trash() {
                       type="checkbox"
                       checked={allSelected}
                       onChange={toggleSelectAll}
-                      className="form-checkbox h-5 w-5 text-gray-600"
+                      className="form-checkbox h-5 w-5 text-gray-600 cursor-pointer accent-yellow-500"
                     />
                   </th>
                   <th className="px-4 py-3 text-left">S.No.</th>
@@ -236,7 +236,7 @@ export default function Trash() {
                         type="checkbox"
                         checked={selectedIds.includes(doc.id)}
                         onChange={() => toggleSelect(doc.id)}
-                        className="form-checkbox h-5 w-5 accent-yellow-500"
+                        className="form-checkbox h-5 w-5 accent-yellow-500 cursor-pointer"
                       />
                     </td>
                     <td className="px-4 py-2">{index + 1}</td>
@@ -267,14 +267,14 @@ export default function Trash() {
                         <button
                           title="Restore"
                           onClick={() => handleRestoreSingle(doc)}
-                          className="text-gray-700 hover:text-black"
+                          className="text-gray-700 hover:text-black cursor-pointer text-xl"
                         >
                           <MdSettingsBackupRestore />
                         </button>
                         <button
                           title="Delete"
                           onClick={() => handleDeleteSingle(doc)}
-                          className="text-gray-700 hover:text-black"
+                          className="text-gray-700 hover:text-black cursor-pointer text-xl"
                         >
                           <FiTrash2 />
                         </button>

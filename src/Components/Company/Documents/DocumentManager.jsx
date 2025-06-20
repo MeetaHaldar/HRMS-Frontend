@@ -260,13 +260,13 @@ export default function DocumentManager() {
                   <td className="px-4 py-2 flex space-x-2">
                     <button
                       onClick={() => handleEdit(doc.id)}
-                      className="cursor-pointer text-gray-600 hover:text-gray-900"
+                      className="cursor-pointer text-gray-600 hover:text-gray-900 cursor-pointer"
                     >
                       <FiEdit />
                     </button>
                     <button
                       onClick={() => handleDeleteClick(doc)}
-                      className="cursor-pointer text-gray-600 hover:text-gray-900"
+                      className="cursor-pointer text-gray-600 hover:text-gray-900 cursor-pointer"
                     >
                       <FiTrash2 />
                     </button>

@@ -275,14 +275,17 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
                 { label: "Male", value: "m" },
                 { label: "Female", value: "f" },
               ].map(({ label, value }) => (
-                <label key={value} className="flex items-center gap-1">
+                <label
+                  key={value}
+                  className="flex items-center gap-1 cursor-pointer"
+                >
                   <input
                     type="radio"
                     name="gender"
                     value={value}
                     checked={formData.gender === value}
                     onChange={handleChange}
-                    className="accent-yellow-500"
+                    className="accent-yellow-500 cursor-pointer"
                   />
                   {label}
                 </label>
@@ -301,14 +304,17 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
                 { label: "Active", value: 1 },
                 { label: "Inactive", value: 0 },
               ].map(({ label, value }) => (
-                <label key={value} className="flex items-center gap-1">
+                <label
+                  key={value}
+                  className="flex items-center gap-1 cursor-pointer"
+                >
                   <input
                     type="radio"
                     name="is_active"
                     value={value}
                     checked={formData.is_active === value}
                     onChange={handleChange}
-                    className="accent-yellow-500"
+                    className="accent-yellow-500 cursor-pointer"
                   />
                   {label}
                 </label>
@@ -321,14 +327,17 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
             <label className="text-gray-700 font-medium">Role</label>
             <div className="flex flex-wrap gap-4 mt-1">
               {["employee", "manager", "systemadmin"].map((role) => (
-                <label key={role} className="flex items-center gap-1">
+                <label
+                  key={role}
+                  className="flex items-center gap-1 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     name="role"
                     value={role}
                     checked={formData.role.includes(role)}
                     onChange={handleChange}
-                    className="accent-yellow-500"
+                    className="accent-yellow-500 cursor-pointer"
                   />
                   {role.charAt(0).toUpperCase() + role.slice(1)}
                 </label>
@@ -343,13 +352,13 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-6 rounded-full"
+              className="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-6 rounded-full cursor-pointer "
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-6 rounded-full"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-6 rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isEditMode ? "Update" : "Register"}
             </button>
