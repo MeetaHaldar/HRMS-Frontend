@@ -75,8 +75,9 @@ export default function DocumentManager() {
   };
 
   const handleDeleteClick = (doc) => {
-    setDocToDelete(doc);
     setIsDeletePopupOpen(true);
+
+    setDocToDelete(doc);
   };
 
   const confirmDelete = async () => {
@@ -257,10 +258,16 @@ export default function DocumentManager() {
                     {doc.created_at?.slice(0, 10) || "—"}
                   </td>
                   <td className="px-4 py-2 flex space-x-2">
-                    <button onClick={() => handleEdit(doc.id)}>
+                    <button
+                      onClick={() => handleEdit(doc.id)}
+                      className="cursor-pointer text-gray-600 hover:text-gray-900"
+                    >
                       <FiEdit />
                     </button>
-                    <button onClick={() => handleDeleteClick(doc)}>
+                    <button
+                      onClick={() => handleDeleteClick(doc)}
+                      className="cursor-pointer text-gray-600 hover:text-gray-900"
+                    >
                       <FiTrash2 />
                     </button>
                   </td>
@@ -312,7 +319,7 @@ export default function DocumentManager() {
       )}
       <TrashDeleteConfirmationPopup
         isOpen={isDeletePopupOpen}
-        onConfirm={confirmDelete}
+        onClose={confirmDelete}
         onCancel={cancelDelete}
         data={[docToDelete]}
       />

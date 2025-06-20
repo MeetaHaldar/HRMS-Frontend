@@ -114,20 +114,22 @@ export default function Trash() {
   };
 
   const toggleSelect = (id) => {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((docId) => docId !== id) : [...prev, id]
-    );
+    setSelectedIds((prev) => {
+      const updated = prev.includes(id)
+        ? prev.filter((docId) => docId !== id)
+        : [...prev, id];
+
+      setIsToolbarOpen(updated.length > 0);
+      return updated;
+    });
   };
 
   const allSelected = selectedIds.length === documents.length;
 
   const toggleSelectAll = () => {
-    if (allSelected) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(documents.map((doc) => doc.id));
-    }
-    setIsToolbarOpen(true);
+    const newSelected = allSelected ? [] : documents.map((doc) => doc.id);
+    setSelectedIds(newSelected);
+    setIsToolbarOpen(newSelected.length > 0);
   };
 
   const handleRestoreSingle = (doc) => {
@@ -136,7 +138,9 @@ export default function Trash() {
   };
 
   const handleBulkRestore = () => {
-    const selectedDocs = documents.filter((doc) => selectedIds.includes(doc.id));
+    const selectedDocs = documents.filter((doc) =>
+      selectedIds.includes(doc.id)
+    );
     setDocumentsToRestore(selectedDocs);
     setIsRestorePopupOpen(true);
   };
@@ -147,20 +151,30 @@ export default function Trash() {
   };
 
   const handleBulkDelete = () => {
-    const selectedDocs = documents.filter((doc) => selectedIds.includes(doc.id));
+    const selectedDocs = documents.filter((doc) =>
+      selectedIds.includes(doc.id)
+    );
     setDocumentsToDelete(selectedDocs);
     setIsDeletePopupOpen(true);
   };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col">
-      <div className="flex items-center mb-6">
-        <div className="font-2xl">
-          <FiTrash2 />
+      <div className=" mb-6">
+        <button
+          onClick={() => window.history.back()}
+          className="text-lg text-gray-600 hover:text-black px-3 py-1"
+        >
+          ← Back
+        </button>
+        <div className="flex items-center mt-8">
+          <div className="font-2xl">
+            <FiTrash2 />
+          </div>
+          <h2 className="text-lg text-gray-600 font-semibold underline ml-2">
+            Trash
+          </h2>
         </div>
-        <h2 className="text-lg text-gray-600 font-semibold underline ml-2">
-          Trash
-        </h2>
       </div>
 
       <div className="relative">
@@ -198,7 +212,6 @@ export default function Trash() {
             <table className="w-full border border-gray-400 rounded-xl mt-6">
               <thead className="bg-gray-200">
                 <tr className="text-gray-600 text-sm">
-                  <th className="px-4 py-3 text-left">S.No.</th>
                   <th className="px-4 py-3 text-left">
                     <input
                       type="checkbox"
@@ -207,6 +220,7 @@ export default function Trash() {
                       className="form-checkbox h-5 w-5 text-gray-600"
                     />
                   </th>
+                  <th className="px-4 py-3 text-left">S.No.</th>
                   <th className="px-4 py-3 text-left">Document Name</th>
                   <th className="px-4 py-3 text-left">Type</th>
                   <th className="px-4 py-3 text-left">Uploaded By</th>
@@ -217,25 +231,29 @@ export default function Trash() {
               <tbody className="text-sm text-gray-700">
                 {documents.map((doc, index) => (
                   <tr key={doc.id} className="hover:bg-gray-100 transition">
-                    <td className="px-4 py-2">{index + 1}</td>
                     <td className="px-4 py-2">
                       <input
                         type="checkbox"
                         checked={selectedIds.includes(doc.id)}
                         onChange={() => toggleSelect(doc.id)}
-                        className="form-checkbox h-5 w-5"
+                        className="form-checkbox h-5 w-5 accent-yellow-500"
                       />
                     </td>
-                   <td
-  className="px-4 py-2 underline text-gray-800 cursor-pointer"
-  onClick={() => {
-    if (doc.type === "File") {
-      window.open(`https://atd.infosware-test.in/public/upload/${doc.filename}`, "_blank");
-    }
-  }}
->
-  {doc.type === "Folder" ? doc.name : doc.filename}
-</td>
+                    <td className="px-4 py-2">{index + 1}</td>
+
+                    <td
+                      className="px-4 py-2 underline text-gray-800 cursor-pointer"
+                      onClick={() => {
+                        if (doc.type === "File") {
+                          window.open(
+                            `${dev_url}public/upload/${doc.filename}`,
+                            "_blank"
+                          );
+                        }
+                      }}
+                    >
+                      {doc.type === "Folder" ? doc.name : doc.filename}
+                    </td>
 
                     <td className="px-4 py-2">{doc.type}</td>
                     <td className="px-4 py-2">{doc.uploadedBy}</td>

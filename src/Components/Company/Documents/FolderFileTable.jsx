@@ -3,10 +3,16 @@ import axios from "axios";
 import dev_url from "../../../config";
 import { useLocation } from "react-router-dom";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import EditDocumentPopup from "./EditDocumentPopup";
+import TrashDeleteConfirmationPopup from "./TrashDeleteConfirmationPopup";
 
 const FolderFileTable = () => {
   const location = useLocation();
   const [files, setFiles] = useState([]);
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+  const [docToDelete, setDocToDelete] = useState(null);
 
   const { type, field, value, foldername } = location.state || {};
 
@@ -35,13 +41,20 @@ const FolderFileTable = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteClick = (file) => {
+    setDocToDelete(file);
+    setIsDeletePopupOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!docToDelete) return;
+
     try {
       const token = localStorage.getItem("token");
       await axios.put(
         `${dev_url}salary/moveToTrash`,
         {
-          id: id,
+          id: docToDelete.id,
           type: "files",
         },
         {
@@ -52,10 +65,18 @@ const FolderFileTable = () => {
       );
 
       // Remove deleted file from UI
-      setFiles((prev) => prev.filter((file) => file.id !== id));
+      setFiles((prev) => prev.filter((file) => file.id !== docToDelete.id));
     } catch (error) {
       console.error("Failed to delete file:", error);
+    } finally {
+      setIsDeletePopupOpen(false);
+      setDocToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setDocToDelete(null);
+    setIsDeletePopupOpen(false);
   };
 
   if (files.length === 0)
@@ -118,12 +139,18 @@ const FolderFileTable = () => {
                 {file.uploaded_at?.slice(0, 10) || "—"}
               </td>
               <td className="px-4 py-3 flex space-x-3">
-                <button className="text-gray-600 hover:text-blue-600">
+                <button
+                  className="text-gray-600 hover:text-blue-600"
+                  onClick={() => {
+                    setSelectedDocument(file);
+                    setIsEditPopupOpen(true);
+                  }}
+                >
                   <FiEdit size={16} />
                 </button>
                 <button
                   className="text-gray-600 hover:text-red-600"
-                  onClick={() => handleDelete(file.id)}
+                  onClick={() => handleDeleteClick(file)}
                 >
                   <FiTrash2 size={16} />
                 </button>
@@ -132,6 +159,23 @@ const FolderFileTable = () => {
           ))}
         </tbody>
       </table>
+
+      <EditDocumentPopup
+        isOpen={isEditPopupOpen}
+        onClose={() => setIsEditPopupOpen(false)}
+        document={selectedDocument}
+        onSave={() => {
+          fetchFiles(type, field, value);
+          setIsEditPopupOpen(false);
+        }}
+      />
+
+      <TrashDeleteConfirmationPopup
+        isOpen={isDeletePopupOpen}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        data={[docToDelete]}
+      />
     </div>
   );
 };
