@@ -241,17 +241,7 @@ export default function Trash() {
                     </td>
                     <td className="px-4 py-2">{index + 1}</td>
 
-                    <td
-                      className="px-4 py-2 underline text-gray-800 cursor-pointer"
-                      onClick={() => {
-                        if (doc.type === "File") {
-                          window.open(
-                            `${dev_url}public/upload/${doc.filename}`,
-                            "_blank"
-                          );
-                        }
-                      }}
-                    >
+                    <td className="px-4 py-2 underline text-gray-800 cursor-pointer">
                       {doc.type === "Folder" ? doc.name : doc.filename}
                     </td>
 
