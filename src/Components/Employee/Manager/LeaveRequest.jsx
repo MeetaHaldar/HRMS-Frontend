@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import dev_url from "../../../config";
 
 export default function LeaveRequest() {
   const [requests, setRequests] = useState([]);
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchLeaveData = async () => {
       try {
-        const response = await axios.get(
-          "https://atd.infosware-test.in/attendence/getleavereq",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await axios.get(`${dev_url}attendence/getleavereq`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         const data = response.data.leaveRequests || [];
         const mapped = data.map((r) => ({
@@ -24,7 +21,8 @@ export default function LeaveRequest() {
           endDate: r.end_time?.split("T")[0],
           reason: r.apply_reason || "—",
           requestedDate: r.created_at?.split("T")[0],
-          status: r.revoke_type, // "P", "A", or "R"
+          status: r.revoke_type,
+          selected: false,
         }));
         setRequests(mapped);
       } catch (error) {
@@ -38,7 +36,7 @@ export default function LeaveRequest() {
   const updateLeaveStatus = async (leave_id, approval_status) => {
     try {
       await axios.put(
-        "https://atd.infosware-test.in/attendence/changeLeaveStatus",
+        `${dev_url}attendence/changeLeaveStatus`,
         { leave_id, approval_status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -53,6 +51,12 @@ export default function LeaveRequest() {
       r.status === "P" ? { ...r, selected: checked } : r
     );
     setRequests(updated);
+  };
+
+  const handleSelect = (id) => {
+    setRequests((prev) =>
+      prev.map((r) => (r.id === id ? { ...r, selected: !r.selected } : r))
+    );
   };
 
   const handleDecision = async (id, newStatus) => {
@@ -78,10 +82,6 @@ export default function LeaveRequest() {
           : r
       )
     );
-  };
-
-  const handleMonthChange = (e) => {
-    setSelectedMonth(e.target.value);
   };
 
   const anySelected = requests.some((r) => r.selected);
@@ -123,7 +123,7 @@ export default function LeaveRequest() {
         </button>
       </div>
 
-      <table className="min-w-full border border-gray-300">
+      <table className="min-w-full border-separate border-spacing-0 border border-gray-400 rounded-xl overflow-hidden">
         <thead className="bg-gray-200">
           <tr className="text-left">
             <th className="p-2">
@@ -160,12 +160,15 @@ export default function LeaveRequest() {
               <td className="p-2 align-middle">{r.reason}</td>
               <td
                 className={`p-2 align-middle font-semibold ${
-                  r.status === "A" ? "text-green-600" : "text-red-600"
+                  r.status === "A"
+                    ? "text-green-600"
+                    : r.status === "R"
+                    ? "text-red-600"
+                    : "text-yellow-600"
                 }`}
               >
                 {statusTextMap[r.status]}
               </td>
-
               <td className="p-2 align-middle">
                 {r.status === "P" ? (
                   <select
