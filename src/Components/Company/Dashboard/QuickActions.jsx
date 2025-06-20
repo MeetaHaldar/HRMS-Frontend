@@ -9,8 +9,8 @@ const QuickActions = () => {
   const navigate = useNavigate();
 
   const stats = [
-    { title: "+ New Employee", route: "/companyAdmin/RegisterEmployee" },
-    { title: "+ Payroll Entry", route: "/companyAdmin/viewSalaryTemplate" },
+    { title: "+ New Employee", route: "/companyAdmin/employeeList" },
+    { title: "+ Payroll Entry", route: "/companyAdmin/salaryTemplate" },
     { title: "Manage Holidays", route: "/companyAdmin/HolidayList" },
     { title: "Settings", route: "/companyAdmin/companyProfile" },
   ];
