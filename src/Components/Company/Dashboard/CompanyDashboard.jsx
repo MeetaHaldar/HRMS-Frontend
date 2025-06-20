@@ -8,8 +8,8 @@ export default function CompanyDashboard() {
     <div>
       <EmployeeWelcomeCard />
       <QuickOverview />
+      <AttendanceChart />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-gray-50">
-        <AttendanceChart />
         <PayrollChart />
       </div>
       <QuickActions />

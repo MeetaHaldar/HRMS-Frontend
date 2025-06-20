@@ -1,45 +1,119 @@
 import {
   BarChart,
   Bar,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import dev_url from "../../../config";
 
-const data = [
-  { day: "Mon", present: 80, absent: 20, late: 60 },
-  { day: "Tue", present: 75, absent: 25, late: 65 },
-  { day: "Wed", present: 85, absent: 15, late: 70 },
-  { day: "Thu", present: 90, absent: 10, late: 80 },
-  { day: "Fri", present: 85, absent: 15, late: 85 },
-  { day: "Sat", weekOff: 100 }, // gray bar
-  { day: "Sun", weekOff: 100 }, // gray bar
-];
+const AttendanceChart = () => {
+  const [chartData, setChartData] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`;
+  });
 
-export default function AttendanceChart() {
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${dev_url}attendence/getSummaryData?month_year=${selectedMonth}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const rawData = response.data.data;
+
+        const maxTotal = Math.max(
+          ...rawData.map((entry) => entry.present + entry.absent)
+        );
+
+        const transformed = rawData.map((entry) => {
+          const present = entry.is_holiday ? 0 : entry.present;
+          const absent = entry.is_holiday ? 0 : entry.absent;
+
+          return {
+            day: new Date(entry.date).getDate().toString().padStart(2, "0"),
+            present,
+            absent,
+            holiday: entry.is_holiday ? maxTotal || 1 : 0,
+            isHoliday: entry.is_holiday,
+          };
+        });
+
+        setChartData(transformed);
+      } catch (err) {
+        console.error("Failed to fetch summary data:", err);
+      }
+    };
+
+    fetchData();
+  }, [selectedMonth]);
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className="bg-white border rounded shadow px-3 py-2 text-sm">
+          <p className="font-semibold text-gray-700">Date: {label}</p>
+          {data.isHoliday ? (
+            <p className="text-blue-600 font-medium">Holiday</p>
+          ) : (
+            <>
+              <p className="text-green-600">Present: {data.present}</p>
+              <p className="text-red-500">Absent: {data.absent}</p>
+            </>
+          )}
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
-    <div className="w-full h-72 bg-white rounded shadow p-4">
-      <ResponsiveContainer width="80%" height="100%">
-        <BarChart data={data}>
-          {/* <CartesianGrid strokeDasharray="1 1" /> */}
-          <XAxis dataKey="day" />
-          <YAxis />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "#fff",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-            }}
-            labelStyle={{ color: "#333", fontWeight: "bold" }}
-            itemStyle={{ color: "#555" }}
-          />
+    <div className="w-full bg-white rounded shadow p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold text-gray-700">
+          Attendance Summary
+        </h2>
+        <input
+          type="month"
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+          className="border rounded px-2 py-1 text-sm"
+        />
+      </div>
 
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={chartData}>
+          <XAxis
+            dataKey="day"
+            label={{ value: "Date", position: "insideBottom", offset: -5 }}
+          />
+          <YAxis
+            label={{ value: "Total Count", angle: -90, position: "insideLeft" }}
+            tickCount={10}
+            domain={[0, "auto"]}
+            interval={0}
+            tickFormatter={(tick) => (tick % 5 === 0 ? tick : "")}
+          />
+          <Tooltip content={<CustomTooltip />} />
           <Legend
             wrapperStyle={{
-              color: "#4B5563", 
+              color: "#4B5563",
               fontSize: "14px",
               fontWeight: "500",
             }}
@@ -47,44 +121,22 @@ export default function AttendanceChart() {
           <Bar
             dataKey="present"
             stackId="a"
-            fill="#95f3ce"
+            fill="#A1DE93"
             name="Present"
             barSize={10}
-            isAnimationActive={false}
-            activeBarStyle={{ fill: "#95f3ce" }}
-            onMouseEnter={() => {}}
-            onMouseLeave={() => {}}
           />
+          <Bar dataKey="absent" stackId="a" fill="#F47C7C" name="Absent" />
           <Bar
-            dataKey="absent"
-            stackId="a"
-            fill="#fc6c6c"
-            name="Absent"
-            onMouseEnter={() => {}}
-            onMouseLeave={() => {}}
-          />
-          <Line
-            type="monotone"
-            dataKey="late"
-            stroke="#555"
-            dot={{ r: 4 }}
-            name="Late Check-ins"
-            isAnimationActive={false}
-            activeBar={false}
-          />
-          <Bar
-            dataKey="weekOff"
-            stackId="a"
-            fill="#d3d3d3"
-            barSize={16}
-            name="Week Off"
-            activeBar={false}
-            isAnimationActive={false}
-            onMouseEnter={() => {}}
-            onMouseLeave={() => {}}
+            dataKey="holiday"
+            name="Holiday"
+            fill="#70A1D7"
+            barSize={10}
+            stackId="b"
           />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
-}
+};
+
+export default AttendanceChart;
