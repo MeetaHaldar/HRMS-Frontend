@@ -65,7 +65,7 @@ export default function SalaryTemplate() {
           Salary Templates:
         </h2>
         <Link to="/companyAdmin/AddNewSalaryTemplate">
-          <button className="bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-4 py-2 text-sm rounded-full font-semibold">
+          <button className="bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 px-4 py-2 text-sm rounded-full font-semibold cursor-pointer">
             + Add Template
           </button>
         </Link>
@@ -95,13 +95,13 @@ export default function SalaryTemplate() {
                 <td className="px-4 py-2 space-x-2">
                   <button
                     onClick={() => handleEdit(item)}
-                    className="text-gray-500 hover:text-gray-950"
+                    className="text-gray-500 hover:text-gray-950 cursor-pointer"
                   >
                     <FiEdit />
                   </button>
                   <button
                     onClick={() => handleDeleteClick(item)}
-                    className="text-gray-500 hover:text-gray-950"
+                    className="text-gray-500 hover:text-gray-950 cursor-pointer"
                   >
                     <RiDeleteBin6Line />
                   </button>

@@ -267,7 +267,7 @@ const ViewSalaryTemplate = () => {
           disabled={!isChanged}
           className={`flex items-center justify-center px-4 py-2 text-sm rounded-full font-semibold ${
             isChanged
-              ? "bg-[#FFD85F] hover:bg-yellow-500 text-gray-900"
+              ? "bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 cursor-pointer"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
@@ -275,7 +275,7 @@ const ViewSalaryTemplate = () => {
         </button>
         <button
           onClick={handleCancel}
-          className="ml-4 border border-gray-300 text-gray-900 px-4 py-2 text-sm rounded-full font-semibold hover:bg-gray-300"
+          className="ml-4 border border-gray-300 text-gray-900 px-4 py-2 text-sm rounded-full font-semibold hover:bg-gray-300 cursor-pointer"
         >
           Cancel
         </button>
