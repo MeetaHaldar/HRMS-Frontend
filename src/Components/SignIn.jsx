@@ -1,8 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 import dev_url from "../config";
+import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,6 +15,7 @@ const SignIn = () => {
 
   const [err, setErr] = useState("");
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false); // 👁 Toggle state
 
   const validate = () => {
     let tempErrors = {};
@@ -39,11 +44,9 @@ const SignIn = () => {
 
       const { token, user } = response.data;
 
-      // Save auth
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Role based redirection
       const roles = user.role;
 
       if (roles.includes("superAdmin")) {
@@ -121,22 +124,38 @@ const SignIn = () => {
             )}
           </div>
 
-          {/* Password */}
-          <div>
+          {/* Password with toggle */}
+          <div className="relative">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               name="password"
               placeholder="Password"
-              className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
+              className="w-full border-b border-gray-300 p-2 pr-10 placeholder-gray-400 focus:outline-none focus:border-black"
               value={formData.password}
               onChange={handleChange}
             />
+            <span
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </span>
             {errors.password && (
               <p className="text-red-500 text-sm">{errors.password}</p>
             )}
           </div>
 
-          {/* Terms */}
+          {/* Forgot password link */}
+          <div className="text-right -mt-3">
+            <button
+              type="button"
+              onClick={() => navigate("/forgotPassword")}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
           <div className="flex items-start gap-2 mt-2">
             <input type="checkbox" required className="mt-1" />
             <p className="text-sm text-gray-600">
@@ -146,7 +165,6 @@ const SignIn = () => {
             </p>
           </div>
 
-          {/* Button */}
           <button
             type="submit"
             className="w-72 mt-4 bg-gray-500 text-white text-lg font-semibold py-2 px-6 rounded-full hover:bg-yellow-500 transition mx-auto"

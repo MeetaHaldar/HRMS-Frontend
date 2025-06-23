@@ -4,6 +4,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/SignIn" element={<SignIn />} />
+          <Route path="/forgotPassword" element={<ForgotPassword />} />
+
           <Route
             path="/"
             element={
@@ -176,3 +178,4 @@ import PayScheduleForm from "./Components/Company/PayScheduleForm";
 import WfhEmployeesTable from "./Components/Company/AttendanceOverview/WfhEmployeesTable";
 import UpdatePassword from "./Components/Employee/UpdatePassword";
 import FolderFileTable from "./Components/Company/Documents/FolderFileTable";
+import ForgotPassword from "./Components/Password/ForgotPassword";
