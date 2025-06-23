@@ -112,7 +112,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+            <Route
+              path="WFHRequest"
+              element={
+                <ProtectedRoute allowedRoles={["manager"]}>
+                  <WFHRequest />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="RegularizarionRequest"
+              element={
+                <ProtectedRoute allowedRoles={["manager"]}>
+                  <RegularizationRequest />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="regularization" element={<Regularization />} />
             <Route path="holidays" element={<Holidays />} />
             <Route path="leaves" element={<Leaves />} />
             <Route path="leave-history" element={<LeaveHistory />} />
@@ -179,3 +195,6 @@ import WfhEmployeesTable from "./Components/Company/AttendanceOverview/WfhEmploy
 import UpdatePassword from "./Components/Employee/UpdatePassword";
 import FolderFileTable from "./Components/Company/Documents/FolderFileTable";
 import ForgotPassword from "./Components/Password/ForgotPassword";
+import Regularization from "./Components/Employee/Regularization";
+import WFHRequest from "./Components/Employee/Manager/WFHRequest";
+import RegularizationRequest from "./Components/Employee/Manager/RegularizationRequest";
