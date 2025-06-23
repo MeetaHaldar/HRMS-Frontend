@@ -1,19 +1,38 @@
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import dev_url from "../../config";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // handle email submission logic
-    console.log("Reset link sent to:", email);
+    try {
+      const response = await axios.post(`${dev_url}api/auth/sendCode`, {
+        email: email,
+      });
+      setMessage("Code is sent");
+      setTimeout(() => {
+        navigate("/ResetPassword");
+      }, 1500);
+    } catch (error) {
+      setMessage("Failed to send code. Please try again.");
+      console.error("Error:", error);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
         <div className="flex justify-center">
-          <img src="" alt="Illustration" className="w-full max-w-md" />
+          <img
+            src={`https://chatgpt.com/`}
+            alt="Illustration"
+            className="w-full max-w-md"
+          />
         </div>
 
         <div className="flex flex-col justify-center items-center">
@@ -40,6 +59,10 @@ export default function ForgotPassword() {
             >
               Send Code
             </button>
+
+            {message && (
+              <p className="text-sm text-center text-green-600">{message}</p>
+            )}
           </form>
         </div>
       </div>

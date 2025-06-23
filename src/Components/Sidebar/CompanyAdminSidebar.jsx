@@ -11,7 +11,7 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import { FaArrowTrendUp, FaPeopleGroup } from "react-icons/fa6";
-import { PiBuildingOfficeLight, PiSunglasses } from "react-icons/pi";
+import { PiBuildingOfficeLight } from "react-icons/pi";
 import { TbTax } from "react-icons/tb";
 import { FcLeave } from "react-icons/fc";
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
@@ -42,8 +42,16 @@ const menuItems = [
     icon: <FaBookOpen />,
     isExpandable: true,
     subItems: [
-      { label: "All Subscriptions", to: "/companyAdmin/subscriptionPlans" },
-      { label: "My Subscriptions", to: "/companyAdmin/my-subscriptions" },
+      {
+        label: "All Subs.",
+        to: "/companyAdmin/subscriptionPlans",
+        icon: <FaBookOpen />,
+      },
+      {
+        label: "My Subs.",
+        to: "/companyAdmin/my-subscriptions",
+        icon: <FaBookOpen />,
+      },
     ],
   },
   { label: "Settings", to: "", icon: <IoSettingsOutline /> },
@@ -134,7 +142,10 @@ const CompanyAdminSidebar = ({ children }) => {
               return (
                 <div key={index} className="w-full">
                   <button
-                    onClick={() => setIsSubscriptionOpen(!isSubscriptionOpen)}
+                    onClick={() => {
+                      setIsSubscriptionOpen(!isSubscriptionOpen);
+                      setIsSettingsMenuActive(false);
+                    }}
                     className={`flex items-center justify-between w-full p-2 rounded-md transition ${
                       isSubscriptionOpen
                         ? "bg-[#FFD85F] text-black"
@@ -168,13 +179,18 @@ const CompanyAdminSidebar = ({ children }) => {
                         <Link
                           key={subIdx}
                           to={subItem.to}
-                          className={`block py-1 text-sm pl-4 ${
+                          onClick={() => {
+                            setIsSettingsMenuActive(false);
+                            setIsSubscriptionOpen(false);
+                          }}
+                          className={`flex items-center space-x-2 py-1 text-sm pl-4 ${
                             isSubActive
                               ? "text-black font-semibold"
                               : "text-gray-600 hover:text-gray-800"
                           }`}
                         >
-                          {subItem.label}
+                          <span className="text-base">{subItem.icon}</span>
+                          <span>{subItem.label}</span>
                         </Link>
                       );
                     })}
@@ -187,15 +203,16 @@ const CompanyAdminSidebar = ({ children }) => {
               <Link
                 key={index}
                 to={item.to}
-                onClick={
-                  item.label === "Settings"
-                    ? (e) => {
-                        e.preventDefault();
-                        setIsSettingsMenuActive(!isSettingsMenuActive);
-                        setIsSubscriptionOpen(false); // close Subscription
-                      }
-                    : undefined
-                }
+                onClick={(e) => {
+                  if (item.label === "Settings") {
+                    e.preventDefault();
+                    setIsSettingsMenuActive(!isSettingsMenuActive);
+                    setIsSubscriptionOpen(false);
+                  } else {
+                    setIsSettingsMenuActive(false);
+                    setIsSubscriptionOpen(false);
+                  }
+                }}
                 className={`flex items-center p-2 rounded-md transition ${
                   isActive ||
                   (item.label === "Settings" && isSettingsMenuActive)

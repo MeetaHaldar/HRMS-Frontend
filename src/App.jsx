@@ -5,6 +5,7 @@ function App() {
         <Routes>
           <Route path="/SignIn" element={<SignIn />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
 
           <Route
             path="/"
@@ -198,3 +199,4 @@ import ForgotPassword from "./Components/Password/ForgotPassword";
 import Regularization from "./Components/Employee/Regularization";
 import WFHRequest from "./Components/Employee/Manager/WFHRequest";
 import RegularizationRequest from "./Components/Employee/Manager/RegularizationRequest";
+import ResetPassword from "./Components/Password/ResetPassword";
