@@ -100,6 +100,7 @@ const ApplyLeavePopup = ({ isOpen, onClose, onSubmit }) => {
       });
       onClose();
     } catch (error) {
+      console.log(err.response.data);
       setFormError(error.response?.data?.message || "Failed to apply leave.");
       console.error(error);
     } finally {

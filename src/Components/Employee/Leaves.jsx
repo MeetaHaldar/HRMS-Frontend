@@ -4,6 +4,7 @@ import LeaveHistory from "./LeaveHistory";
 import LeaveStats from "./LeaveStats";
 import axios from "axios";
 import dev_url from "../../config";
+
 const Leaves = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const token = localStorage.getItem("token");
@@ -16,7 +17,7 @@ const Leaves = () => {
   });
 
   const [leaveCategories, setLeaveCategories] = useState([]);
-  const [notification, setNotification] = useState("");
+  const [notification, setNotification] = useState({ message: "", type: "" });
   const [reloadHistory, setReloadHistory] = useState(false);
 
   // Fetch leave categories on mount
@@ -52,14 +53,20 @@ const Leaves = () => {
         }
       );
 
-      setNotification(response.data.message || "Leave applied successfully!");
-      setReloadHistory((prev) => !prev); // Toggle to trigger reload
+      setNotification({
+        message: response.data.message || "Leave applied successfully!",
+        type: "success",
+      });
+      setReloadHistory((prev) => !prev); // Trigger reload
 
-      setTimeout(() => setNotification(""), 5000);
+      setTimeout(() => setNotification({ message: "", type: "" }), 5000);
     } catch (error) {
       console.error("Error applying leave:", error);
-      setNotification("Failed to apply leave. Please try again.");
-      setTimeout(() => setNotification(""), 5000);
+      setNotification({
+        message: error.response?.data?.message || "Failed to apply leave.",
+        type: "error",
+      });
+      setTimeout(() => setNotification({ message: "", type: "" }), 5000);
     }
   };
 
@@ -67,9 +74,15 @@ const Leaves = () => {
     <>
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
-          {notification && (
-            <div className="fixed top-4 right-4 bg-green-100 text-green-800 px-4 py-2 rounded shadow-md z-50">
-              {notification}
+          {notification.message && (
+            <div
+              className={`fixed top-4 right-4 px-4 py-2 rounded shadow-md z-50 ${
+                notification.type === "success"
+                  ? "bg-green-100 text-green-800 border border-green-300"
+                  : "bg-red-100 text-red-800 border border-red-300"
+              }`}
+            >
+              {notification.message}
             </div>
           )}
 
