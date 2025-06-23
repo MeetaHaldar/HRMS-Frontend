@@ -60,7 +60,7 @@ const Profile = () => {
       });
       setSuccessMessage("Profile photo updated successfully!");
       setTimeout(() => setSuccessMessage(""), 3000);
-     
+
       setEmployee((prev) => ({
         ...prev,
         photo: `${file.name}?updated=${Date.now()}`,

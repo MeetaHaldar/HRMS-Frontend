@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MdSpaceDashboard, MdOutlineWorkOutline } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { GiThreeLeaves } from "react-icons/gi";
@@ -7,7 +7,6 @@ import { WiSunset } from "react-icons/wi";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
 import { IoMdTime } from "react-icons/io";
-
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const baseMenu = [
@@ -71,7 +70,7 @@ const baseMenu = [
 const EmployeeSidebar = ({ children }) => {
   const location = useLocation();
   const [expandedMenus, setExpandedMenus] = useState({});
-
+  const navigate = useNavigate();
   let role = "";
   try {
     const userData = localStorage.getItem("user");
@@ -97,6 +96,7 @@ const EmployeeSidebar = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.clear();
+    navigate("/signIn");
   };
 
   return (
