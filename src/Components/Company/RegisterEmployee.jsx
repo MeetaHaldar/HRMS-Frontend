@@ -326,7 +326,7 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
           <div className="flex flex-col sm:col-span-2">
             <label className="text-gray-700 font-medium">Role</label>
             <div className="flex flex-wrap gap-4 mt-1">
-              {["employee", "manager", "systemadmin"].map((role) => (
+              {["employee", "manager"].map((role) => (
                 <label
                   key={role}
                   className="flex items-center gap-1 cursor-pointer"

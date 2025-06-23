@@ -61,7 +61,8 @@ const SignIn = () => {
         localStorage.removeItem("user");
       }
     } catch (error) {
-      setErr("Login failed. Please check your credentials.");
+      console.error(error);
+      setErr(error.response.data.message);
       setTimeout(() => setErr(""), 5000);
     }
   };
@@ -157,7 +158,11 @@ const SignIn = () => {
           </div>
 
           <div className="flex items-start gap-2 mt-2">
-            <input type="checkbox" required className="mt-1" />
+            <input
+              type="checkbox"
+              required
+              className="mt-1 accent-yellow-500"
+            />
             <p className="text-sm text-gray-600">
               I agree to the{" "}
               <span className="font-semibold">Terms & Conditions</span> and{" "}
