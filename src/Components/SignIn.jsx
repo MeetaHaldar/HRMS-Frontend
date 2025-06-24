@@ -8,7 +8,6 @@ const SignIn = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
@@ -20,7 +19,6 @@ const SignIn = () => {
   const validate = () => {
     let tempErrors = {};
 
-    if (!formData.name) tempErrors.name = "Name is required";
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/))
       tempErrors.email = "Invalid email format";
     if (!formData.password || formData.password.length < 6)
@@ -62,7 +60,7 @@ const SignIn = () => {
       }
     } catch (error) {
       console.error(error);
-      setErr(error.response.data.message);
+      setErr(error.response?.data?.message || "Login failed");
       setTimeout(() => setErr(""), 5000);
     }
   };
@@ -95,21 +93,6 @@ const SignIn = () => {
           onSubmit={handleSubmit}
           className="flex flex-col gap-5 w-[90%] md:w-[50%]"
         >
-          {/* Name */}
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              className="w-full border-b border-gray-300 p-2 placeholder-gray-400 focus:outline-none focus:border-black"
-              value={formData.name}
-              onChange={handleChange}
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name}</p>
-            )}
-          </div>
-
           {/* Email */}
           <div>
             <input
