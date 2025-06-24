@@ -25,7 +25,6 @@ const baseMenu = [
     to: "/employee/holidays",
     icon: <WiSunset />,
   },
-
   {
     label: "My Requests",
     icon: <GiThreeLeaves />,
@@ -42,6 +41,7 @@ const baseMenu = [
   {
     label: "Attendance Request",
     icon: <MdOutlineWorkOutline />,
+    isManagerOnly: true,
     children: [
       {
         label: "Leave Request",
@@ -82,10 +82,10 @@ const EmployeeSidebar = ({ children }) => {
     console.error("Error parsing user from localStorage:", error);
   }
 
-  const employeeMenu =
-    role && role.includes("manager")
-      ? baseMenu
-      : baseMenu.filter((item) => !item.requiresManager);
+  const employeeMenu = baseMenu.filter((item) => {
+    if (item.isManagerOnly && !role.includes("manager")) return false;
+    return true;
+  });
 
   const toggleMenu = (label) => {
     setExpandedMenus((prev) => ({
