@@ -3,13 +3,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoSettingsOutline } from "react-icons/io5";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FaUmbrellaBeach } from "react-icons/fa6";
-
 import {
   FaFolderPlus,
   FaBookOpen,
   FaIdBadge,
   FaChevronDown,
 } from "react-icons/fa";
+import { FaListAlt } from "react-icons/fa";
+import { FaUserCheck } from "react-icons/fa6";
 import { FaArrowTrendUp, FaPeopleGroup } from "react-icons/fa6";
 import { PiBuildingOfficeLight } from "react-icons/pi";
 import { TbTax } from "react-icons/tb";
@@ -45,12 +46,12 @@ const menuItems = [
       {
         label: "All Subs.",
         to: "/companyAdmin/subscriptionPlans",
-        icon: <FaBookOpen />,
+        icon: <FaListAlt />,
       },
       {
         label: "My Subs.",
         to: "/companyAdmin/my-subscriptions",
-        icon: <FaBookOpen />,
+        icon: <FaUserCheck />,
       },
     ],
   },
@@ -132,7 +133,7 @@ const CompanyAdminSidebar = ({ children }) => {
         } flex flex-col items-center`}
       >
         <div className="flex items-center justify-center h-16 text-lg font-bold">
-          M
+          System Admin
         </div>
         <nav className="space-y-4 py-4 w-full">
           {menuItems.map((item, index) => {
@@ -254,6 +255,10 @@ const CompanyAdminSidebar = ({ children }) => {
               const isActive = location.pathname === item.to;
 
               if (item.isExpandable) {
+                const isAnySubActive = item.subItems?.some(
+                  (sub) => location.pathname === sub.to
+                );
+
                 return (
                   <div key={index}>
                     <button
@@ -261,7 +266,7 @@ const CompanyAdminSidebar = ({ children }) => {
                         setIsLeaveAttendanceOpen(!isLeaveAttendanceOpen)
                       }
                       className={`flex justify-between items-center w-full p-2 rounded-md transition ${
-                        isLeaveAttendanceOpen
+                        isLeaveAttendanceOpen || isAnySubActive
                           ? "bg-[#FFD85F] text-black"
                           : "hover:bg-gray-100 text-gray-600"
                       }`}

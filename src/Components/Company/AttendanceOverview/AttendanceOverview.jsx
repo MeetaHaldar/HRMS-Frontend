@@ -104,10 +104,9 @@ export default function AttendanceOverview() {
   ];
 
   const approvalData = [
-    { title: "Leave Requests", value: 8, link: "/companyAdmin/leaveRequests" },
+    { title: "Leave Requests", link: "/companyAdmin/leaveRequests" },
     {
       title: "Regularization Requests",
-      value: 4,
       link: "/companyAdmin/regularizationRequest",
     },
   ];
@@ -171,9 +170,6 @@ export default function AttendanceOverview() {
               <ExternalLink size={14} />
             </Link>
             <span className="text-sm font-medium">{item.title}</span>
-            <span className="text-xl font-semibold mt-1">
-              {item.value.toString().padStart(2, "0")}
-            </span>
           </div>
         ))}
       </div>
