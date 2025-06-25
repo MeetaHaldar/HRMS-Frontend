@@ -5,23 +5,29 @@ import dev_url from "../../../config";
 export default function WFHRequest() {
   const [requests, setRequests] = useState([]);
   const token = localStorage.getItem("token");
+  const approvedBy = JSON.parse(localStorage.getItem("user"))?.name || "Admin";
 
   useEffect(() => {
     const fetchWFHData = async () => {
       try {
-        const response = await axios.get(`${dev_url}attendence/getwfhreq`, {
+        const response = await axios.get(`${dev_url}api/employee/wfhdetails`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const data = response.data.leaveRequests || [];
+        const data = response.data.wfh_history || [];
         const mapped = data.map((r) => ({
-          id: r.abstractexception_ptr_id,
+          id: r.id,
           name: r.first_name + " " + r.last_name || "N/A",
           startDate: r.start_time?.split("T")[0],
           endDate: r.end_time?.split("T")[0],
-          reason: r.apply_reason || "—",
+          reason: r.reason || "—",
           requestedDate: r.created_at?.split("T")[0],
-          status: r.revoke_type,
+          status:
+            r.status?.toLowerCase() === "pending"
+              ? "P"
+              : r.status?.toLowerCase() === "approved"
+              ? "A"
+              : "R",
           selected: false,
         }));
         setRequests(mapped);
@@ -33,15 +39,18 @@ export default function WFHRequest() {
     fetchWFHData();
   }, [token]);
 
-  const updateWFHStatus = async (leave_id, approval_status) => {
+  const updateWFHStatus = async (id, status) => {
     try {
       await axios.put(
-        `${dev_url}attendence/changeLeaveStatus`,
-        { leave_id, approval_status },
+        `${dev_url}attendence/approvewfh?id=${id}`,
+        {
+          status: status === "A" ? "Approved" : "Rejected",
+          approved_by: approvedBy,
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (error) {
-      console.error(`Failed to update status for WFH ID ${leave_id}:`, error);
+      console.error(`Failed to update status for WFH ID ${id}:`, error);
     }
   };
 
@@ -132,6 +141,7 @@ export default function WFHRequest() {
                 checked={allSelectable && allSelected}
                 disabled={!allSelectable}
                 onChange={handleBulkSelect}
+                className="accent-yellow-400"
               />
             </th>
             <th className="p-2">Name</th>
@@ -151,6 +161,7 @@ export default function WFHRequest() {
                     type="checkbox"
                     checked={r.selected || false}
                     onChange={() => handleSelect(r.id)}
+                    className="accent-yellow-400"
                   />
                 )}
               </td>

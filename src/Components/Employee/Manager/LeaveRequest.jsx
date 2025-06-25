@@ -132,6 +132,7 @@ export default function LeaveRequest() {
                 checked={allSelectable && allSelected}
                 disabled={!allSelectable}
                 onChange={handleBulkSelect}
+                className="accent-yellow-400"
               />
             </th>
             <th className="p-2">Name</th>
@@ -151,6 +152,7 @@ export default function LeaveRequest() {
                     type="checkbox"
                     checked={r.selected || false}
                     onChange={() => handleSelect(r.id)}
+                    className="accent-yellow-400"
                   />
                 )}
               </td>

@@ -83,6 +83,11 @@ function App() {
             />
             <Route path="leaveRequests" element={<LeaveRequestsTable />} />
             <Route
+              path="regularizationRequest"
+              element={<RegularizationRequestTable />}
+            />
+
+            <Route
               path="checkinEmployees"
               element={<CheckinEmployeesTable />}
             />
@@ -200,3 +205,4 @@ import Regularization from "./Components/Employee/Regularization";
 import WFHRequest from "./Components/Employee/Manager/WFHRequest";
 import RegularizationRequest from "./Components/Employee/Manager/RegularizationRequest";
 import ResetPassword from "./Components/Password/ResetPassword";
+import RegularizationRequestTable from "./Components/Company/AttendanceOverview/RegularizationRequestTable";

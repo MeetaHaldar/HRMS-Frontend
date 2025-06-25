@@ -6,11 +6,11 @@ import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import dev_url from "../../../config";
 
-export default function LeaveRequestsTable() {
+export default function RegularizationRequestsTable() {
   const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState("");
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,35 +33,35 @@ export default function LeaveRequestsTable() {
     return `${year}-${month}`;
   };
 
-  const fetchLeaveRequests = async (date) => {
+  const fetchRegularizationRequests = async (date) => {
     setLoading(true);
     setError(null);
     const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.get(`${dev_url}attendence/history`, {
-        params: { month_year: formatMonthYear(date) },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await axios.get(`${dev_url}attendence/listofRegularize`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      setLeaveRequests(response.data.leave_history);
+
+      const all = res.data.requests || [];
+      const filtered = all.filter((r) => r.status === "pending");
+      setRequests(filtered);
     } catch (err) {
-      setError("Failed to fetch leave requests");
-      setLeaveRequests([]);
       console.error(err);
+      setError("Failed to fetch regularization requests.");
+      setRequests([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchLeaveRequests(selectedDate);
+    fetchRegularizationRequests(selectedDate);
   }, []);
 
   const onDateChange = (date) => {
     setSelectedDate(date);
-    fetchLeaveRequests(date);
+    fetchRegularizationRequests(date);
   };
 
   const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
@@ -77,7 +77,6 @@ export default function LeaveRequestsTable() {
 
   return (
     <div className="p-6 text-gray-800 w-full">
-      {/* Header */}
       <div className="flex justify-between items-center mb-4 flex-wrap">
         <div className="flex items-center gap-2 mb-2 sm:mb-0">
           <ArrowLeft
@@ -86,7 +85,7 @@ export default function LeaveRequestsTable() {
             onClick={() => navigate("/companyAdmin/LeaveAttendanceOverview")}
           />
           <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
-            Leave Requests:
+            Regularization Requests:
           </h2>
         </div>
         <div className="flex items-center gap-3 text-sm text-gray-600">
@@ -103,10 +102,8 @@ export default function LeaveRequestsTable() {
         </div>
       </div>
 
-      {/* Error message */}
       {error && <div className="mb-4 text-red-600 font-semibold">{error}</div>}
 
-      {/* Loading state */}
       {loading ? (
         <div className="text-center py-10 text-gray-600">Loading...</div>
       ) : (
@@ -114,54 +111,40 @@ export default function LeaveRequestsTable() {
           <table className="min-w-full text-sm text-left">
             <thead>
               <tr className="bg-gray-100 text-gray-700">
-                <th className="px-4 py-2">Employee Code</th>
-                <th className="px-4 py-2">Employee Name</th>
-                <th className="px-4 py-2">Applied on</th>
-                <th className="px-4 py-2">No.of Days</th>
-                <th className="px-4 py-2">Leave Type</th>
+                <th className="px-4 py-2">Name</th>
+                <th className="px-4 py-2">Date</th>
+                <th className="px-4 py-2">Reason</th>
+                <th className="px-4 py-2">Requested On</th>
                 <th className="px-4 py-2">Status</th>
-                <th className="px-4 py-2">From</th>
-                <th className="px-4 py-2">To</th>
               </tr>
             </thead>
             <tbody>
-              {leaveRequests.length === 0 ? (
+              {requests.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="text-center py-4 text-gray-500">
-                    No leave requests found.
+                  <td colSpan={6} className="text-center py-4 text-gray-500">
+                    No regularization requests found.
                   </td>
                 </tr>
               ) : (
-                leaveRequests
-                  .filter((req) => req.revoke_type === "P")
-                  .map((req, index) => (
-                    <tr key={index}>
-                      <td className="px-4 py-3">{req.emp_code || "-"}</td>
-                      <td className="px-4 py-3">
-                        {req.first_name} {req.last_name}
-                      </td>
-                      <td className="px-4 py-3">
-                        {req.apply_time
-                          ? new Date(req.apply_time).toLocaleDateString("en-GB")
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-3">{req.days || "-"}</td>
-                      <td className="px-4 py-3">{req.category_name || "-"}</td>
-                      <td className="px-4 py-3 font-medium text-yellow-600">
-                        Pending
-                      </td>
-                      <td className="px-4 py-3">
-                        {req.start_time
-                          ? new Date(req.start_time).toLocaleDateString("en-GB")
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-3">
-                        {req.end_time
-                          ? new Date(req.end_time).toLocaleDateString("en-GB")
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))
+                requests.map((req, index) => (
+                  <tr key={index}>
+                    <td className="px-4 py-3">{req.first_name || "-"}</td>
+                    <td className="px-4 py-3">
+                      {req.date
+                        ? new Date(req.date).toLocaleDateString("en-GB")
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-3">{req.reason || "-"}</td>
+                    <td className="px-4 py-3">
+                      {req.created_at
+                        ? new Date(req.created_at).toLocaleDateString("en-GB")
+                        : "-"}
+                    </td>
+                    <td className="px-4 py-3 font-medium text-yellow-600">
+                      Pending
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>

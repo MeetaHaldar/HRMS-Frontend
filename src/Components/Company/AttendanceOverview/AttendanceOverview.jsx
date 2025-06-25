@@ -10,9 +10,6 @@ export default function AttendanceOverview() {
   const [attendanceDate, setAttendanceDate] = useState(
     dayjs().format("YYYY-MM-DD")
   );
-  const [approvalDate, setApprovalDate] = useState(
-    dayjs().format("YYYY-MM-DD")
-  );
 
   const [totalEmployees, setTotalEmployees] = useState(0);
   const [checkinEmployees, setCheckinEmployees] = useState(0);
@@ -82,11 +79,6 @@ export default function AttendanceOverview() {
     }
   }, [attendanceDate, token]);
 
-  const handleDateChange = (e) => {
-    const selected = dayjs(e.target.value).format("YYYY-MM-DD");
-    setAttendanceDate(selected);
-  };
-
   const overviewData = [
     {
       title: "Total Employees",
@@ -116,7 +108,7 @@ export default function AttendanceOverview() {
     {
       title: "Regularization Requests",
       value: 4,
-      link: "/companyAdmin/regularization-requests",
+      link: "/companyAdmin/regularizationRequest",
     },
   ];
 
@@ -133,17 +125,10 @@ export default function AttendanceOverview() {
 
       <hr className="my-4 border-gray-400" />
 
-      {/* Attendance Overview Section */}
       <div className="flex justify-between items-center mb-2 flex-wrap gap-2">
         <h2 className="text-lg md:text-lg text-gray-500 font-semibold">
           Attendance Overviews:
         </h2>
-        <input
-          type="date"
-          className="text-sm border border-gray-300 rounded px-2 py-1"
-          value={attendanceDate}
-          onChange={handleDateChange}
-        />
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -171,12 +156,6 @@ export default function AttendanceOverview() {
         <h3 className="text-lg md:text-lg text-gray-500 font-semibold">
           Pending Approvals:
         </h3>
-        <input
-          type="date"
-          className="text-sm border border-gray-300 rounded px-2 py-1"
-          value={approvalDate}
-          onChange={(e) => setApprovalDate(e.target.value)}
-        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
