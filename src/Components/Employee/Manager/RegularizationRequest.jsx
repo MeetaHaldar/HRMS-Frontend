@@ -10,23 +10,23 @@ export default function RegularizationRequest() {
     const fetchRegularizationData = async () => {
       try {
         const response = await axios.get(
-          `${dev_url}attendence/getregularizationreq`,
+          `${dev_url}attendence/listofRegularize`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
 
-        const data = response.data.leaveRequests || [];
+        const data = response.data.requests || [];
         const mapped = data.map((r) => ({
-          id: r.abstractexception_ptr_id,
-          name: r.first_name + " " + r.last_name || "N/A",
-          startDate: r.start_time?.split("T")[0],
-          endDate: r.end_time?.split("T")[0],
-          reason: r.apply_reason || "—",
+          id: r.id,
+          name: r.first_name || "N/A",
+          startDate: r.date?.split("T")[0] || "—",
+          reason: r.reason || "—",
           requestedDate: r.created_at?.split("T")[0],
-          status: r.revoke_type,
+          status: r.status, // "pending", "approved", "rejected"
           selected: false,
         }));
+
         setRequests(mapped);
       } catch (error) {
         console.error("Error fetching regularization requests:", error);
@@ -36,22 +36,22 @@ export default function RegularizationRequest() {
     fetchRegularizationData();
   }, [token]);
 
-  const updateStatus = async (leave_id, approval_status) => {
+  const updateStatus = async (requestId, status) => {
     try {
       await axios.put(
-        `${dev_url}attendence/changeLeaveStatus`,
-        { leave_id, approval_status },
+        `${dev_url}attendence/updateRegularizeStatus`,
+        { requestId, status },
         { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (error) {
-      console.error(`Failed to update status for ID ${leave_id}:`, error);
+      console.error(`Failed to update status for ID ${requestId}:`, error);
     }
   };
 
   const handleBulkSelect = (e) => {
     const checked = e.target.checked;
     const updated = requests.map((r) =>
-      r.status === "P" ? { ...r, selected: checked } : r
+      r.status === "pending" ? { ...r, selected: checked } : r
     );
     setRequests(updated);
   };
@@ -72,7 +72,9 @@ export default function RegularizationRequest() {
   };
 
   const handleBulkAction = async (newStatus) => {
-    const toUpdate = requests.filter((r) => r.selected && r.status === "P");
+    const toUpdate = requests.filter(
+      (r) => r.selected && r.status === "pending"
+    );
 
     for (let r of toUpdate) {
       await updateStatus(r.id, newStatus);
@@ -80,7 +82,7 @@ export default function RegularizationRequest() {
 
     setRequests((prev) =>
       prev.map((r) =>
-        r.selected && r.status === "P"
+        r.selected && r.status === "pending"
           ? { ...r, status: newStatus, selected: false }
           : r
       )
@@ -88,15 +90,15 @@ export default function RegularizationRequest() {
   };
 
   const anySelected = requests.some((r) => r.selected);
-  const allSelectable = requests.some((r) => r.status === "P");
+  const allSelectable = requests.some((r) => r.status === "pending");
   const allSelected =
     allSelectable &&
-    requests.filter((r) => r.status === "P").every((r) => r.selected);
+    requests.filter((r) => r.status === "pending").every((r) => r.selected);
 
   const statusTextMap = {
-    P: "Pending",
-    A: "Approved",
-    R: "Rejected",
+    pending: "Pending",
+    approved: "Approved",
+    rejected: "Rejected",
   };
 
   return (
@@ -116,13 +118,13 @@ export default function RegularizationRequest() {
       >
         <button
           className="px-3 py-1 bg-[#FFD85F] hover:bg-yellow-500 text-gray-900 text-xs md:text-sm rounded-full font-semibold cursor-pointer"
-          onClick={() => handleBulkAction("A")}
+          onClick={() => handleBulkAction("approved")}
         >
           Accept All
         </button>
         <button
           className="px-3 py-1 rounded-full text-sm font-medium shadow-sm hover:bg-gray-100"
-          onClick={() => handleBulkAction("R")}
+          onClick={() => handleBulkAction("rejected")}
         >
           Reject All
         </button>
@@ -141,7 +143,6 @@ export default function RegularizationRequest() {
             </th>
             <th className="p-2">Name</th>
             <th className="p-2">Start Date</th>
-            <th className="p-2">End Date</th>
             <th className="p-2">Reason</th>
             <th className="p-2">Status</th>
             <th className="p-2">Action</th>
@@ -151,7 +152,7 @@ export default function RegularizationRequest() {
           {requests.map((r) => (
             <tr key={r.id} className="text-left">
               <td className="p-2 align-middle">
-                {r.status === "P" && (
+                {r.status === "pending" && (
                   <input
                     type="checkbox"
                     checked={r.selected || false}
@@ -161,13 +162,12 @@ export default function RegularizationRequest() {
               </td>
               <td className="p-2 align-middle">{r.name}</td>
               <td className="p-2 align-middle">{r.startDate}</td>
-              <td className="p-2 align-middle">{r.endDate}</td>
               <td className="p-2 align-middle">{r.reason}</td>
               <td
                 className={`p-2 align-middle font-semibold ${
-                  r.status === "A"
+                  r.status === "approved"
                     ? "text-green-600"
-                    : r.status === "R"
+                    : r.status === "rejected"
                     ? "text-red-600"
                     : "text-yellow-600"
                 }`}
@@ -175,12 +175,12 @@ export default function RegularizationRequest() {
                 {statusTextMap[r.status]}
               </td>
               <td className="p-2 align-middle">
-                {r.status === "P" ? (
+                {r.status === "pending" ? (
                   <select
                     defaultValue=""
                     onChange={(e) => {
                       const val = e.target.value;
-                      if (val === "A" || val === "R") {
+                      if (val === "approved" || val === "rejected") {
                         handleDecision(r.id, val);
                       }
                     }}
@@ -189,8 +189,8 @@ export default function RegularizationRequest() {
                     <option value="" disabled>
                       Choose
                     </option>
-                    <option value="A">Approve</option>
-                    <option value="R">Reject</option>
+                    <option value="approved">Approve</option>
+                    <option value="rejected">Reject</option>
                   </select>
                 ) : (
                   <span className="text-gray-400">Action Taken</span>

@@ -25,7 +25,7 @@ const Regularization = () => {
     try {
       setLoading(true);
       const res = await axios.get(
-        `${dev_url}api/employee/regularization?month_year=${selectedMonth}&employee_id=${employeeId}`,
+        `${dev_url}attendence/regularizeHistory?month=${selectedMonth}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -46,12 +46,12 @@ const Regularization = () => {
   }, [selectedMonth]);
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "Approved":
+    switch (status.toLowerCase()) {
+      case "approved":
         return "text-green-500";
-      case "Rejected":
+      case "rejected":
         return "text-red-500";
-      case "Pending":
+      case "pending":
       default:
         return "text-yellow-500";
     }
@@ -97,8 +97,8 @@ const Regularization = () => {
       {/* Stats Section */}
       {data && (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          {card("Regularization Balance", data.balance)}
-          {card("Regularization Granted", data.granted)}
+          {card("Regularization Balance", data.remaining)}
+          {card("Regularization Granted", data.allowed)}
           {card("Pending Regularization", data.pending)}
         </div>
       )}
@@ -113,44 +113,36 @@ const Regularization = () => {
             <thead className="bg-gray-100 text-gray-600">
               <tr>
                 <th className="p-3 text-left">Date</th>
+                <th className="p-3 text-left">Reason</th>
                 <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left">Requested On</th>
-                <th className="p-3 text-left">Approval</th>
-                <th className="p-3 text-left">Approval Date/Time</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="text-center p-4 text-gray-400">
+                  <td colSpan="3" className="text-center p-4 text-gray-400">
                     Loading...
                   </td>
                 </tr>
-              ) : !data?.history?.length ? (
+              ) : !data?.requests?.length ? (
                 <tr>
-                  <td colSpan="5" className="text-center p-4 text-gray-400">
+                  <td colSpan="3" className="text-center p-4 text-gray-400">
                     No regularization history found.
                   </td>
                 </tr>
               ) : (
-                data.history.map((item, idx) => (
+                data.requests.map((item, idx) => (
                   <tr key={idx} className="hover:bg-gray-50">
                     <td className="p-3">
                       {formatDateTime(item.date).split(" , ")[0]}
                     </td>
+                    <td className="p-3">{item.reason}</td>
                     <td
                       className={`p-3 font-medium ${getStatusColor(
                         item.status
                       )}`}
                     >
                       {item.status}
-                    </td>
-                    <td className="p-3">
-                      {formatDateTime(item.requested_on).split(" , ")[0]}
-                    </td>
-                    <td className="p-3">{item.approval || "-"}</td>
-                    <td className="p-3">
-                      {formatDateTime(item.approval_date)}
                     </td>
                   </tr>
                 ))
@@ -163,7 +155,7 @@ const Regularization = () => {
       <ApplyRegularizationPopup
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
-        onSubmit={(formData) => {
+        onSubmit={() => {
           setIsPopupOpen(false);
           fetchData();
         }}
