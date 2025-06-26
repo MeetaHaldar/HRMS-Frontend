@@ -3,10 +3,10 @@ function App() {
     <>
       <Router>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/SignIn" element={<SignIn />} />
           <Route path="/forgotPassword" element={<ForgotPassword />} />
           <Route path="/ResetPassword" element={<ResetPassword />} />
-
           <Route
             path="/"
             element={
@@ -23,7 +23,6 @@ function App() {
             />
             <Route path="Subscription" element={<Subscription />} />
             <Route path="changePassword" element={<UpdatePassword />} />
-
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
           <Route
@@ -47,12 +46,10 @@ function App() {
             <Route path="salaryComponent" element={<SalaryComponent />} />
             <Route path="SalaryTemplate" element={<SalaryTemplate />} />
             <Route path="addBenifitpopup" element={<AddBenefitPopup />} />
-
             <Route
               path="addNewSalaryTemplate"
               element={<AddNewSalaryTemplate />}
             />
-
             <Route
               path="viewSalaryTemplate/:id"
               element={<ViewSalaryTemplate />}
@@ -86,7 +83,6 @@ function App() {
               path="regularizationRequest"
               element={<RegularizationRequestTable />}
             />
-
             <Route
               path="checkinEmployees"
               element={<CheckinEmployeesTable />}
@@ -107,7 +103,6 @@ function App() {
             }
           >
             <Route path="dashboard" element={<Dashboard />} />
-
             <Route path="profile" element={<Profile />} />
             {/* // for manager  */}
             <Route
@@ -141,7 +136,6 @@ function App() {
             <Route path="WFH" element={<WFH />} />
             <Route path="calender" element={<AttendanceCalendar />} />
             <Route path="changePassword" element={<UpdatePassword />} />
-
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
         </Routes>
@@ -206,3 +200,4 @@ import WFHRequest from "./Components/Employee/Manager/WFHRequest";
 import RegularizationRequest from "./Components/Employee/Manager/RegularizationRequest";
 import ResetPassword from "./Components/Password/ResetPassword";
 import RegularizationRequestTable from "./Components/Company/AttendanceOverview/RegularizationRequestTable";
+import Home from "./Home";
