@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import dev_url from "./config";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 const Home = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -9,7 +10,10 @@ const Home = () => {
     msg: "",
   });
 
+  const [popupVisible, setPopupVisible] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
+  const [plans, setPlans] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,7 +24,8 @@ const Home = () => {
     try {
       await axios.post(`${dev_url}api/auth/contactUS`, formData);
 
-      setPopupMsg("Message successfully sent!");
+      setPopupMsg("Form submitted successfully!");
+      setPopupVisible(true);
 
       setFormData({
         name: "",
@@ -29,12 +34,35 @@ const Home = () => {
         msg: "",
       });
 
-      setTimeout(() => setPopupMsg(""), 3000);
+      setTimeout(() => {
+        setPopupVisible(false);
+      }, 4500);
     } catch (error) {
       console.log(error);
       setPopupMsg("Something went wrong. Try again.");
       setTimeout(() => setPopupMsg(""), 3000);
     }
+  };
+
+  useEffect(() => {
+    axios
+      .get(`${dev_url}subscription`)
+      .then((res) => setPlans(res.data))
+      .catch((err) => console.error(err));
+  }, []);
+  const images = [
+    "src/assets/image7.png",
+    "src/assets/image2.png",
+    "src/assets/image3.png",
+    "src/assets/image4.png",
+  ];
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
   return (
     <div className="font-sans text-gray-800">
@@ -150,8 +178,32 @@ const Home = () => {
           </div>
         </div>
       </section>
+      <section className="bg-[#FFF9EB] px-6 py-20 text-center relative">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="inline-block border border-[#FFD84D] px-4 py-1 rounded-full font-semibold text-sm mb-4">
+            Subscription
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold text-[#2A2A2A] mb-2">
+            Manage leave and <br className="hidden md:block" /> attendance,
+            built-in.
+          </h2>
+          <p className="text-[#555] max-w-2xl mx-auto mb-16">
+            Create custom leave types, allow employees to apply for leaves,
+            approve or reject leaves, manage attendance.
+          </p>
 
-      <section className="bg-[#FFF9EB] px-6 py-20 text-center">
+          {/* --- ROW 1 --- */}
+          <div className="flex flex-wrap justify-center gap-6 md:gap-10 lg:gap-12 relative z-10 mb-10">
+            {plans[0] && <Card data={plans[0]} />}
+            {plans[1] && <Card data={plans[1]} />}
+            {plans[2] && <Card data={plans[2]} />}
+            {plans[3] && <Card data={plans[3]} />}
+          </div>
+        </div>
+      </section>
+
+      <section className=" px-6 py-20 text-center">
         <div className="max-w-6xl mx-auto">
           <div className="inline-block border border-[#FFD84D] px-4 py-1 rounded-full font-semibold text-sm mb-4">
             Free Device
@@ -188,37 +240,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      <section className="bg-[#FFF9EB] px-6 py-20 text-center">
-        <div className="max-w-5xl mx-auto">
-          <div className="inline-block border border-[#FFD84D] px-4 py-1 rounded-full font-semibold text-sm mb-4">
-            Leave and Attendance
-          </div>
-
-          <h2 className="text-2xl md:text-3xl font-bold text-[#2A2A2A] mb-2">
-            Manage leave and <br className="hidden md:block" /> attendance,
-            built-in.
-          </h2>
-
-          <p className="text-[#555] max-w-2xl mx-auto mb-10">
-            Create custom leave types, allow employees to apply for leaves,
-            approve or reject leaves, manage attendance.
-          </p>
-
-          <div className="relative flex justify-center items-center">
-            <div className="hidden md:block absolute left-0 w-24 h-40 bg-[#FFD84D] rounded-r-2xl"></div>
-
-            <div className="hidden md:block absolute right-0 w-24 h-40 bg-[#FFD84D] rounded-l-2xl"></div>
-
-            <img
-              src="/images/leave-attendance.png"
-              alt="Leave and Attendance"
-              className="relative z-10 rounded shadow-lg w-full max-w-4xl"
-            />
-          </div>
-        </div>
-      </section>
-
       <section className="bg-[#FFF9EB] px-6 py-20 text-center">
         <div className="max-w-5xl mx-auto">
           <div className="inline-block border border-[#FFD84D] px-4 py-1 rounded-full font-semibold text-sm mb-4">
@@ -236,15 +257,30 @@ const Home = () => {
           </p>
 
           <div className="relative flex justify-center items-center">
-            <div className="hidden md:block absolute left-0 w-24 h-40 bg-[#FFD84D] rounded-r-2xl"></div>
-
-            <div className="hidden md:block absolute right-0 w-24 h-40 bg-[#FFD84D] rounded-l-2xl"></div>
+            {/* Background block */}
+            <div className="hidden md:block absolute left-0 w-full h-60 bg-[#FFD84D] rounded"></div>
 
             <img
-              src="src\assets\image7.png"
-              alt="Salary Templates"
-              className="relative z-10 rounded shadow-lg w-1/2 max-w-4xl "
+              src={images[currentIndex]}
+              alt="Carousel"
+              className="relative z-10 w-full max-w-xl h-72 object-cover rounded shadow-lg transition-all duration-500"
             />
+
+            {/* Left arrow */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            >
+              <FaChevronLeft />
+            </button>
+
+            {/* Right arrow */}
+            <button
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-white p-2 rounded-full shadow hover:bg-gray-100"
+            >
+              <FaChevronRight />
+            </button>
           </div>
         </div>
       </section>
@@ -303,14 +339,16 @@ const Home = () => {
             ></textarea>
             <button
               type="submit"
-              className="bg-[#FFD84D] text-black font-semibold px-6 py-2 rounded hover:bg-[#f7cc3c] transition w-full"
+              className="bg-[#FFD84D] text-black font-semibold px-6 py-2 rounded hover:bg-[#f7cc3c] transition w-full cursor-pointer"
             >
               Submit
             </button>
 
-            {popupMsg && (
-              <div className="text-sm font-medium mt-2 text-green-600 text-center">
-                {popupMsg}
+            {popupVisible && (
+              <div className="fixed top-10 left-0 z-50">
+                <div className="bg-green-600 text-white px-6 py-3 rounded-r shadow-lg transform transition-transform duration-500 translate-x-0 animate-slide-in">
+                  {popupMsg}
+                </div>
               </div>
             )}
           </form>
@@ -319,5 +357,30 @@ const Home = () => {
     </div>
   );
 };
+const Card = ({ data }) => (
+  <div className="bg-white border border-gray-200 shadow rounded-xl p-6 text-left w-[300px]">
+    <h3 className="text-lg font-semibold text-[#2A2A2A] mb-1">{data.name}</h3>
+    <p className="text-xl font-bold mb-2">₹{data.total_amount}/ month</p>
+    <p className="text-sm text-[#666] mb-3">{data.description}</p>
+    <ul className="text-sm text-[#444] space-y-1">
+      <li>
+        <b>Max Employee limit:</b> {data.max_employee_no}
+      </li>
+      <li>
+        <b>Subscription Amount:</b> {data.total_amount}
+      </li>
+      <li>
+        <b>Limited period Discount:</b> {data.discount}
+      </li>
+      <li>
+        <b>Discounted Offer Price:</b>{" "}
+        {data.total_amount - data.total_amount * (data.discount / 100)}
+      </li>
+    </ul>
+    <button className="mt-4 bg-[#FFD84D] text-black font-semibold px-4 py-2 rounded hover:bg-[#f7cc3c] transition w-full">
+      Get Started
+    </button>
+  </div>
+);
 
 export default Home;
