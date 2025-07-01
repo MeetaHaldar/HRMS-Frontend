@@ -90,6 +90,7 @@ function App() {
             <Route path="wfhEmployees" element={<WfhEmployeesTable />} />
             <Route path="paySchedule" element={<PayScheduleForm />} />
             <Route path="changePassword" element={<UpdatePassword />} />
+            <Route path="salarylist" element={<SalaryList />} />
 
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
@@ -201,3 +202,4 @@ import RegularizationRequest from "./Components/Employee/Manager/RegularizationR
 import ResetPassword from "./Components/Password/ResetPassword";
 import RegularizationRequestTable from "./Components/Company/AttendanceOverview/RegularizationRequestTable";
 import Home from "./Home";
+import SalaryList from "./Components/Company/Salary/SalaryList";

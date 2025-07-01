@@ -33,6 +33,8 @@ const menuItems = [
     icon: <FaPeopleGroup />,
   },
   { label: "Documents", to: "/companyAdmin/documents", icon: <FaFolderPlus /> },
+  { label: "Salary List", to: "/companyAdmin/salarylist", icon: <FaFolderPlus /> },
+
   {
     label: "Leave & Attendance",
     to: "LeaveAttendanceOverview",
@@ -77,6 +79,11 @@ const settingsMenu = [
   {
     label: "Holidays",
     to: "/companyAdmin/HolidayList",
+    icon: <FaUmbrellaBeach />,
+  },
+  {
+    label: "Pay Schedule",
+    to: "/companyAdmin/paySchedule",
     icon: <FaUmbrellaBeach />,
   },
   {
