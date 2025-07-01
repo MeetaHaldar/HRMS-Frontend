@@ -18,10 +18,12 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
     is_active: 1,
     password: "",
     role: [],
+    template_id: "", // Added template_id field
   });
 
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
+  const [salaryTemplates, setSalaryTemplates] = useState([]); // Salary templates state
   const [errors, setErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -31,16 +33,20 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
     const fetchDropdownData = async () => {
       const token = localStorage.getItem("token");
       try {
-        const [deptRes, posRes] = await Promise.all([
+        const [deptRes, posRes, tempRes] = await Promise.all([
           axios.get(`${dev_url}api/auth/company/getallDepartment`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           axios.get(`${dev_url}api/auth/company/getallPosition`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
+          axios.get(`${dev_url}salary/listsalarycomponent`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
         setDepartments(deptRes.data.data);
         setPositions(posRes.data.data);
+        setSalaryTemplates(tempRes.data.data || []);
       } catch (error) {
         console.error("Error fetching dropdowns", error);
       }
@@ -147,6 +153,7 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
       is_active: 1,
       password: "",
       role: [],
+      template_id: "",
     });
     setErrors({});
     onClose();
@@ -265,6 +272,26 @@ const RegisterEmployee = ({ isOpen, onClose, item = null, onSuccess }) => {
             {errors.position_id && (
               <span className="text-red-500 text-sm">{errors.position_id}</span>
             )}
+          </div>
+
+          {/* Salary Template */}
+          <div className="flex flex-col">
+            <label className="text-gray-700 font-medium">
+              Add Salary Template
+            </label>
+            <select
+              name="template_id"
+              value={formData.template_id}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
+            >
+              <option value="">Select Template</option>
+              {salaryTemplates.map((template) => (
+                <option key={template.id} value={template.id}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Gender */}
