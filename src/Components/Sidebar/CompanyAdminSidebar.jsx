@@ -33,7 +33,11 @@ const menuItems = [
     icon: <FaPeopleGroup />,
   },
   { label: "Documents", to: "/companyAdmin/documents", icon: <FaFolderPlus /> },
-  { label: "Salary List", to: "/companyAdmin/salarylist", icon: <FaFolderPlus /> },
+  {
+    label: "Salary List",
+    to: "/companyAdmin/salarylist",
+    icon: <FaFolderPlus />,
+  },
 
   {
     label: "Leave & Attendance",
@@ -85,6 +89,11 @@ const settingsMenu = [
     label: "Pay Schedule",
     to: "/companyAdmin/paySchedule",
     icon: <FaUmbrellaBeach />,
+  },
+  {
+    label: "Monthly Salary List",
+    to: "/companyAdmin/MonthlySalaryList",
+    icon: <RiMoneyDollarBoxLine />,
   },
   {
     label: "Salary Components",

@@ -27,7 +27,9 @@
     "react-router-dom": "^7.4.1",
     "react-select": "^5.10.1",
     "react-select-country-list": "^2.2.3",
-    "recharts": "^2.15.3"
+    "recharts": "^2.15.3",
+    "slsx": "^0.0.3",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
