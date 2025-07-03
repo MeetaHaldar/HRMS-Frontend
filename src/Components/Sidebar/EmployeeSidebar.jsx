@@ -8,6 +8,7 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { FiLogOut } from "react-icons/fi";
 import { IoMdTime } from "react-icons/io";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { HiOutlineCurrencyRupee } from "react-icons/hi";
 
 const baseMenu = [
   {
@@ -59,6 +60,11 @@ const baseMenu = [
         icon: <MdOutlineWorkOutline />,
       },
     ],
+  },
+  {
+    label: "Salary List",
+    to: "/employee/SalaryTable",
+    icon: <HiOutlineCurrencyRupee />,
   },
   {
     label: "Update Password",

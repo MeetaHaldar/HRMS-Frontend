@@ -138,6 +138,8 @@ function App() {
             <Route path="WFH" element={<WFH />} />
             <Route path="calender" element={<AttendanceCalendar />} />
             <Route path="changePassword" element={<UpdatePassword />} />
+            <Route path="SalaryTable" element={<SalaryTable />} />
+            <Route path="salarySlip/:id" element={<SalarySlip />} />
             <Route path="*" element={<h1>404 - Page Not Found</h1>} />
           </Route>
         </Routes>
@@ -204,4 +206,6 @@ import ResetPassword from "./Components/Password/ResetPassword";
 import RegularizationRequestTable from "./Components/Company/AttendanceOverview/RegularizationRequestTable";
 import Home from "./Home";
 import SalaryList from "./Components/Company/Salary/SalaryList";
-import MonthlySalaryList from "./Components/Company/Salary/MonthlySalaryList";
+import MonthlySalaryList from "./Components/Company/Salary/EmployeeSalaryTemplate";
+import SalaryTable from "./Components/Employee/SalaryTable";
+import SalarySlip from "./Components/Employee/SalarySlip";

@@ -31,6 +31,7 @@ const Profile = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log(res.data.employee);
         setEmployee(res.data.employee);
       } catch (error) {
         console.error("Failed to fetch employee data:", error);

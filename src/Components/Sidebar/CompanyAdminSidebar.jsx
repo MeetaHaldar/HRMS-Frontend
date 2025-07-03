@@ -8,10 +8,9 @@ import {
   FaBookOpen,
   FaIdBadge,
   FaChevronDown,
-} from "react-icons/fa";
-import { FaListAlt } from "react-icons/fa";
-import { FaUserCheck } from "react-icons/fa6";
-import { FaArrowTrendUp, FaPeopleGroup } from "react-icons/fa6";
+  FaUserCheck,
+  FaPeopleGroup,
+} from "react-icons/fa6";
 import { PiBuildingOfficeLight } from "react-icons/pi";
 import { TbTax } from "react-icons/tb";
 import { FcLeave } from "react-icons/fc";
@@ -34,17 +33,6 @@ const menuItems = [
   },
   { label: "Documents", to: "/companyAdmin/documents", icon: <FaFolderPlus /> },
   {
-    label: "Salary List",
-    to: "/companyAdmin/salarylist",
-    icon: <FaFolderPlus />,
-  },
-
-  {
-    label: "Leave & Attendance",
-    to: "LeaveAttendanceOverview",
-    icon: <FcLeave />,
-  },
-  {
     label: "Subscription",
     icon: <FaBookOpen />,
     isExpandable: true,
@@ -52,13 +40,29 @@ const menuItems = [
       {
         label: "All Subs.",
         to: "/companyAdmin/subscriptionPlans",
-        icon: <FaListAlt />,
+        icon: <></>,
       },
       {
         label: "My Subs.",
         to: "/companyAdmin/my-subscriptions",
         icon: <FaUserCheck />,
       },
+    ],
+  },
+  {
+    label: "Leave & Attendance",
+    to: "LeaveAttendanceOverview",
+    icon: <FcLeave />,
+  },
+  {
+    label: "Salary",
+    icon: <RiMoneyDollarBoxLine />,
+    isExpandable: true,
+    subItems: [
+      { label: "Salary List", to: "/companyAdmin/salarylist" },
+      { label: "Monthly Salary", to: "/companyAdmin/MonthlySalaryList" },
+      { label: "Salary Components", to: "/companyAdmin/salaryComponent" },
+      { label: "Salary Templates", to: "/companyAdmin/salaryTemplate" },
     ],
   },
   { label: "Settings", to: "", icon: <IoSettingsOutline /> },
@@ -91,26 +95,6 @@ const settingsMenu = [
     icon: <FaUmbrellaBeach />,
   },
   {
-    label: "Monthly Salary List",
-    to: "/companyAdmin/MonthlySalaryList",
-    icon: <RiMoneyDollarBoxLine />,
-  },
-  {
-    label: "Salary Components",
-    to: "/companyAdmin/salaryComponent",
-    icon: <RiMoneyDollarBoxLine />,
-  },
-  {
-    label: "Salary Templates",
-    to: "/companyAdmin/salaryTemplate",
-    icon: <GrTemplate />,
-  },
-  {
-    label: "Taxes",
-    to: "/companyAdmin/TaxDetails",
-    icon: <TbTax />,
-  },
-  {
     label: "Leave & Attendance",
     icon: <FcLeave />,
     isExpandable: true,
@@ -122,6 +106,11 @@ const settingsMenu = [
     ],
   },
   {
+    label: "Taxes",
+    to: "/companyAdmin/TaxDetails",
+    icon: <TbTax />,
+  },
+  {
     label: "Change Password",
     to: "/companyAdmin/changePassword",
     icon: <RiLockPasswordLine />,
@@ -131,7 +120,8 @@ const settingsMenu = [
 const CompanyAdminSidebar = ({ children }) => {
   const [isSettingsMenuActive, setIsSettingsMenuActive] = useState(false);
   const [isSubscriptionOpen, setIsSubscriptionOpen] = useState(false);
-  const [isLeaveAttendanceOpen, setIsLeaveAttendanceOpen] = useState(false);
+  const [isSalaryOpen, setIsSalaryOpen] = useState(false);
+  const [activeSettingsParent, setActiveSettingsParent] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -142,7 +132,6 @@ const CompanyAdminSidebar = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Collapsible Main Sidebar */}
       <div
         className={`bg-white shadow-md border-r border-gray-200 transition-all duration-300 pl-2 ${
           isSettingsMenuActive ? "w-16" : "w-34"
@@ -156,15 +145,29 @@ const CompanyAdminSidebar = ({ children }) => {
             const isActive = location.pathname === item.to;
 
             if (item.isExpandable) {
+              const isOpen =
+                item.label === "Subscription"
+                  ? isSubscriptionOpen
+                  : item.label === "Salary"
+                  ? isSalaryOpen
+                  : false;
+
+              const setOpen =
+                item.label === "Subscription"
+                  ? setIsSubscriptionOpen
+                  : item.label === "Salary"
+                  ? setIsSalaryOpen
+                  : () => {};
+
               return (
                 <div key={index} className="w-full">
                   <button
                     onClick={() => {
-                      setIsSubscriptionOpen(!isSubscriptionOpen);
+                      setOpen(!isOpen);
                       setIsSettingsMenuActive(false);
                     }}
                     className={`flex items-center justify-between w-full p-2 rounded-md transition ${
-                      isSubscriptionOpen
+                      isOpen
                         ? "bg-[#FFD85F] text-black"
                         : "text-gray-600 hover:bg-gray-100"
                     }`}
@@ -178,16 +181,14 @@ const CompanyAdminSidebar = ({ children }) => {
                     <span className="text-xs">
                       <FaChevronDown
                         className={`transition-transform duration-300 ${
-                          isSubscriptionOpen ? "rotate-180" : "rotate-0"
+                          isOpen ? "rotate-180" : "rotate-0"
                         }`}
                       />
                     </span>
                   </button>
                   <div
                     className={`ml-6 mt-1 overflow-hidden transition-all duration-300 ease-in-out ${
-                      isSubscriptionOpen
-                        ? "max-h-40 opacity-100"
-                        : "max-h-0 opacity-0"
+                      isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
                     }`}
                   >
                     {item.subItems.map((subItem, subIdx) => {
@@ -198,7 +199,7 @@ const CompanyAdminSidebar = ({ children }) => {
                           to={subItem.to}
                           onClick={() => {
                             setIsSettingsMenuActive(false);
-                            setIsSubscriptionOpen(false);
+                            setOpen(false);
                           }}
                           className={`flex items-center space-x-2 py-1 text-sm pl-4 ${
                             isSubActive
@@ -225,9 +226,11 @@ const CompanyAdminSidebar = ({ children }) => {
                     e.preventDefault();
                     setIsSettingsMenuActive(!isSettingsMenuActive);
                     setIsSubscriptionOpen(false);
+                    setIsSalaryOpen(false);
                   } else {
                     setIsSettingsMenuActive(false);
                     setIsSubscriptionOpen(false);
+                    setIsSalaryOpen(false);
                   }
                 }}
                 className={`flex items-center p-2 rounded-md transition ${
@@ -245,7 +248,6 @@ const CompanyAdminSidebar = ({ children }) => {
             );
           })}
 
-          {/* Logout Button */}
           <div className="w-full px-2 pt-6">
             <button
               onClick={handleLogout}
@@ -260,7 +262,6 @@ const CompanyAdminSidebar = ({ children }) => {
         </nav>
       </div>
 
-      {/* Settings Sidebar */}
       {isSettingsMenuActive && (
         <div className="w-64 bg-white shadow-lg h-full overflow-y-auto">
           <div className="h-16 flex items-center justify-center text-2xl font-semibold text-[#303030]">
@@ -271,6 +272,7 @@ const CompanyAdminSidebar = ({ children }) => {
               const isActive = location.pathname === item.to;
 
               if (item.isExpandable) {
+                const isOpen = activeSettingsParent === item.label;
                 const isAnySubActive = item.subItems?.some(
                   (sub) => location.pathname === sub.to
                 );
@@ -278,11 +280,13 @@ const CompanyAdminSidebar = ({ children }) => {
                 return (
                   <div key={index}>
                     <button
-                      onClick={() =>
-                        setIsLeaveAttendanceOpen(!isLeaveAttendanceOpen)
-                      }
+                      onClick={() => {
+                        setActiveSettingsParent((prev) =>
+                          prev === item.label ? null : item.label
+                        );
+                      }}
                       className={`flex justify-between items-center w-full p-2 rounded-md transition ${
-                        isLeaveAttendanceOpen || isAnySubActive
+                        isOpen || isAnySubActive
                           ? "bg-[#FFD85F] text-black"
                           : "hover:bg-gray-100 text-gray-600"
                       }`}
@@ -295,18 +299,15 @@ const CompanyAdminSidebar = ({ children }) => {
                       </div>
                       <span
                         className={`transition-transform duration-300 text-sm ${
-                          isLeaveAttendanceOpen ? "rotate-180" : "rotate-0"
+                          isOpen ? "rotate-180" : "rotate-0"
                         }`}
                       >
                         <FaChevronDown />
                       </span>
                     </button>
-
                     <div
                       className={`ml-6 pl-2 mt-1 overflow-hidden transition-all duration-300 ease-in-out border-l border-r border-b border-gray-600 border-dashed p-3 ${
-                        isLeaveAttendanceOpen
-                          ? "max-h-40 opacity-100"
-                          : "max-h-0 opacity-0"
+                        isOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
                       }`}
                     >
                       {item.subItems.map((subItem, subIdx) => {
@@ -349,7 +350,6 @@ const CompanyAdminSidebar = ({ children }) => {
         </div>
       )}
 
-      {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <main className="p-6">{children}</main>
       </div>
