@@ -5,11 +5,10 @@ import { CgProfile } from "react-icons/cg";
 import { GiThreeLeaves } from "react-icons/gi";
 import { WiSunset } from "react-icons/wi";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { FiLogOut } from "react-icons/fi";
 import { IoMdTime } from "react-icons/io";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineCurrencyRupee } from "react-icons/hi";
-
+// import LogoutButtonWithPopup from "./LogoutButtonWithPopup";
 const baseMenu = [
   {
     label: "Dashboard",
@@ -184,15 +183,7 @@ const EmployeeSidebar = ({ children }) => {
         </div>
 
         <div className="w-full px-2 pb-6">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start text-gray-600 hover:bg-gray-100 transition"
-          >
-            <span className="text-xl">
-              <FiLogOut />
-            </span>
-            <span className="hidden lg:inline">Logout</span>
-          </button>
+          <LogoutButtonWithPopup />
         </div>
       </div>
 

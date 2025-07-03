@@ -44,7 +44,7 @@ const SalarySlip = () => {
       {/* Top Left - Back */}
       <button
         onClick={() => navigate(-1)}
-        className="absolute top-4 left-4 px-4 py-1 bg-gray-200 rounded-full hover:bg-gray-300 text-sm print:hidden"
+        className="absolute top-4 left-4 px-4 py-1 bg-gray-200 rounded-full hover:bg-gray-300 text-sm print:hidden cursor-pointer"
       >
         ← Back
       </button>
@@ -52,7 +52,7 @@ const SalarySlip = () => {
       {/* Top Right - Download */}
       <button
         onClick={handleDownload}
-        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-1 bg-yellow-400 text-black font-semibold rounded-full hover:bg-yellow-500 text-sm print:hidden"
+        className="absolute top-4 right-4 flex items-center gap-2 px-4 py-1 bg-yellow-400 text-black font-semibold rounded-full hover:bg-yellow-500 text-sm print:hidden cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +124,7 @@ const SalarySlip = () => {
 
         {/* Salary Components Table */}
         <table className="w-full text-sm border border-gray-300 mb-6">
-          <thead className="bg-gray-100 border-b">
+          <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-2 text-left font-semibold">
                 Salary Components
@@ -136,7 +136,7 @@ const SalarySlip = () => {
           <tbody>
             {data.earnings?.length > 0 &&
               data.earnings.map((item, index) => (
-                <tr key={`earning-${index}`} className="border-b">
+                <tr key={`earning-${index}`}>
                   <td className="px-4 py-2">{item.name}</td>
                   <td className="px-4 py-2 text-green-700">Earning</td>
                   <td className="px-4 py-2">
@@ -147,7 +147,7 @@ const SalarySlip = () => {
 
             {data.deductions?.length > 0 &&
               data.deductions.map((item, index) => (
-                <tr key={`deduction-${index}`} className="border-b">
+                <tr key={`deduction-${index}`}>
                   <td className="px-4 py-2">{item.name}</td>
                   <td className="px-4 py-2 text-red-700">Deduction</td>
                   <td className="px-4 py-2">
@@ -157,7 +157,7 @@ const SalarySlip = () => {
               ))}
 
             {Number(data.reimbursements) > 0 && (
-              <tr className="border-b">
+              <tr>
                 <td className="px-4 py-2">Reimbursements</td>
                 <td className="px-4 py-2 text-blue-700">Reimbursement</td>
                 <td className="px-4 py-2">

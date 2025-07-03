@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { MdSpaceDashboard } from "react-icons/md";
 import { FaBuilding } from "react-icons/fa";
 import { BsCardChecklist } from "react-icons/bs";
-import { FiLogOut } from "react-icons/fi";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { MdChecklist } from "react-icons/md";
+// import LogoutButtonWithPopup from "./LogoutButtonWithPopup";
 
 const superAdminMenu = [
   {
@@ -131,15 +130,7 @@ const SuperAdminSidebar = ({ children }) => {
 
         {/* Logout Button */}
         <div className="w-full px-2 pb-6">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start text-gray-600 hover:bg-gray-100 transition"
-          >
-            <span className="text-xl">
-              <FiLogOut />
-            </span>
-            <span className="hidden lg:inline">Logout</span>
-          </button>
+          <LogoutButtonWithPopup />
         </div>
       </div>
 

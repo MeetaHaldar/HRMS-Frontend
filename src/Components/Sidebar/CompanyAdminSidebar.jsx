@@ -3,6 +3,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoSettingsOutline } from "react-icons/io5";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { FaUmbrellaBeach } from "react-icons/fa6";
+import { LuBadgeIndianRupee } from "react-icons/lu";
+import { IoIosListBox } from "react-icons/io";
+import LogoutButtonWithPopup from "./LogoutButtonWithPopup";
 import {
   FaFolderPlus,
   FaBookOpen,
@@ -15,10 +18,10 @@ import { PiBuildingOfficeLight } from "react-icons/pi";
 import { TbTax } from "react-icons/tb";
 import { FcLeave } from "react-icons/fc";
 import { RiMoneyDollarBoxLine } from "react-icons/ri";
-import { GrTemplate } from "react-icons/gr";
 import { MdSpaceDashboard } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { FiLogOut } from "react-icons/fi";
+import { GrSchedule } from "react-icons/gr";
 
 const menuItems = [
   {
@@ -38,12 +41,12 @@ const menuItems = [
     isExpandable: true,
     subItems: [
       {
-        label: "All Subs.",
+        label: "All Subscriptions",
         to: "/companyAdmin/subscriptionPlans",
-        icon: <></>,
+        icon: <IoIosListBox />,
       },
       {
-        label: "My Subs.",
+        label: "My Subscription",
         to: "/companyAdmin/my-subscriptions",
         icon: <FaUserCheck />,
       },
@@ -59,10 +62,26 @@ const menuItems = [
     icon: <RiMoneyDollarBoxLine />,
     isExpandable: true,
     subItems: [
-      { label: "Salary List", to: "/companyAdmin/salarylist" },
-      { label: "Monthly Salary", to: "/companyAdmin/MonthlySalaryList" },
-      { label: "Salary Components", to: "/companyAdmin/salaryComponent" },
-      { label: "Salary Templates", to: "/companyAdmin/salaryTemplate" },
+      {
+        label: "Salary List",
+        to: "/companyAdmin/salarylist",
+        icon: <LuBadgeIndianRupee />,
+      },
+      {
+        label: "Monthly Salary",
+        to: "/companyAdmin/MonthlySalaryList",
+        icon: <LuBadgeIndianRupee />,
+      },
+      {
+        label: "Salary Components",
+        to: "/companyAdmin/salaryComponent",
+        icon: <LuBadgeIndianRupee />,
+      },
+      {
+        label: "Salary Templates",
+        to: "/companyAdmin/salaryTemplate",
+        icon: <LuBadgeIndianRupee />,
+      },
     ],
   },
   { label: "Settings", to: "", icon: <IoSettingsOutline /> },
@@ -92,7 +111,7 @@ const settingsMenu = [
   {
     label: "Pay Schedule",
     to: "/companyAdmin/paySchedule",
-    icon: <FaUmbrellaBeach />,
+    icon: <GrSchedule />,
   },
   {
     label: "Leave & Attendance",
@@ -132,9 +151,10 @@ const CompanyAdminSidebar = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
       <div
         className={`bg-white shadow-md border-r border-gray-200 transition-all duration-300 pl-2 ${
-          isSettingsMenuActive ? "w-16" : "w-34"
+          isSettingsMenuActive ? "w-16" : "w-[240px]"
         } flex flex-col items-center`}
       >
         <div className="flex items-center justify-center h-16 text-lg font-bold">
@@ -186,9 +206,12 @@ const CompanyAdminSidebar = ({ children }) => {
                       />
                     </span>
                   </button>
+
                   <div
-                    className={`ml-6 mt-1 overflow-hidden transition-all duration-300 ease-in-out ${
-                      isOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
+                    className={`ml-6 overflow-hidden transition-all duration-300 ease-in-out border-l border-r border-b border-gray-600 border-dashed p-3 ${
+                      isOpen
+                        ? "max-h-60 opacity-100 mt-0.5"
+                        : "max-h-0 opacity-0"
                     }`}
                   >
                     {item.subItems.map((subItem, subIdx) => {
@@ -197,18 +220,15 @@ const CompanyAdminSidebar = ({ children }) => {
                         <Link
                           key={subIdx}
                           to={subItem.to}
-                          onClick={() => {
-                            setIsSettingsMenuActive(false);
-                            setOpen(false);
-                          }}
-                          className={`flex items-center space-x-2 py-1 text-sm pl-4 ${
+                          onClick={() => setIsSettingsMenuActive(false)}
+                          className={`flex items-center gap-2 py-1 text-sm ${
                             isSubActive
                               ? "text-black font-semibold"
                               : "text-gray-600 hover:text-gray-800"
                           }`}
                         >
-                          <span className="text-base">{subItem.icon}</span>
-                          <span>{subItem.label}</span>
+                          {subItem.icon}
+                          {subItem.label}
                         </Link>
                       );
                     })}
@@ -249,19 +269,12 @@ const CompanyAdminSidebar = ({ children }) => {
           })}
 
           <div className="w-full px-2 pt-6">
-            <button
-              onClick={handleLogout}
-              className="w-full flex items-center space-x-3 p-2 rounded-md justify-center lg:justify-start text-gray-600 hover:bg-gray-100 transition"
-            >
-              <span className="text-xl">
-                <FiLogOut />
-              </span>
-              {!isSettingsMenuActive && <span className="text-sm">Logout</span>}
-            </button>
+            <LogoutButtonWithPopup />
           </div>
         </nav>
       </div>
 
+      {/* Settings Panel */}
       {isSettingsMenuActive && (
         <div className="w-64 bg-white shadow-lg h-full overflow-y-auto">
           <div className="h-16 flex items-center justify-center text-2xl font-semibold text-[#303030]">
