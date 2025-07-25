@@ -4,7 +4,7 @@ import { FaBuilding } from "react-icons/fa";
 import { BsCardChecklist } from "react-icons/bs";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { MdChecklist } from "react-icons/md";
-// import LogoutButtonWithPopup from "./LogoutButtonWithPopup";
+import LogoutButtonWithPopup from "./LogoutButtonWithPopup";
 
 const superAdminMenu = [
   {
