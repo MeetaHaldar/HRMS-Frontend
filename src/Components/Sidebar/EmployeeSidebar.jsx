@@ -8,7 +8,7 @@ import { RiLockPasswordLine } from "react-icons/ri";
 import { IoMdTime } from "react-icons/io";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineCurrencyRupee } from "react-icons/hi";
-// import LogoutButtonWithPopup from "./LogoutButtonWithPopup";
+import LogoutButtonWithPopup from "./LogoutButtonWithPopup";
 const baseMenu = [
   {
     label: "Dashboard",

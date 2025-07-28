@@ -26,7 +26,7 @@ const LogoutButtonWithPopup = () => {
 
       {/* Confirmation Popup */}
       {showPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-transparent backdrop-blur-sm">
           <div className="bg-white rounded-xl shadow-lg p-6 w-11/12 max-w-sm text-center">
             <p className="text-gray-800 text-md font-medium mb-4">
               Are you sure you want to logout?
